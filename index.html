@@ -17,12 +17,19 @@
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
 
   /* ---------- top bar ---------- */
-  header{background:var(--navy);color:#fff;padding:14px 24px;display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center}
-  header h1{font-size:20px;margin:0;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+  header{background:var(--navy);color:#fff;padding:12px 24px 14px;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"title nav actions" "meta meta meta";gap:12px 24px;align-items:center}
+  header h1{grid-area:title;font-size:20px;margin:0;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+  nav.pages{grid-area:nav;justify-self:start}
+  .actions{grid-area:actions}
+  .meta{grid-area:meta}
+  @media (max-width:900px){header{grid-template-columns:1fr;grid-template-areas:"title" "nav" "meta" "actions"}}
   header h1 small{font-weight:400;opacity:.75;margin-left:8px;font-size:13px}
-  .meta{display:flex;flex-wrap:wrap;gap:10px 14px;flex:1;min-width:280px}
-  .meta label{display:flex;flex-direction:column;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.85}
-  .meta input{margin-top:3px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:6px 9px;font-size:14px;min-width:150px;outline:none}
+  nav.pages{display:flex;gap:4px;background:rgba(255,255,255,.1);padding:4px;border-radius:10px}
+  nav.pages a{color:#fff;text-decoration:none;padding:6px 12px;border-radius:7px;font-size:13.5px;opacity:.8}
+  nav.pages a.active{background:#41c3ec;color:var(--navy);opacity:1;font-weight:600}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 14px}
+  .meta label{display:flex;flex:1 1 160px;flex-direction:column;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.85}
+  .meta input{margin-top:3px;width:100%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:6px 9px;font-size:14px;min-width:150px;outline:none}
   .meta input:focus{background:rgba(255,255,255,.18);border-color:#fff}
   .meta input::placeholder{color:rgba(255,255,255,.5)}
   .actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -114,7 +121,7 @@
   @media print{
     @page{size:A3 landscape;margin:10mm}
     header{background:var(--navy) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .actions,.statusbar,.toast,.modal{display:none !important}
+    .actions,.statusbar,.toast,.modal,nav.pages{display:none !important}
     body{background:#fff}
     main{padding:8mm 0}
     .box{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid}
@@ -127,6 +134,7 @@
 
 <header>
   <h1>SkillAIbility <small>WP3 · Solution Canvas</small></h1>
+  <nav class="pages"><a href="index.html" class="active">Solution canvas</a><a href="inclusion.html">Inclusion matrix</a></nav>
   <div class="meta">
     <label>Group / team <input id="m_group" placeholder="e.g. Group A" autocomplete="off"></label>
     <label>Company / use case <input id="m_case" placeholder="e.g. Volvo – final assembly" autocomplete="off"></label>
@@ -248,13 +256,9 @@
 
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
+<script src="config.js"></script>
 <script>
-/* =====================================================================
-   CONFIGURATION
-   Paste the Web App URL of your Google Apps Script here (see README.md).
-   Leave empty to run in "export only" mode.
-   ===================================================================== */
-const SUBMIT_URL = "";
+/* SUBMIT_URL is defined in config.js */
 const WORKSHOP_ID = "WP3";         // tag stored with every submission
 const STORAGE_KEY = "skillaibility_wp3_canvas_v1";
 
@@ -266,6 +270,7 @@ const fieldEls = () => $$("textarea[data-key]");
 
 function collect(){
   const d = {
+    form: "canvas",
     workshop: WORKSHOP_ID,
     submission_id: getSubmissionId(),
     group: $("#m_group").value.trim(),

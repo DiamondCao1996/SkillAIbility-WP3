@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SkillAIbility WP3 – Inclusion Matrix</title>
+<style>
+  :root{
+    --navy:#0b1b3f; --bg:#eef0f3; --ink:#0b1b3f; --muted:#3b4560;
+    --blue:#c9eefb; --blue-b:#41c3ec; --blue-d:#1a8fb8;
+    --green:#d9f2c9; --green-b:#9fd65c; --green-d:#4f8f1c;
+    --yellow:#fce9a9; --yellow-b:#f0d34a; --yellow-d:#a8860b;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+
+  header{background:var(--navy);color:#fff;padding:12px 24px 14px;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"title nav actions" "meta meta meta";gap:12px 24px;align-items:center}
+  header h1{grid-area:title;font-size:20px;margin:0;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+  nav.pages{grid-area:nav;justify-self:start}
+  .actions{grid-area:actions}
+  .meta{grid-area:meta}
+  @media (max-width:900px){header{grid-template-columns:1fr;grid-template-areas:"title" "nav" "meta" "actions"}}
+  header h1 small{font-weight:400;opacity:.75;margin-left:8px;font-size:13px}
+  nav.pages{display:flex;gap:4px;background:rgba(255,255,255,.1);padding:4px;border-radius:10px}
+  nav.pages a{color:#fff;text-decoration:none;padding:6px 12px;border-radius:7px;font-size:13.5px;opacity:.8}
+  nav.pages a.active{background:#41c3ec;color:var(--navy);opacity:1;font-weight:600}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 14px}
+  .meta label{display:flex;flex:1 1 160px;flex-direction:column;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.85}
+  .meta input{margin-top:3px;width:100%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:6px 9px;font-size:14px;min-width:150px;outline:none}
+  .meta input:focus{background:rgba(255,255,255,.18);border-color:#fff}
+  .meta input::placeholder{color:rgba(255,255,255,.5)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  button{border:0;border-radius:9px;padding:9px 14px;font-size:14px;cursor:pointer;font-weight:600;transition:.15s;font-family:inherit}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff}
+  .btn-ghost:hover{background:rgba(255,255,255,.22)}
+  .btn-primary{background:#41c3ec;color:var(--navy)}
+  .btn-primary:hover{background:#6ad3f2}
+  .btn-primary:disabled{opacity:.6;cursor:wait}
+
+  main{padding:18px 22px 70px;max-width:1700px;margin:0 auto}
+
+  /* framing strip */
+  .framing{background:#fff;border-radius:var(--radius);padding:14px 20px;margin-bottom:16px;border-left:6px solid var(--navy)}
+  .framing h2{margin:0 0 4px;font-size:18px;font-weight:600}
+  .framing p{margin:0;font-size:14px;color:var(--muted);line-height:1.45}
+  .outcomes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .outcomes span{background:var(--navy);color:#fff;border-radius:999px;padding:5px 12px;font-size:13px}
+  .outcomes span i{font-style:normal;opacity:.75;font-weight:400;margin-left:5px}
+
+  /* dimension tabs */
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{flex:1;min-width:200px;border:2.5px solid;border-radius:14px;padding:10px 14px;cursor:pointer;background:#fff;text-align:left;font-weight:600;font-size:15px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+  .tab .n{display:inline-flex;width:26px;height:26px;border-radius:50%;align-items:center;justify-content:center;font-size:13px;color:#fff}
+  .tab .cnt{margin-left:auto;font-size:12px;font-weight:500;opacity:.65}
+  .tab[data-dim=TA]{border-color:var(--blue-b)} .tab[data-dim=TA].active{background:var(--blue)} .tab[data-dim=TA] .n{background:var(--blue-d)}
+  .tab[data-dim=TE]{border-color:var(--green-b)} .tab[data-dim=TE].active{background:var(--green)} .tab[data-dim=TE] .n{background:var(--green-d)}
+  .tab[data-dim=OR]{border-color:var(--yellow-b)} .tab[data-dim=OR].active{background:var(--yellow)} .tab[data-dim=OR] .n{background:var(--yellow-d)}
+
+  /* dimension panel */
+  .panel{display:none;border:2.5px solid;border-radius:var(--radius);padding:16px 18px 18px;background:#fff}
+  .panel.active{display:block}
+  .panel[data-dim=TA]{border-color:var(--blue-b)} .panel[data-dim=TE]{border-color:var(--green-b)} .panel[data-dim=OR]{border-color:var(--yellow-b)}
+  .panel .chars{border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px;line-height:1.5}
+  .panel[data-dim=TA] .chars{background:var(--blue)} .panel[data-dim=TE] .chars{background:var(--green)} .panel[data-dim=OR] .chars{background:var(--yellow)}
+  .panel .chars h3{margin:0 0 6px;font-size:16px;font-weight:600}
+  .panel .chars ul{margin:0;padding-left:18px}
+  .panel .chars li{margin:2px 0}
+  .panel .chars .ref{font-size:12px;opacity:.7}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+  @media (max-width:1100px){.layout{grid-template-columns:1fr}}
+
+  /* matrix */
+  .matrix-wrap{overflow-x:auto}
+  table.matrix{border-collapse:separate;border-spacing:6px;width:100%;min-width:640px}
+  table.matrix th{font-weight:600;font-size:14px;padding:6px 8px}
+  table.matrix thead th{background:var(--navy);color:#fff;border-radius:8px;padding:9px 8px}
+  table.matrix thead th.corner{background:transparent}
+  table.matrix tbody th{text-align:left;background:#eef0f3;border-radius:8px;max-width:190px;line-height:1.25}
+  table.matrix tbody th small{display:block;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:2px}
+  td.cell{background:#f7f8fa;border:1.5px dashed #c7ccd6;border-radius:10px;min-width:120px;height:74px;vertical-align:top;padding:6px;cursor:pointer;transition:.12s;position:relative}
+  td.cell:hover{border-color:var(--navy);background:#fff}
+  td.cell.has{border-style:solid;background:#fff}
+  td.cell.selected{outline:3px solid var(--navy);outline-offset:-1px}
+  .chips{display:flex;flex-wrap:wrap;gap:4px}
+  .chip{font-size:12px;font-weight:600;padding:3px 7px;border-radius:999px;color:#fff;white-space:nowrap}
+  .chip.TA{background:var(--blue-d)} .chip.TE{background:var(--green-d)} .chip.OR{background:var(--yellow-d)}
+  .chip.freq::after{content:"★";margin-left:3px;font-size:10px}
+  td.cell .note-ind{position:absolute;right:6px;bottom:4px;font-size:11px;opacity:.55}
+  td.cell .plus{position:absolute;right:6px;top:4px;font-size:14px;opacity:0;color:var(--navy)}
+  td.cell:hover .plus{opacity:.6}
+
+  /* side: legend / editor */
+  aside{position:sticky;top:12px}
+  .side{border-radius:12px;background:#f7f8fa;border:1.5px solid #dfe3ea;padding:12px 14px;margin-bottom:12px}
+  .side h4{margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .side .hint{font-size:13px;color:var(--muted);margin:0 0 8px;line-height:1.4}
+  .code-list{display:flex;flex-direction:column;gap:5px;max-height:52vh;overflow:auto;padding-right:4px}
+  .code{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:8px;background:#fff;border:1.5px solid #e3e6ec;font-size:13px;line-height:1.3}
+  .code.editing{cursor:default}
+  .code.pick{cursor:pointer}
+  .code.pick:hover{border-color:var(--navy)}
+  .code.pick.on{border-color:var(--navy);background:#eef3ff}
+  .code .id{font-weight:700;min-width:36px;padding-top:1px}
+  .code .id.TA{color:var(--blue-d)} .code .id.TE{color:var(--green-d)} .code .id.OR{color:var(--yellow-d)}
+  .code input.lbl{flex:1;border:0;border-bottom:1px dashed #bbb;background:transparent;font:inherit;padding:1px 2px;outline:none;color:var(--ink);min-width:0}
+  .code input.lbl:focus{border-bottom:1.5px solid var(--navy)}
+  .code input.lbl::placeholder{color:#aab}
+  .code .star{cursor:pointer;opacity:.35;font-size:15px;padding-top:0;user-select:none}
+  .code .star.on{opacity:1;color:#d99a00}
+  .code .check{font-size:15px;width:18px;text-align:center;padding-top:0}
+  .side .row{display:flex;gap:6px;margin-top:8px}
+  .side .row button{flex:1;padding:7px 8px;font-size:13px}
+  .btn-soft{background:#e7e9ee;color:var(--ink)} .btn-soft:hover{background:#d9dce4}
+  .btn-navy{background:var(--navy);color:#fff}
+  .side textarea{width:100%;min-height:64px;border:1px dashed #bbb;border-radius:8px;padding:7px 9px;font:inherit;font-size:13px;resize:vertical;outline:none;background:#fff}
+  .side textarea:focus{border-style:solid;border-color:var(--navy)}
+  .sel-title{font-weight:600;font-size:14px;margin:0 0 6px;line-height:1.3}
+  .sel-title span{color:var(--muted);font-weight:400}
+  .freq-box{font-size:13px;line-height:1.45}
+  .freq-box b{display:block;margin-bottom:2px}
+
+  /* footer / status / toast / modal */
+  .statusbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d8dce4;padding:8px 22px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:5}
+  .statusbar .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9aa3b5;margin-right:6px;vertical-align:middle}
+  .statusbar .dot.saved{background:#3ec26f}.statusbar .dot.dirty{background:#f0b429}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:14px;z-index:20;opacity:0;pointer-events:none;transition:.25s;max-width:90vw}
+  .toast.show{opacity:1}.toast.ok{background:#1f8f4c}.toast.err{background:#b3261e}
+  .modal{position:fixed;inset:0;background:rgba(11,27,63,.55);display:none;align-items:center;justify-content:center;z-index:30;padding:20px}
+  .modal.open{display:flex}
+  .modal .card{background:#fff;border-radius:16px;padding:22px 26px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .modal h3{margin:0 0 8px;font-size:20px}
+  .modal p{margin:6px 0;font-size:14.5px;line-height:1.45;color:#333}
+  .modal .row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  .modal .btn-cancel{background:#e7e9ee;color:var(--ink)}
+  .modal .btn-danger{background:#b3261e;color:#fff}
+
+  @media print{
+    @page{size:A3 landscape;margin:10mm}
+    header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .actions,.statusbar,.toast,.modal,nav.pages,.tabs{display:none !important}
+    .panel{display:block !important;break-before:page;margin-bottom:10mm}
+    .panel:first-of-type{break-before:auto}
+    .layout{grid-template-columns:1fr}
+    aside{position:static}
+    .side .row,.side textarea{display:none}
+    .code-list{max-height:none}
+    body{background:#fff}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SkillAIbility <small>WP3 · Inclusion Matrix</small></h1>
+  <nav class="pages"><a href="index.html">Solution canvas</a><a href="inclusion.html" class="active">Inclusion matrix</a></nav>
+  <div class="meta">
+    <label>Group / team <input id="m_group" placeholder="e.g. Group A" autocomplete="off"></label>
+    <label>Company / use case <input id="m_case" placeholder="e.g. Volvo – final assembly" autocomplete="off"></label>
+    <label>Participants <input id="m_people" placeholder="names or roles" autocomplete="off"></label>
+    <label>Date <input id="m_date" type="date"></label>
+  </div>
+  <div class="actions">
+    <button class="btn-ghost" onclick="exportJSON()" title="Download as JSON">⬇ Export</button>
+    <button class="btn-ghost" onclick="importJSON()" title="Load a JSON file">⬆ Import</button>
+    <button class="btn-ghost" onclick="window.print()" title="Print or save as PDF">🖨 Print</button>
+    <button class="btn-ghost" onclick="confirmReset()" title="Reset to the research baseline">↺ Reset</button>
+    <button class="btn-primary" id="submitBtn" onclick="submitMatrix()">Submit matrix</button>
+  </div>
+</header>
+
+<main>
+  <div class="framing">
+    <h2>Organisation → Inclusion</h2>
+    <p>For each <b>worker group</b> (rows) and each <b>outcome</b> the technology should deliver (columns), select which <b>requirements</b> apply. Cells are pre-filled with the WP3 research baseline – confirm, remove or add codes based on your own case. Click a cell to edit it; define new codes in the legend on the right (★ marks a frequent requirement).</p>
+    <div class="outcomes">
+      <span><b>Augmentation</b><i>enhance what workers can do</i></span>
+      <span><b>Inclusion</b><i>make the job accessible</i></span>
+      <span><b>Symbiosis</b><i>human–AI work as one system</i></span>
+      <span><b>Empowerment</b><i>workers grow and decide</i></span>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="panels"></div>
+</main>
+
+<div class="statusbar">
+  <span><span class="dot" id="dot"></span><span id="status">Draft saved locally in this browser</span></span>
+  <span id="progress"></span>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="card"><h3 id="modalTitle"></h3><div id="modalBody"></div><div class="row" id="modalRow"></div></div></div>
+<input type="file" id="fileInput" accept="application/json" style="display:none">
+
+<script src="config.js"></script>
+<script>
+/* =====================================================================
+   DATA MODEL
+   ===================================================================== */
+const WORKSHOP_ID = "WP3";
+const STORAGE_KEY = "skillaibility_wp3_inclusion_v1";
+const FORM = "inclusion";
+
+const GROUPS = [
+  { id:"novice",    name:"Novice and learning-vulnerable workers" },
+  { id:"deaf",      name:"Deaf and hard-of-hearing workers" },
+  { id:"aging",     name:"Aging workers" },
+  { id:"physical",  name:"Workers with physical support needs" },
+  { id:"cognitive", name:"Workers with cognitive support needs" },
+];
+const OUTCOMES = [
+  { id:"augmentation", name:"Augmentation" },
+  { id:"inclusion",    name:"Inclusion" },
+  { id:"symbiosis",    name:"Symbiosis" },
+  { id:"empowerment",  name:"Empowerment" },
+];
+
+const DIMENSIONS = [
+  {
+    id:"TA", n:"1", name:"Task requirements", short:"Task",
+    charsTitle:"Task characteristics",
+    chars:[
+      "<b>Demand taxonomy:</b> core demands (physical / cognitive / sensing) set task feasibility; contextual demands (leadership, training, social inclusion) decide sustainability of inclusion. <span class='ref'>(SPS 2026)</span>",
+      "Task allocation and redistributed-workload evidence from interviews; empowerment and performance perspective. <span class='ref'>[1]</span>",
+      "Sectoral framing of task change against EU digitalisation-and-work trends. <span class='ref'>[2][3]</span>"
+    ],
+    codes:[
+      {id:"TA1", label:"Fewer complex motions – perform one motion at a time", freq:false},
+      {id:"TA2", label:"", freq:false},{id:"TA3", label:"", freq:false},{id:"TA4", label:"", freq:false},
+      {id:"TA5", label:"", freq:false},{id:"TA6", label:"", freq:false},{id:"TA7", label:"", freq:false},{id:"TA8", label:"", freq:false},
+    ],
+    baseline:{
+      "novice:inclusion":["TA1"], "deaf:inclusion":["TA1"], "aging:inclusion":["TA1"],
+      "physical:inclusion":["TA1"], "cognitive:inclusion":["TA1"]
+    }
+  },
+  {
+    id:"TE", n:"2", name:"Technology requirements", short:"Technology",
+    charsTitle:"Technology characteristics",
+    chars:[
+      "<b>Human–AI collaboration principles:</b> trust, autonomy, usability for shared tasks. <span class='ref'>(APMS 2026)</span>",
+      "Conditional trust, reliability and honest expectations as fit conditions for adoption. <span class='ref'>[1]</span>",
+      "<b>Multimodal redundancy principle:</b> at least two channels for every alert / instruction; adaptable rather than static technology."
+    ],
+    codes:[
+      {id:"TE1",  label:"Physical functions – adjust spacing in projected assembly instructions", freq:false},
+      {id:"TE2",  label:"Cognitive support – in-situ instructions, continuous assistance", freq:false},
+      {id:"TE3",  label:"Cognitive support – two-way communication", freq:false},
+      {id:"TE4",  label:"Cognitive support – feedback systems", freq:false},
+      {id:"TE5",  label:"Cognitive support – automatic detection when the operator does not know how to initiate interaction", freq:false},
+      {id:"TE6",  label:"Sensing functions – appropriate mode of instruction (visual, audio, lights, verbal, colour schemes)", freq:true},
+      {id:"TE7",  label:"Simulation for work planning", freq:false},
+      {id:"TE8",  label:"In-situ capability / skill matching", freq:true},
+      {id:"TE9",  label:"Upskilling – sufficient content depth", freq:false},
+      {id:"TE10", label:"Upskilling – contextualisation for industry-specific training", freq:false},
+    ],
+    baseline:{
+      "novice:inclusion":["TE8"], "novice:symbiosis":["TE8","TE10"], "novice:empowerment":["TE7","TE8","TE9","TE10"],
+      "deaf:inclusion":["TE6"], "deaf:empowerment":["TE6"],
+      "aging:inclusion":["TE8"], "aging:empowerment":["TE8"],
+      "physical:inclusion":["TE1"],
+      "cognitive:augmentation":["TE4","TE6"], "cognitive:inclusion":["TE5","TE6"], "cognitive:symbiosis":["TE3"], "cognitive:empowerment":["TE2","TE6"]
+    }
+  },
+  {
+    id:"OR", n:"3", name:"Organisation conditions", short:"Organisation",
+    charsTitle:"Work organisation conditions",
+    chars:[
+      "Operator involvement through the whole AI development and implementation process. <span class='ref'>[1]</span>",
+      "<b>Social environment and learning by doing:</b> protecting social learning, problem-solving and knowledge sharing. <span class='ref'>[1]</span>",
+      "<b>Organisational enablers</b> added to the complementarity model: training reach (co-workers, supervisors, procurement), financial accessibility, knowledge-oriented leadership."
+    ],
+    codes:[
+      {id:"OR1", label:"Flexible study methods – online learning", freq:true},
+      {id:"OR2", label:"Continuous training", freq:false},
+      {id:"OR3", label:"Job rotation in different stations", freq:false},
+      {id:"OR4", label:"Job enlargement", freq:false},
+      {id:"OR5", label:"Simultaneously value workers' long experience", freq:true},
+      {id:"OR6", label:"Knowledge-oriented leadership", freq:true},
+      {id:"OR7", label:"Training through direct interaction with technology", freq:false},
+      {id:"OR8", label:"Combined with direct contact with experts, e.g. visits and practical lectures", freq:true},
+    ],
+    baseline:{
+      "novice:inclusion":["OR8"], "novice:symbiosis":["OR1"], "novice:empowerment":["OR1","OR8"],
+      "aging:inclusion":["OR4","OR5","OR6"], "aging:symbiosis":["OR2","OR7"], "aging:empowerment":["OR2","OR3","OR5","OR6"]
+    }
+  }
+];
+
+/* state: { dims: { TA:{ codes:[{id,label,freq}], cells:{ "group:outcome":[ids] }, notes:{ "group:outcome":"" } } } } */
+let state = null;
+let activeDim = "TA";
+let selected = null;   // "group:outcome" in active dim
+
+function freshState(){
+  const s = { dims:{} };
+  DIMENSIONS.forEach(d=>{
+    const cells={}; GROUPS.forEach(g=>OUTCOMES.forEach(o=>cells[g.id+":"+o.id]=[...(d.baseline[g.id+":"+o.id]||[])]));
+    s.dims[d.id]={ codes:d.codes.map(c=>({...c})), cells, notes:{} };
+  });
+  return s;
+}
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const dimById = id => DIMENSIONS.find(d=>d.id===id);
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+function renderAll(){
+  const tabs=$("#tabs"); tabs.innerHTML="";
+  DIMENSIONS.forEach(d=>{
+    const b=document.createElement("button"); b.className="tab"+(d.id===activeDim?" active":""); b.dataset.dim=d.id;
+    b.innerHTML=`<span class="n">${d.n}</span>${d.name}<span class="cnt" id="cnt_${d.id}"></span>`;
+    b.onclick=()=>{ activeDim=d.id; selected=null; renderAll(); };
+    tabs.appendChild(b);
+  });
+  const panels=$("#panels"); panels.innerHTML="";
+  DIMENSIONS.forEach(d=>panels.appendChild(renderPanel(d)));
+  updateCounts();
+}
+
+function renderPanel(d){
+  const st=state.dims[d.id];
+  const p=document.createElement("section"); p.className="panel"+(d.id===activeDim?" active":""); p.dataset.dim=d.id;
+  p.innerHTML=`<div class="chars"><h3>${d.charsTitle}</h3><ul>${d.chars.map(c=>`<li>${c}</li>`).join("")}</ul></div>
+    <div class="layout"><div class="matrix-wrap"></div><aside></aside></div>`;
+  // matrix
+  const t=document.createElement("table"); t.className="matrix";
+  t.innerHTML=`<thead><tr><th class="corner"></th>${OUTCOMES.map(o=>`<th>${o.name}</th>`).join("")}</tr></thead>`;
+  const tb=document.createElement("tbody");
+  GROUPS.forEach(g=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<th>${g.name}</th>`;
+    OUTCOMES.forEach(o=>{
+      const key=g.id+":"+o.id, ids=st.cells[key]||[];
+      const td=document.createElement("td"); td.className="cell"+(ids.length?" has":"")+(selected===key&&d.id===activeDim?" selected":"");
+      td.dataset.key=key; td.title=`${g.name} × ${o.name} – click to edit`;
+      td.innerHTML=`<span class="plus">✎</span><div class="chips">${ids.map(id=>chipHTML(d.id,id)).join("")}</div>${st.notes[key]?'<span class="note-ind" title="has a note">📝</span>':''}`;
+      td.onclick=()=>{ selected=(selected===key)?null:key; renderAll(); if(selected) setTimeout(()=>{ const a=$(`.panel.active aside`); if(window.innerWidth<1100) a.scrollIntoView({behavior:"smooth",block:"nearest"}); },0); };
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb); p.querySelector(".matrix-wrap").appendChild(t);
+  p.querySelector("aside").appendChild(renderSide(d));
+  return p;
+}
+function chipHTML(dim,id){ const c=state.dims[dim].codes.find(x=>x.id===id); return `<span class="chip ${dim}${c&&c.freq?" freq":""}" title="${c?esc(c.label):""}">${id}</span>`; }
+function esc(s){ return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
+
+function renderSide(d){
+  const st=state.dims[d.id]; const wrap=document.createElement("div");
+  // --- cell editor / legend ---
+  const box=document.createElement("div"); box.className="side";
+  if(selected){
+    const [gid,oid]=selected.split(":"); const g=GROUPS.find(x=>x.id===gid), o=OUTCOMES.find(x=>x.id===oid);
+    box.innerHTML=`<h4>Editing cell</h4><p class="sel-title">${g.name} <span>×</span> ${o.name}</p><p class="hint">Tick the ${d.short.toLowerCase()} requirements that apply. Edit a code's description directly in the list.</p>`;
+  } else {
+    box.innerHTML=`<h4>${d.id}: ${d.name}</h4><p class="hint">Click a cell in the matrix to assign codes. You can rename codes here and mark frequent ones with ★.</p>`;
+  }
+  const list=document.createElement("div"); list.className="code-list";
+  st.codes.forEach(c=>{
+    const on=selected && (st.cells[selected]||[]).includes(c.id);
+    const row=document.createElement("div"); row.className="code "+(selected?"pick":"editing")+(on?" on":"");
+    row.innerHTML=`${selected?`<span class="check">${on?"☑":"☐"}</span>`:""}<span class="id ${d.id}">${c.id}</span><input class="lbl" value="${esc(c.label)}" placeholder="describe this requirement…"><span class="star${c.freq?" on":""}" title="Frequent requirement">★</span>`;
+    const inp=row.querySelector(".lbl");
+    inp.addEventListener("input",()=>{ c.label=inp.value; scheduleSave(); });
+    inp.addEventListener("click",e=>e.stopPropagation());
+    row.querySelector(".star").onclick=e=>{ e.stopPropagation(); c.freq=!c.freq; scheduleSave(); renderAll(); };
+    if(selected) row.onclick=()=>{ const arr=st.cells[selected]||(st.cells[selected]=[]); const i=arr.indexOf(c.id); i>=0?arr.splice(i,1):arr.push(c.id); arr.sort((a,b)=>parseInt(a.replace(/\D/g,""))-parseInt(b.replace(/\D/g,""))); scheduleSave(); renderAll(); };
+    list.appendChild(row);
+  });
+  box.appendChild(list);
+  const rowBtns=document.createElement("div"); rowBtns.className="row";
+  const add=document.createElement("button"); add.className="btn-soft"; add.textContent="+ New code";
+  add.onclick=()=>{ const n=Math.max(0,...st.codes.map(c=>parseInt(c.id.replace(/\D/g,""))||0))+1; st.codes.push({id:d.id+n,label:"",freq:false}); scheduleSave(); renderAll(); setTimeout(()=>{ const l=$$(`.panel.active .code input.lbl`); l[l.length-1]&&l[l.length-1].focus(); },0); };
+  rowBtns.appendChild(add);
+  if(selected){ const done=document.createElement("button"); done.className="btn-navy"; done.textContent="Done"; done.onclick=()=>{ selected=null; renderAll(); }; rowBtns.appendChild(done); }
+  box.appendChild(rowBtns);
+  wrap.appendChild(box);
+  // --- note for selected cell ---
+  if(selected){
+    const nb=document.createElement("div"); nb.className="side";
+    nb.innerHTML=`<h4>Note for this cell</h4>`;
+    const ta=document.createElement("textarea"); ta.placeholder="Why these requirements? Evidence from your case, disagreements, ideas…"; ta.value=st.notes[selected]||"";
+    ta.addEventListener("input",()=>{ st.notes[selected]=ta.value; scheduleSave(); const td=$(`.panel.active td[data-key="${selected}"]`); const ind=td.querySelector(".note-ind"); if(ta.value.trim()&&!ind) td.insertAdjacentHTML("beforeend",'<span class="note-ind">📝</span>'); if(!ta.value.trim()&&ind) ind.remove(); });
+    nb.appendChild(ta); wrap.appendChild(nb);
+  }
+  // --- frequent ---
+  const fr=st.codes.filter(c=>c.freq);
+  if(fr.length){ const fb=document.createElement("div"); fb.className="side freq-box"; fb.innerHTML=`<h4>★ Frequent requirements</h4>`+fr.map(c=>`<b>${c.id}</b>${esc(c.label)||"<i>(no description)</i>"}<br>`).join(""); wrap.appendChild(fb); }
+  return wrap;
+}
+
+function updateCounts(){
+  let total=0, filled=0;
+  DIMENSIONS.forEach(d=>{ const st=state.dims[d.id]; const n=Object.values(st.cells).filter(a=>a.length).length; const c=Object.values(st.cells).reduce((s,a)=>s+a.length,0); total+=20; filled+=n; const el=$("#cnt_"+d.id); if(el) el.textContent=`${n}/20 cells · ${c} codes`; });
+  $("#progress").textContent=`${filled} / ${total} cells filled`;
+}
+
+/* =====================================================================
+   PERSISTENCE
+   ===================================================================== */
+let saveTimer;
+function collect(){
+  return {
+    form:FORM, workshop:WORKSHOP_ID, submission_id:getSubmissionId(),
+    group:$("#m_group").value.trim(), use_case:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
+    submitted_at:new Date().toISOString(), user_agent:navigator.userAgent,
+    dims:state.dims
+  };
+}
+function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-INC-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id);} return id; }
+function scheduleSave(){
+  $("#dot").className="dot dirty"; $("#status").textContent="Unsaved changes…";
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(collect())); }catch(e){} $("#dot").className="dot saved"; $("#status").textContent="Draft saved locally · "+new Date().toLocaleTimeString(); },400);
+  updateCounts();
+}
+function load(d){
+  $("#m_group").value=d.group||""; $("#m_case").value=d.use_case||""; $("#m_people").value=d.participants||""; $("#m_date").value=d.date||new Date().toISOString().slice(0,10);
+  if(d.dims){ const s=freshState(); DIMENSIONS.forEach(dim=>{ const src=d.dims[dim.id]; if(!src) return; if(Array.isArray(src.codes)&&src.codes.length) s.dims[dim.id].codes=src.codes; if(src.cells) s.dims[dim.id].cells={...s.dims[dim.id].cells,...src.cells}; if(src.notes) s.dims[dim.id].notes=src.notes; }); state=s; }
+}
+document.addEventListener("input",e=>{ if(e.target.matches("header input")) scheduleSave(); });
+
+(function init(){
+  state=freshState(); $("#m_date").value=new Date().toISOString().slice(0,10);
+  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ load(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
+  renderAll();
+})();
+
+/* =====================================================================
+   ACTIONS
+   ===================================================================== */
+function toast(msg,cls="",ms=3500){ const t=$("#toast"); t.textContent=msg; t.className="toast show "+cls; clearTimeout(t._t); t._t=setTimeout(()=>t.className="toast",ms); }
+function modal(title,bodyHTML,buttons){ $("#modalTitle").textContent=title; $("#modalBody").innerHTML=bodyHTML; const row=$("#modalRow"); row.innerHTML=""; buttons.forEach(b=>{ const btn=document.createElement("button"); btn.textContent=b.label; btn.className=b.cls||"btn-cancel"; btn.onclick=()=>{ closeModal(); b.onClick&&b.onClick(); }; row.appendChild(btn); }); $("#modal").classList.add("open"); }
+function closeModal(){ $("#modal").classList.remove("open"); }
+$("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeModal(); });
+
+function slug(){ const d=collect(); return [WORKSHOP_ID+"-inclusion", d.group||"matrix", d.date||""].filter(Boolean).join("_").replace(/[^\w\-]+/g,"-"); }
+function exportJSON(){ const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=slug()+".json"; a.click(); toast("Matrix exported as JSON","ok"); }
+function importJSON(){ $("#fileInput").click(); }
+$("#fileInput").addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ load(JSON.parse(r.result)); renderAll(); scheduleSave(); toast("Matrix loaded","ok"); }catch(err){ toast("Could not read that file","err"); } }; r.readAsText(f); e.target.value=""; });
+function confirmReset(){ modal("Reset to the research baseline?","<p>All cells, code descriptions and notes go back to the pre-filled WP3 baseline. Header fields are kept. Export first if you want a copy.</p>",[{label:"Cancel"},{label:"Reset matrix",cls:"btn-danger",onClick:()=>{ state=freshState(); selected=null; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); renderAll(); scheduleSave(); toast("Matrix reset to baseline"); }}]); }
+
+function submitMatrix(){
+  const d=collect(); const missing=[]; if(!d.group) missing.push("Group / team"); if(!d.use_case) missing.push("Company / use case");
+  let body="";
+  if(missing.length){ modal("Almost there",`<p><b>Please fill in:</b> ${missing.join(", ")} (top bar).</p>`,[{label:"OK"}]); return; }
+  const undefinedUsed=[]; DIMENSIONS.forEach(dim=>{ const st=state.dims[dim.id]; const used=new Set(Object.values(st.cells).flat()); st.codes.forEach(c=>{ if(used.has(c.id)&&!c.label.trim()) undefinedUsed.push(c.id); }); });
+  if(undefinedUsed.length) body+=`<p>Codes used in the matrix but without a description: <b>${undefinedUsed.join(", ")}</b>. You can still submit.</p>`;
+  if(!SUBMIT_URL) body+=`<p><i>No collection backend is configured, so a JSON file will be downloaded instead – please send it to the facilitator.</i></p>`;
+  modal("Submit this matrix?", body||"<p>All three dimensions (task, technology, organisation) will be sent to the workshop facilitators.</p>",[{label:"Cancel"},{label:"Submit",cls:"btn-primary",onClick:()=>doSubmit(d)}]);
+}
+async function doSubmit(d){
+  if(!SUBMIT_URL){ exportJSON(); return; }
+  const btn=$("#submitBtn"); btn.disabled=true; btn.textContent="Submitting…";
+  try{ await fetch(SUBMIT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)}); toast("✓ Matrix submitted – thank you!","ok",5000); $("#status").textContent="Submitted "+new Date().toLocaleTimeString()+" · you can keep editing and re-submit"; }
+  catch(err){ toast("Submission failed (offline?). A JSON copy was downloaded instead.","err",6000); exportJSON(); }
+  finally{ btn.disabled=false; btn.textContent="Submit matrix"; }
+}
+document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } if(e.key==="Escape"&&selected){ selected=null; renderAll(); } });
+</script>
+</body>
+</html>
