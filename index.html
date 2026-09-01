@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SkillAIbility WP3 – Solution Canvas</title>
+<style>
+  :root{
+    --navy:#0b1b3f; --bg:#eef0f3; --ink:#0b1b3f; --muted:#3b4560;
+    --blue:#c9eefb; --blue-b:#41c3ec;
+    --green:#d9f2c9; --green-b:#9fd65c;
+    --yellow:#fce9a9; --yellow-b:#f0d34a;
+    --grey:#f5f6f8; --grey-b:#c7ccd6;
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+
+  /* ---------- top bar ---------- */
+  header{background:var(--navy);color:#fff;padding:14px 24px;display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center}
+  header h1{font-size:20px;margin:0;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+  header h1 small{font-weight:400;opacity:.75;margin-left:8px;font-size:13px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 14px;flex:1;min-width:280px}
+  .meta label{display:flex;flex-direction:column;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.85}
+  .meta input{margin-top:3px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:6px 9px;font-size:14px;min-width:150px;outline:none}
+  .meta input:focus{background:rgba(255,255,255,.18);border-color:#fff}
+  .meta input::placeholder{color:rgba(255,255,255,.5)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  button{border:0;border-radius:9px;padding:9px 14px;font-size:14px;cursor:pointer;font-weight:600;transition:.15s}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff}
+  .btn-ghost:hover{background:rgba(255,255,255,.22)}
+  .btn-primary{background:#41c3ec;color:var(--navy)}
+  .btn-primary:hover{background:#6ad3f2}
+  .btn-primary:disabled{opacity:.6;cursor:wait}
+
+  /* ---------- canvas ---------- */
+  main{padding:18px 22px 60px;max-width:1900px;margin:0 auto}
+  .canvas{
+    display:grid;gap:14px;
+    grid-template-columns:1fr 1fr 1fr 2fr 1.2fr;
+    grid-template-rows:auto auto auto;
+    grid-template-areas:
+      "challenge persona solution risks action"
+      "pain pain solution kpis action"
+      "goals goals uvp skills action";
+  }
+  .box{border:2.5px solid;border-radius:var(--radius);padding:12px 16px 14px;display:flex;flex-direction:column;position:relative;min-height:160px}
+  .box.blue{background:var(--blue);border-color:var(--blue-b)}
+  .box.green{background:var(--green);border-color:var(--green-b)}
+  .box.yellow{background:var(--yellow);border-color:var(--yellow-b)}
+  .box.grey{background:var(--grey);border-color:var(--grey-b)}
+  .box .step{position:absolute;top:10px;left:16px;font-size:15px;font-weight:600;opacity:.8}
+  .box h2{margin:4px 0 4px;text-align:center;font-size:24px;font-weight:500;line-height:1.1}
+  .box .q{font-style:italic;font-size:14.5px;line-height:1.35;margin:0}
+  .box .eg{font-style:italic;font-size:12.5px;color:var(--muted);margin:3px 0 8px;line-height:1.35}
+  textarea{
+    flex:1;width:100%;min-height:70px;resize:vertical;border:1px dashed rgba(11,27,63,.35);border-radius:10px;
+    background:rgba(255,255,255,.55);padding:9px 11px;font:inherit;font-size:14.5px;line-height:1.4;color:var(--ink);outline:none;
+  }
+  textarea:focus{background:#fff;border-style:solid;border-color:var(--navy)}
+  textarea::placeholder{color:rgba(11,27,63,.4)}
+  .box.filled{box-shadow:0 0 0 3px rgba(11,27,63,.08) inset}
+  .box .count{position:absolute;right:14px;top:12px;font-size:11px;opacity:.55}
+
+  #challenge{grid-area:challenge}#persona{grid-area:persona}#pain{grid-area:pain}#goals{grid-area:goals}
+  #solution{grid-area:solution}#uvp{grid-area:uvp}#risks{grid-area:risks}#kpis{grid-area:kpis}#skills{grid-area:skills}#action{grid-area:action}
+
+  .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;flex:1}
+  .kpi-grid label{display:flex;flex-direction:column;font-size:14px}
+  .kpi-grid label b{text-decoration:underline;font-weight:600;margin-bottom:2px}
+  .kpi-grid label i{font-size:12px;color:var(--muted);margin-bottom:4px}
+  .kpi-grid textarea{min-height:64px}
+
+  /* ---------- footer / status ---------- */
+  .statusbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d8dce4;padding:8px 22px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:5}
+  .statusbar .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9aa3b5;margin-right:6px;vertical-align:middle}
+  .statusbar .dot.saved{background:#3ec26f}.statusbar .dot.dirty{background:#f0b429}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:14px;z-index:20;opacity:0;pointer-events:none;transition:.25s;max-width:90vw}
+  .toast.show{opacity:1}
+  .toast.ok{background:#1f8f4c}.toast.err{background:#b3261e}
+
+  /* ---------- modal ---------- */
+  .modal{position:fixed;inset:0;background:rgba(11,27,63,.55);display:none;align-items:center;justify-content:center;z-index:30;padding:20px}
+  .modal.open{display:flex}
+  .modal .card{background:#fff;border-radius:16px;padding:22px 26px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .modal h3{margin:0 0 8px;font-size:20px}
+  .modal p{margin:6px 0;font-size:14.5px;line-height:1.45;color:#333}
+  .modal .row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  .modal .btn-cancel{background:#e7e9ee;color:var(--ink)}
+  .modal .btn-danger{background:#b3261e;color:#fff}
+  .modal ul{font-size:14px;margin:6px 0;padding-left:20px}
+  .modal code{background:#f1f3f7;padding:1px 5px;border-radius:4px;font-size:13px}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1250px){
+    .canvas{grid-template-columns:1fr 1fr 1fr;
+      grid-template-areas:
+        "challenge persona solution"
+        "pain pain solution"
+        "goals goals uvp"
+        "risks risks kpis"
+        "skills skills kpis"
+        "action action action"}
+    .box h2{font-size:21px}
+  }
+  @media (max-width:760px){
+    .canvas{grid-template-columns:1fr;
+      grid-template-areas:"challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
+    .kpi-grid{grid-template-columns:1fr}
+    header h1{font-size:17px}
+  }
+
+  /* ---------- print ---------- */
+  @media print{
+    @page{size:A3 landscape;margin:10mm}
+    header{background:var(--navy) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .actions,.statusbar,.toast,.modal{display:none !important}
+    body{background:#fff}
+    main{padding:8mm 0}
+    .box{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid}
+    textarea{border:1px solid #999;background:#fff;resize:none;overflow:visible;height:auto}
+    .meta input{color:#fff;border-color:#fff}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SkillAIbility <small>WP3 · Solution Canvas</small></h1>
+  <div class="meta">
+    <label>Group / team <input id="m_group" placeholder="e.g. Group A" autocomplete="off"></label>
+    <label>Company / use case <input id="m_case" placeholder="e.g. Volvo – final assembly" autocomplete="off"></label>
+    <label>Participants <input id="m_people" placeholder="names or roles" autocomplete="off"></label>
+    <label>Date <input id="m_date" type="date"></label>
+  </div>
+  <div class="actions">
+    <button class="btn-ghost" onclick="exportJSON()" title="Download this canvas as a JSON file">⬇ Export</button>
+    <button class="btn-ghost" onclick="importJSON()" title="Load a previously exported JSON file">⬆ Import</button>
+    <button class="btn-ghost" onclick="window.print()" title="Print or save as PDF">🖨 Print</button>
+    <button class="btn-ghost" onclick="confirmClear()" title="Clear all fields">✕ Clear</button>
+    <button class="btn-primary" id="submitBtn" onclick="submitCanvas()">Submit canvas</button>
+  </div>
+</header>
+
+<main>
+  <div class="canvas" id="canvas">
+
+    <section class="box blue" id="challenge">
+      <span class="step">1</span>
+      <h2>Challenge</h2>
+      <p class="q">What is the main challenge in the process?</p>
+      <p class="eg">E.g. Time to assemble, Time to learn, Safety</p>
+      <textarea data-key="challenge" placeholder="Describe the main challenge…"></textarea>
+    </section>
+
+    <section class="box blue" id="persona">
+      <span class="step">1</span>
+      <h2>Persona</h2>
+      <p class="q">Who is working in this process? What characteristics do they have?</p>
+      <p class="eg">E.g. Low experience, Elderly, Deaf</p>
+      <textarea data-key="persona" placeholder="Describe the persona…"></textarea>
+    </section>
+
+    <section class="box blue" id="pain">
+      <span class="step">1</span>
+      <h2>Pain points</h2>
+      <p class="q">What are the persona's central pain points connected to the main challenge?</p>
+      <p class="eg">E.g. many task steps to remember, back pain due to heavy lifting, cannot hear safety alarm</p>
+      <textarea data-key="pain_points" placeholder="List the central pain points…"></textarea>
+    </section>
+
+    <section class="box blue" id="goals">
+      <span class="step">1</span>
+      <h2>Goals</h2>
+      <p class="q">What stakeholder goals does the solution need to consider?</p>
+      <p class="eg">E.g. productivity, quality, ergonomics, safety</p>
+      <textarea data-key="goals" placeholder="List stakeholder goals…"></textarea>
+    </section>
+
+    <section class="box green" id="solution">
+      <span class="step">2</span>
+      <h2>Solution</h2>
+      <p class="q">What is your proposed solution to address the goals and pain points? Define the key elements making it the top tool</p>
+      <p class="eg">E.g. AI assistant, Cobot, Virtual safety area</p>
+      <textarea data-key="solution" placeholder="Describe the proposed solution and its key elements…"></textarea>
+    </section>
+
+    <section class="box green" id="uvp">
+      <span class="step">2</span>
+      <h2>Unique value proposition</h2>
+      <p class="q">How does the solution address the goals and pain points?</p>
+      <p class="eg">E.g. continuous guidance during training, less physically demanding motions, automatic stopping of machines in case of safety risks</p>
+      <textarea data-key="uvp" placeholder="What makes this solution valuable…"></textarea>
+    </section>
+
+    <section class="box yellow" id="risks">
+      <span class="step">3</span>
+      <h2>Risks</h2>
+      <p class="q">What risks could the proposed solution entail?</p>
+      <p class="eg">E.g. AI complacency, resistance to new technology</p>
+      <textarea data-key="risks" placeholder="List potential risks…"></textarea>
+    </section>
+
+    <section class="box yellow" id="kpis">
+      <span class="step">3</span>
+      <h2>KPIs</h2>
+      <p class="q">What will be measured to track the success of the proposed solution?</p>
+      <div class="kpi-grid">
+        <label><b>Social</b><i>E.g. well-being, stress level, technology acceptance</i><textarea data-key="kpi_social" placeholder="Social KPIs…"></textarea></label>
+        <label><b>Technical</b><i>E.g. accuracy, reliability</i><textarea data-key="kpi_technical" placeholder="Technical KPIs…"></textarea></label>
+        <label><b>Operational</b><i>E.g. throughput, scrap rate</i><textarea data-key="kpi_operational" placeholder="Operational KPIs…"></textarea></label>
+        <label><b>Economic</b><i>E.g. ROI, revenue per worker</i><textarea data-key="kpi_economic" placeholder="Economic KPIs…"></textarea></label>
+      </div>
+    </section>
+
+    <section class="box yellow" id="skills">
+      <span class="step">3</span>
+      <h2>Skills</h2>
+      <p class="q">What skills will be needed?</p>
+      <p class="eg">E.g. effective prompting, human-machine task allocation, leadership</p>
+      <textarea data-key="skills" placeholder="List the skills needed…"></textarea>
+    </section>
+
+    <section class="box grey" id="action">
+      <span class="step">4</span>
+      <h2>Action plan</h2>
+      <p class="q">What actions are needed for successful implementation of the solution?</p>
+      <p class="eg">E.g. time studies, operator workshops, train personnel, pilot test</p>
+      <textarea data-key="action_plan" placeholder="List concrete actions, owners and timing…"></textarea>
+    </section>
+
+  </div>
+</main>
+
+<div class="statusbar">
+  <span><span class="dot" id="dot"></span><span id="status">Draft saved locally in this browser</span></span>
+  <span id="progress">0 / 14 fields filled</span>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal">
+  <div class="card">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+    <div class="row" id="modalRow"></div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="application/json" style="display:none">
+
+<script>
+/* =====================================================================
+   CONFIGURATION
+   Paste the Web App URL of your Google Apps Script here (see README.md).
+   Leave empty to run in "export only" mode.
+   ===================================================================== */
+const SUBMIT_URL = "";
+const WORKSHOP_ID = "WP3";         // tag stored with every submission
+const STORAGE_KEY = "skillaibility_wp3_canvas_v1";
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const metaIds = ["m_group","m_case","m_people","m_date"];
+const fieldEls = () => $$("textarea[data-key]");
+
+function collect(){
+  const d = {
+    workshop: WORKSHOP_ID,
+    submission_id: getSubmissionId(),
+    group: $("#m_group").value.trim(),
+    use_case: $("#m_case").value.trim(),
+    participants: $("#m_people").value.trim(),
+    date: $("#m_date").value,
+    submitted_at: new Date().toISOString(),
+    user_agent: navigator.userAgent
+  };
+  fieldEls().forEach(t => d[t.dataset.key] = t.value.trim());
+  return d;
+}
+function getSubmissionId(){
+  let id = localStorage.getItem(STORAGE_KEY+"_id");
+  if(!id){ id = WORKSHOP_ID+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id); }
+  return id;
+}
+function fill(d){
+  $("#m_group").value = d.group||""; $("#m_case").value = d.use_case||"";
+  $("#m_people").value = d.participants||""; $("#m_date").value = d.date||"";
+  fieldEls().forEach(t => t.value = d[t.dataset.key]||"");
+  refresh();
+}
+
+/* ---------- autosave ---------- */
+let saveTimer;
+function refresh(){
+  let filled=0, total=fieldEls().length;
+  fieldEls().forEach(t=>{ const box=t.closest(".box"); const has=t.value.trim().length>0; if(has) filled++; box.classList.toggle("filled", $$("textarea",box).some(x=>x.value.trim())); });
+  $("#progress").textContent = `${filled} / ${total} fields filled`;
+}
+function scheduleSave(){
+  $("#dot").className="dot dirty"; $("#status").textContent="Unsaved changes…";
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(collect())); }catch(e){}
+    $("#dot").className="dot saved"; $("#status").textContent="Draft saved locally · "+new Date().toLocaleTimeString();
+  },500);
+  refresh();
+}
+document.addEventListener("input", e=>{ if(e.target.matches("textarea,input")) scheduleSave(); });
+
+/* ---------- restore ---------- */
+(function init(){
+  if(!$("#m_date").value) $("#m_date").value = new Date().toISOString().slice(0,10);
+  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ fill(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
+  refresh();
+  if(!SUBMIT_URL) $("#submitBtn").title="No backend configured – submit will download a JSON file instead";
+})();
+
+/* ---------- toast / modal ---------- */
+function toast(msg, cls="", ms=3500){ const t=$("#toast"); t.textContent=msg; t.className="toast show "+cls; clearTimeout(t._t); t._t=setTimeout(()=>t.className="toast",ms); }
+function modal(title, bodyHTML, buttons){
+  $("#modalTitle").textContent=title; $("#modalBody").innerHTML=bodyHTML;
+  const row=$("#modalRow"); row.innerHTML="";
+  buttons.forEach(b=>{ const btn=document.createElement("button"); btn.textContent=b.label; btn.className=b.cls||"btn-cancel"; btn.onclick=()=>{ closeModal(); b.onClick&&b.onClick(); }; row.appendChild(btn); });
+  $("#modal").classList.add("open");
+}
+function closeModal(){ $("#modal").classList.remove("open"); }
+$("#modal").addEventListener("click", e=>{ if(e.target.id==="modal") closeModal(); });
+
+/* ---------- export / import / clear ---------- */
+function slug(){ const d=collect(); return [WORKSHOP_ID, d.group||"canvas", d.date||""].filter(Boolean).join("_").replace(/[^\w\-]+/g,"-"); }
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=slug()+".json"; a.click();
+  toast("Canvas exported as JSON","ok");
+}
+function importJSON(){ $("#fileInput").click(); }
+$("#fileInput").addEventListener("change", e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ try{ fill(JSON.parse(r.result)); scheduleSave(); toast("Canvas loaded","ok"); }catch(err){ toast("Could not read that file","err"); } }; r.readAsText(f); e.target.value="";
+});
+function confirmClear(){
+  modal("Clear the whole canvas?", "<p>All fields on this canvas will be emptied. If you want to keep a copy, export it first.</p>",
+    [{label:"Cancel"},{label:"Clear everything",cls:"btn-danger",onClick:()=>{ localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); fill({}); $("#m_date").value=new Date().toISOString().slice(0,10); $("#dot").className="dot"; $("#status").textContent="Canvas cleared"; toast("Canvas cleared"); }}]);
+}
+
+/* ---------- submit ---------- */
+function submitCanvas(){
+  const d=collect();
+  const missing=[]; if(!d.group) missing.push("Group / team"); if(!d.use_case) missing.push("Company / use case");
+  const empty=fieldEls().filter(t=>!t.value.trim()).length;
+  let body="";
+  if(missing.length) body+=`<p><b>Please fill in:</b> ${missing.join(", ")} (top bar).</p>`;
+  if(empty) body+=`<p>${empty} of ${fieldEls().length} canvas fields are still empty. You can still submit and re-submit later – each submission is stored separately.</p>`;
+  if(!SUBMIT_URL) body+=`<p><i>No collection backend is configured for this page, so a JSON file will be downloaded instead – please send it to the facilitator.</i></p>`;
+  if(missing.length){ modal("Almost there", body, [{label:"OK"}]); return; }
+  modal("Submit this canvas?", body || "<p>Your canvas will be sent to the workshop facilitators.</p>",
+    [{label:"Cancel"},{label:"Submit",cls:"btn-primary",onClick:()=>doSubmit(d)}]);
+}
+async function doSubmit(d){
+  if(!SUBMIT_URL){ exportJSON(); return; }
+  const btn=$("#submitBtn"); btn.disabled=true; btn.textContent="Submitting…";
+  try{
+    // Apps Script web apps do not send CORS headers for POST redirects, so use no-cors + text/plain.
+    await fetch(SUBMIT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)});
+    toast("✓ Canvas submitted – thank you!","ok",5000);
+    $("#status").textContent="Submitted "+new Date().toLocaleTimeString()+" · you can keep editing and re-submit";
+  }catch(err){
+    toast("Submission failed (offline?). A JSON copy was downloaded instead.","err",6000);
+    exportJSON();
+  }finally{ btn.disabled=false; btn.textContent="Submit canvas"; }
+}
+
+/* keyboard shortcut: Ctrl/Cmd+S exports */
+document.addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
+</script>
+</body>
+</html>
