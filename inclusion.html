@@ -182,6 +182,12 @@
   .layer[data-dim=TA] .dotc{background:var(--blue-d)} .layer[data-dim=TE] .dotc{background:var(--green-d)} .layer[data-dim=OR] .dotc{background:var(--yellow-d)}
   .layer .lh{font-size:11.5px;color:var(--muted);margin:0 0 7px;font-style:italic}
   .codechips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+  .codechips.full{flex-direction:column;align-items:stretch}
+  .codechips.full .cchip{border-radius:10px;white-space:normal;text-align:left;padding:6px 10px;font-weight:500;font-size:12.5px;line-height:1.35}
+  .codechips.full .cchip b{font-weight:700;margin-right:4px}
+  .expand-btn{margin-left:auto;background:none;border:1px solid #c7ccd6;border-radius:7px;color:var(--muted);font-size:11px;font-weight:600;padding:2px 8px;cursor:pointer}
+  .expand-btn:hover{border-color:var(--navy);color:var(--navy)}
+  .layer h5{align-items:center}
   .cchip{font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;cursor:pointer;border:1.5px solid;background:#fff;user-select:none;line-height:1.3}
   .cchip.TA{border-color:var(--blue-d);color:var(--blue-d)} .cchip.TE{border-color:var(--green-d);color:var(--green-d)} .cchip.OR{border-color:var(--yellow-d);color:var(--yellow-d)}
   .cchip.on.TA{background:var(--blue-d);color:#fff} .cchip.on.TE{background:var(--green-d);color:#fff} .cchip.on.OR{background:var(--yellow-d);color:#fff}
@@ -472,6 +478,7 @@ const CANVAS_KEYS = ["challenge","persona_notes","pain_points","goals","uvp","ri
 /* state (step 1): { dims: { TA:{ codes, cells, notes } } }
    state2 (step 2): { personas:[ids], fields:{key:text}, sol:{ TA:{codes:[],text:""}, ... } } */
 let state = null, state2 = null;
+const expandedLayers = new Set();   // dims whose step-2 code list shows full descriptions
 let activeDim = "TA";
 let selected = null;
 let step = 1;
@@ -612,8 +619,13 @@ function renderStep2(){
   DIMENSIONS.forEach(d=>{
     const st=state.dims[d.id]; const sol=state2.sol[d.id]; const sug=suggestedCodes(d.id);
     const div=document.createElement("div"); div.className="layer"; div.dataset.dim=d.id;
+    const full=expandedLayers.has(d.id);
     div.innerHTML=`<h5><span class="dotc"></span>${d.layer}</h5><p class="lh">${d.layerHint}</p>`;
-    const chips=document.createElement("div"); chips.className="codechips";
+    const eb=document.createElement("button"); eb.className="expand-btn"; eb.textContent=full?"▲ Compact":"▼ Expand";
+    eb.title=full?"Back to the compact view":"Show the full text of every requirement";
+    eb.onclick=()=>{ full?expandedLayers.delete(d.id):expandedLayers.add(d.id); renderStep2(); };
+    div.querySelector("h5").appendChild(eb);
+    const chips=document.createElement("div"); chips.className="codechips"+(full?" full":"");
     const codes=[...st.codes].sort((a,b)=>((sug.has(b.id)?1:0)-(sug.has(a.id)?1:0))||(parseInt(a.id.replace(/\D/g,""))-parseInt(b.id.replace(/\D/g,""))));
     let any=false;
     codes.forEach(c=>{
@@ -621,7 +633,9 @@ function renderStep2(){
       any=true;
       const on=sol.codes.includes(c.id);
       const sp=document.createElement("span"); sp.className=`cchip ${d.id}${on?" on":""}${sug.has(c.id)?" sug":""}`;
-      sp.title=c.label||c.id; sp.textContent=c.id+(c.label?" · "+(c.label.length>34?c.label.slice(0,32)+"…":c.label):"");
+      sp.title=c.label||c.id;
+      if(full) sp.innerHTML=`<b>${c.id}</b>${esc(c.label||"")}${sug.has(c.id)?" ★":""}`;
+      else sp.textContent=c.id+(c.label?" · "+(c.label.length>34?c.label.slice(0,32)+"…":c.label):"");
       sp.onclick=()=>{ const i=sol.codes.indexOf(c.id); i>=0?sol.codes.splice(i,1):sol.codes.push(c.id); scheduleSave(); renderStep2(); };
       chips.appendChild(sp);
     });

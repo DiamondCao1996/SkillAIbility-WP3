@@ -77,7 +77,12 @@
   .lr-head .dotc{width:10px;height:10px;border-radius:50%;display:inline-block}
   .linkrow[data-dim=TA] .dotc{background:var(--blue-d)} .linkrow[data-dim=TE] .dotc{background:var(--green-d)} .linkrow[data-dim=OR] .dotc{background:var(--yellow-d)}
   .codechips{display:flex;flex-wrap:wrap;gap:5px}
+  .codechips.full{flex-direction:column;align-items:stretch}
+  .codechips.full .cchip{border-radius:10px;white-space:normal;text-align:left;padding:6px 10px;font-weight:500;font-size:12.5px;line-height:1.35}
+  .codechips.full .cchip b{font-weight:700;margin-right:4px}
   .cchip{font-size:11.5px;font-weight:600;border-radius:999px;padding:3px 9px;cursor:pointer;border:1.5px solid;background:#fff;user-select:none;line-height:1.3}
+  .expand-btn{margin-left:auto;background:none;border:1px solid #c7ccd6;border-radius:7px;color:var(--muted);font-size:11px;font-weight:600;padding:2px 8px;cursor:pointer}
+  .expand-btn:hover{border-color:var(--navy);color:var(--navy)}
   .cchip.TA{border-color:var(--blue-d);color:var(--blue-d)} .cchip.TE{border-color:var(--green-d);color:var(--green-d)} .cchip.OR{border-color:var(--yellow-d);color:var(--yellow-d)}
   .cchip.on.TA{background:var(--blue-d);color:#fff} .cchip.on.TE{background:var(--green-d);color:#fff} .cchip.on.OR{background:var(--yellow-d);color:#fff}
   .coverage{border-top:1px dashed #d8dce4;padding-top:9px}
@@ -176,6 +181,7 @@ const esc=s=>String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&g
 
 /* state: { partner:"", cases:{ U1:{codes:{TA:[],TE:[],OR:[]}, coverage:"", missing:""} } } */
 let state={ partner:"", cases:{} };
+const expandedLists=new Set();   // "U17:TE" → show full descriptions
 function caseState(id){ return state.cases[id]||(state.cases[id]={codes:{TA:[],TE:[],OR:[]},coverage:"",missing:""}); }
 
 /* ---- live code lists from the assessment matrix draft (same browser) ---- */
@@ -220,13 +226,20 @@ function renderCards(){
       <h6>Target groups · pathways (from the mapping)</h6>
       <div class="uc-tags grouptags">${gtags}${ptags}</div>`;
     ["TA","TE","OR"].forEach(dim=>{
+      const key=u.id+":"+dim, full=expandedLists.has(key);
       const row=document.createElement("div"); row.className="linkrow"; row.dataset.dim=dim;
-      row.innerHTML=`<div class="lr-head"><span class="dotc"></span>${dim==="TA"?"Task requirements":dim==="TE"?"Technology requirements":"Organisation conditions"} this use case addresses</div>`;
-      const chips=document.createElement("div"); chips.className="codechips";
+      const head=document.createElement("div"); head.className="lr-head";
+      head.innerHTML=`<span class="dotc"></span>${dim==="TA"?"Task requirements":dim==="TE"?"Technology requirements":"Organisation conditions"} this use case addresses`;
+      const eb=document.createElement("button"); eb.className="expand-btn"; eb.textContent=full?"▲ Compact":"▼ Expand";
+      eb.title=full?"Back to the compact view":"Show the full text of every requirement";
+      eb.onclick=()=>{ full?expandedLists.delete(key):expandedLists.add(key); render(); };
+      head.appendChild(eb); row.appendChild(head);
+      const chips=document.createElement("div"); chips.className="codechips"+(full?" full":"");
       mc[dim].forEach(c=>{
         const on=cs.codes[dim].includes(c.id);
         const sp=document.createElement("span"); sp.className=`cchip ${dim}${on?" on":""}`; sp.title=c.label||c.id;
-        sp.textContent=c.id+(c.label?" · "+(c.label.length>28?c.label.slice(0,26)+"…":c.label):"");
+        if(full){ sp.innerHTML=`<b>${c.id}</b>${esc(c.label||"")}`; }
+        else sp.textContent=c.id+(c.label?" · "+(c.label.length>28?c.label.slice(0,26)+"…":c.label):"");
         sp.onclick=()=>{ const a=cs.codes[dim]; const i=a.indexOf(c.id); i>=0?a.splice(i,1):a.push(c.id); scheduleSave(); render(); };
         chips.appendChild(sp);
       });
