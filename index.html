@@ -136,8 +136,7 @@
   <h1>SkillAIbility <small>WP3 · Human-centric Workforce Canvas</small></h1>
   <nav class="pages"><a href="index.html" class="active">Human-centric workforce canvas</a><a href="inclusion.html">Assessment matrix</a></nav>
   <div class="meta">
-    <label>Group / team <input id="m_group" placeholder="e.g. Group A" autocomplete="off"></label>
-    <label>Company / use case <input id="m_case" placeholder="e.g. Volvo – final assembly" autocomplete="off"></label>
+    <label>Company <input id="m_case" placeholder="e.g. Volvo" autocomplete="off"></label>
     <label>Participants <input id="m_people" placeholder="names or roles" autocomplete="off"></label>
     <label>Date <input id="m_date" type="date"></label>
   </div>
@@ -260,12 +259,12 @@
 <script>
 /* SUBMIT_URL is defined in config.js */
 const WORKSHOP_ID = "WP3";         // tag stored with every submission
-const STORAGE_KEY = "skillaibility_wp3_canvas_v1";
+const STORAGE_KEY = "skillaibility_wp3_canvas_v2";
 
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-const metaIds = ["m_group","m_case","m_people","m_date"];
+const metaIds = ["m_case","m_people","m_date"];
 const fieldEls = () => $$("textarea[data-key]");
 
 function collect(){
@@ -273,8 +272,7 @@ function collect(){
     form: "canvas",
     workshop: WORKSHOP_ID,
     submission_id: getSubmissionId(),
-    group: $("#m_group").value.trim(),
-    use_case: $("#m_case").value.trim(),
+    company: $("#m_case").value.trim(),
     participants: $("#m_people").value.trim(),
     date: $("#m_date").value,
     submitted_at: new Date().toISOString(),
@@ -289,7 +287,7 @@ function getSubmissionId(){
   return id;
 }
 function fill(d){
-  $("#m_group").value = d.group||""; $("#m_case").value = d.use_case||"";
+  $("#m_case").value = d.company||d.use_case||"";
   $("#m_people").value = d.participants||""; $("#m_date").value = d.date||"";
   fieldEls().forEach(t => t.value = d[t.dataset.key]||"");
   refresh();
@@ -333,7 +331,7 @@ function closeModal(){ $("#modal").classList.remove("open"); }
 $("#modal").addEventListener("click", e=>{ if(e.target.id==="modal") closeModal(); });
 
 /* ---------- export / import / clear ---------- */
-function slug(){ const d=collect(); return [WORKSHOP_ID, d.group||"canvas", d.date||""].filter(Boolean).join("_").replace(/[^\w\-]+/g,"-"); }
+function slug(){ const d=collect(); return [WORKSHOP_ID, d.company||"canvas", d.date||""].filter(Boolean).join("_").replace(/[^\w\-]+/g,"-"); }
 function exportJSON(){
   const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=slug()+".json"; a.click();
@@ -352,7 +350,7 @@ function confirmClear(){
 /* ---------- submit ---------- */
 function submitCanvas(){
   const d=collect();
-  const missing=[]; if(!d.group) missing.push("Group / team"); if(!d.use_case) missing.push("Company / use case");
+  const missing=[]; if(!d.company) missing.push("Company");
   const empty=fieldEls().filter(t=>!t.value.trim()).length;
   let body="";
   if(missing.length) body+=`<p><b>Please fill in:</b> ${missing.join(", ")} (top bar).</p>`;

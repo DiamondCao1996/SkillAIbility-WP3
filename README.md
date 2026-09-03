@@ -6,7 +6,7 @@ any laptop or tablet, and every submission lands in a Google Sheet owned by the 
 | Tool | Live page |
 |---|---|
 | **Human-centric workforce canvas** – Challenge → Persona → Pain points → Goals → Solution → UVP → Risks → KPIs → Skills → Action plan | https://diamondcao1996.github.io/SkillAIbility-WP3/ |
-| **Assessment matrix** – *Organisation → Inclusion*: task, technology and organisation requirements per worker group × outcome | https://diamondcao1996.github.io/SkillAIbility-WP3/inclusion.html |
+| **Assessment matrix** – two steps: (1) requirement matrix per worker group × outcome, (2) a solution canvas linked to the matrix | https://diamondcao1996.github.io/SkillAIbility-WP3/inclusion.html |
 
 ## The human-centric workforce canvas
 
@@ -18,20 +18,26 @@ any laptop or tablet, and every submission lands in a Google Sheet owned by the 
 * **Print** – A3 landscape print / save as PDF, keeps the colours.
 * Works on desktop, tablet and phone (layout reflows).
 
-## The assessment matrix (`inclusion.html`)
+## The assessment matrix (`inclusion.html`) – two steps
 
-Three dimensions, each a 5 × 4 grid of **worker groups** (novice / learning-vulnerable, deaf and
-hard-of-hearing, aging, physical support needs, cognitive support needs) × **outcomes**
-(Augmentation, Inclusion, Symbiosis, Empowerment):
+**Step 1 – matrix.** Three dimensions, each a 5 × 4 grid of **worker groups** (novice /
+learning-vulnerable, deaf and hard-of-hearing, aging, physical support needs, cognitive support
+needs) × **outcomes** (Augmentation, Inclusion, Symbiosis, Empowerment):
 
 * **TA – Task requirements** (TA1–TA8; TA2–TA8 left blank for participants to define)
 * **TE – Technology requirements** (TE1–TE10)
 * **OR – Organisation conditions** (OR1–OR8)
 
 Cells are pre-filled with the WP3 research baseline. Participants click a cell, tick/untick the
-codes that apply, add a note, rename codes, mark frequent ones (★) or add new codes. **Reset**
-returns to the baseline. The baseline lives in `DIMENSIONS` at the top of the script in
-`inclusion.html` – edit it there to change the pre-fill.
+codes that apply, add a note, rename codes, mark frequent ones (★) or add new codes.
+
+**Step 2 – linked solution canvas.** The canvas layout, interconnected with step 1: the
+**Persona** box is a picker over the five worker groups (the matrix rows), and the **Solution**
+box has three layers – task, technology, organisational conditions – whose selectable codes come
+from the step-1 lists, with the codes step 1 assigned to the selected personas ringed in yellow
+as suggestions. Free-text boxes for challenge, pain points, goals, UVP, risks, KPIs, skills and
+action plan complete the canvas. One **Submit** sends both steps together. **Reset** returns to
+the baseline; the baseline lives in `DIMENSIONS` at the top of the script in `inclusion.html`.
 
 ## Facilitator setup (≈3 minutes, one time)
 
@@ -56,9 +62,24 @@ attached to a Google Sheet you own.
 
    Commit – GitHub Pages redeploys in about a minute. Both tools read this one file.
 
-Test it: open a live page, fill in a group name and use case, press **Submit**. A new row should
-appear in the sheet within a few seconds. Opening the web-app URL directly in a browser shows
-`… is running. Canvas rows: N · Inclusion rows: N` as a health check.
+Running `setup` also sends a **test email** with the workbook attached, so you can confirm the
+whole chain at once. Test the live flow: open a page, fill in the Company field, press **Submit**.
+A new row appears in the sheet and an email lands at the addresses in `EMAIL_TO` within ~1 minute.
+Opening the web-app URL directly in a browser shows `… is running. Canvas rows: N · Assessment
+rows: N` as a health check.
+
+### Automatic results email
+
+On every submission the script emails **huizhong@chalmers.se** and **sandra.jaksic@chalmers.se**
+(the `EMAIL_TO` constant at the top of `Code.gs`):
+
+* a formatted summary of what the group just submitted, and
+* the **complete workbook as an .xlsx attachment** – all tabs, all submissions so far – so the
+  inbox always holds an analysis-ready Excel file without touching the sheet.
+
+Set `SEND_EMAIL = false` in `Code.gs` to switch the emails off (data still lands in the sheet).
+Email problems never block a submission. Quota note: Google caps Apps Script at ~100 emails/day
+for personal accounts and ~1500/day for workspace accounts – far above workshop volumes.
 
 > If you later edit `Code.gs`, you must **Deploy → Manage deployments → ✎ → Version: New** for the
 > change to go live. The URL stays the same.
@@ -66,7 +87,8 @@ appear in the sheet within a few seconds. Opening the web-app URL directly in a 
 ## Running a workshop
 
 * Share the live URL (or a QR code of it) with each group. One device per group is enough.
-* Ask groups to fill in *Group / team* and *Company / use case* first – submit requires them.
+* Ask each company's participants to fill in *Company* first – submit requires it; participants
+  from one company count as one group, and re-submissions are told apart by `received_at`.
 * Groups can submit as often as they like; you'll see the latest version by `received_at`.
 * If Wi-Fi is unreliable, groups can **Export** a JSON file and hand it in instead – you can
   **Import** it on your own machine and submit it to the sheet from there.
@@ -78,12 +100,12 @@ The script creates four tabs in the sheet:
 
 | Tab | Content |
 |---|---|
-| `Canvas` | One row per canvas submission: metadata + one column per canvas field (`challenge`, `persona`, `pain_points`, `goals`, `solution`, `uvp`, `risks`, `kpi_social`, `kpi_technical`, `kpi_operational`, `kpi_economic`, `skills`, `action_plan`) |
-| `Inclusion` | One row per matrix submission: metadata + one column per cell (`TE:aging:inclusion` = "TE8", …), one note column per cell, and the full code definitions as JSON |
-| `Inclusion_cells` | Long format, one row per (submission, dimension, worker group, outcome, code) – pivot this for frequency analysis |
-| `Inclusion_codes` | Code definitions as each group left them – shows renamed / newly added codes |
+| `Canvas` | One row per workforce-canvas submission: metadata + one column per canvas field |
+| `Assessment` | One row per assessment submission: metadata, selected personas, all step-2 canvas fields, the three solution layers (codes + free text), one column per matrix cell (`TE:aging:inclusion` = "TE8", …), one note column per cell, and the code definitions as JSON |
+| `Assessment_cells` | Long format, one row per code entry – `source` says whether it came from the step-1 matrix (with worker group × outcome) or the step-2 solution layers. Pivot this for frequency analysis |
+| `Assessment_codes` | Code definitions as each group left them – shows renamed / newly added codes |
 
-Metadata on every row: `submission_id`, `group`, `use_case`, `participants`, `date`, `received_at`.
+Metadata on every row: `submission_id`, `company`, `participants`, `date`, `received_at`.
 
 ## Customising
 

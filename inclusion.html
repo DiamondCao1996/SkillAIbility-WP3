@@ -10,6 +10,7 @@
     --blue:#c9eefb; --blue-b:#41c3ec; --blue-d:#1a8fb8;
     --green:#d9f2c9; --green-b:#9fd65c; --green-d:#4f8f1c;
     --yellow:#fce9a9; --yellow-b:#f0d34a; --yellow-d:#a8860b;
+    --grey:#f5f6f8; --grey-b:#c7ccd6;
     --radius:18px;
   }
   *{box-sizing:border-box}
@@ -26,7 +27,7 @@
   nav.pages a{color:#fff;text-decoration:none;padding:6px 12px;border-radius:7px;font-size:13.5px;opacity:.8}
   nav.pages a.active{background:#41c3ec;color:var(--navy);opacity:1;font-weight:600}
   .meta{display:flex;flex-wrap:wrap;gap:10px 14px}
-  .meta label{display:flex;flex:1 1 160px;flex-direction:column;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.85}
+  .meta label{display:flex;flex:1 1 200px;flex-direction:column;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.85}
   .meta input{margin-top:3px;width:100%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:6px 9px;font-size:14px;min-width:150px;outline:none}
   .meta input:focus{background:rgba(255,255,255,.18);border-color:#fff}
   .meta input::placeholder{color:rgba(255,255,255,.5)}
@@ -39,6 +40,16 @@
   .btn-primary:disabled{opacity:.6;cursor:wait}
 
   main{padding:18px 22px 70px;max-width:1700px;margin:0 auto}
+
+  /* ---------- step switcher ---------- */
+  .steps{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .stepbtn{flex:1;min-width:260px;border:2.5px solid var(--navy);border-radius:14px;background:#fff;color:var(--ink);padding:12px 16px;text-align:left;display:flex;gap:12px;align-items:center;font-size:15px}
+  .stepbtn .sn{display:inline-flex;min-width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;background:#e3e7ef;color:var(--navy);font-weight:700}
+  .stepbtn.active{background:var(--navy);color:#fff}
+  .stepbtn.active .sn{background:#41c3ec;color:var(--navy)}
+  .stepbtn small{display:block;font-weight:400;font-size:12.5px;opacity:.75;margin-top:1px}
+  .stepview{display:none}
+  .stepview.active{display:block}
 
   /* framing strip */
   .framing{background:#fff;border-radius:var(--radius);padding:14px 20px;margin-bottom:16px;border-left:6px solid var(--navy)}
@@ -78,7 +89,6 @@
   table.matrix thead th{background:var(--navy);color:#fff;border-radius:8px;padding:9px 8px}
   table.matrix thead th.corner{background:transparent}
   table.matrix tbody th{text-align:left;background:#eef0f3;border-radius:8px;max-width:190px;line-height:1.25}
-  table.matrix tbody th small{display:block;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:2px}
   td.cell{background:#f7f8fa;border:1.5px dashed #c7ccd6;border-radius:10px;min-width:120px;height:74px;vertical-align:top;padding:6px;cursor:pointer;transition:.12s;position:relative}
   td.cell:hover{border-color:var(--navy);background:#fff}
   td.cell.has{border-style:solid;background:#fff}
@@ -121,6 +131,57 @@
   .freq-box{font-size:13px;line-height:1.45}
   .freq-box b{display:block;margin-bottom:2px}
 
+  /* ---------- step 2 canvas ---------- */
+  .canvas2{display:grid;gap:14px;
+    grid-template-columns:1fr 1fr 1.4fr 1.4fr 1fr;
+    grid-template-areas:
+      "challenge persona solution risks action"
+      "pain pain solution kpis action"
+      "goals goals solution kpis action"
+      "goals goals uvp skills action";
+  }
+  #c_challenge{grid-area:challenge}#c_persona{grid-area:persona}#c_pain{grid-area:pain}#c_goals{grid-area:goals}
+  #c_solution{grid-area:solution}#c_uvp{grid-area:uvp}#c_risks{grid-area:risks}#c_kpis{grid-area:kpis}#c_skills{grid-area:skills}#c_action{grid-area:action}
+  .box{border:2.5px solid;border-radius:var(--radius);padding:12px 16px 14px;display:flex;flex-direction:column;position:relative;min-height:150px}
+  .box.blue{background:var(--blue);border-color:var(--blue-b)}
+  .box.green{background:var(--green);border-color:var(--green-b)}
+  .box.yellow{background:var(--yellow);border-color:var(--yellow-b)}
+  .box.grey{background:var(--grey);border-color:var(--grey-b)}
+  .box .step{position:absolute;top:10px;left:16px;font-size:15px;font-weight:600;opacity:.8}
+  .box h2{margin:4px 0 4px;text-align:center;font-size:21px;font-weight:500;line-height:1.1}
+  .box .q{font-style:italic;font-size:13.5px;line-height:1.35;margin:0 0 6px}
+  .box textarea{flex:1;width:100%;min-height:64px;resize:vertical;border:1px dashed rgba(11,27,63,.35);border-radius:10px;background:rgba(255,255,255,.55);padding:9px 11px;font:inherit;font-size:14px;line-height:1.4;color:var(--ink);outline:none}
+  .box textarea:focus{background:#fff;border-style:solid;border-color:var(--navy)}
+  .box textarea::placeholder{color:rgba(11,27,63,.4)}
+  .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;flex:1}
+  .kpi-grid label{display:flex;flex-direction:column;font-size:13.5px}
+  .kpi-grid label b{text-decoration:underline;font-weight:600;margin-bottom:3px}
+  .kpi-grid textarea{min-height:44px}
+
+  /* persona picker */
+  .persona-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+  .pchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.6);border:1.5px solid rgba(11,27,63,.25);border-radius:10px;padding:7px 10px;cursor:pointer;font-size:13.5px;line-height:1.25;user-select:none}
+  .pchip:hover{border-color:var(--navy);background:#fff}
+  .pchip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .pchip .pc{font-size:15px;width:18px;text-align:center}
+  .link-hint{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 6px}
+
+  /* solution layers */
+  .layer{border:1.5px solid rgba(11,27,63,.2);border-radius:12px;background:rgba(255,255,255,.6);padding:9px 11px;margin-bottom:9px}
+  .layer h5{margin:0 0 2px;font-size:14px;display:flex;align-items:center;gap:7px}
+  .layer h5 .dotc{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .layer[data-dim=TA] .dotc{background:var(--blue-d)} .layer[data-dim=TE] .dotc{background:var(--green-d)} .layer[data-dim=OR] .dotc{background:var(--yellow-d)}
+  .layer .lh{font-size:11.5px;color:var(--muted);margin:0 0 7px;font-style:italic}
+  .codechips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+  .cchip{font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;cursor:pointer;border:1.5px solid;background:#fff;user-select:none;line-height:1.3}
+  .cchip.TA{border-color:var(--blue-d);color:var(--blue-d)} .cchip.TE{border-color:var(--green-d);color:var(--green-d)} .cchip.OR{border-color:var(--yellow-d);color:var(--yellow-d)}
+  .cchip.on.TA{background:var(--blue-d);color:#fff} .cchip.on.TE{background:var(--green-d);color:#fff} .cchip.on.OR{background:var(--yellow-d);color:#fff}
+  .cchip.sug{box-shadow:0 0 0 2px #f0d34a}
+  .layer textarea{min-height:40px;font-size:13px}
+  .layer .empty{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 7px}
+  .sug-legend{font-size:11.5px;color:var(--muted);margin:0 0 7px}
+  .sug-legend .sw{display:inline-block;width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #f0d34a;vertical-align:-1px;margin-right:4px}
+
   /* footer / status / toast / modal */
   .statusbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d8dce4;padding:8px 22px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:5}
   .statusbar .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9aa3b5;margin-right:6px;vertical-align:middle}
@@ -136,16 +197,27 @@
   .modal .btn-cancel{background:#e7e9ee;color:var(--ink)}
   .modal .btn-danger{background:#b3261e;color:#fff}
 
+  @media (max-width:1250px){
+    .canvas2{grid-template-columns:1fr 1fr;
+      grid-template-areas:"challenge persona" "pain pain" "goals goals" "solution solution" "uvp uvp" "risks kpis" "skills kpis" "action action"}
+  }
+  @media (max-width:760px){
+    .canvas2{grid-template-columns:1fr;grid-template-areas:"challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
+    .kpi-grid{grid-template-columns:1fr}
+    header h1{font-size:17px}
+  }
+
   @media print{
     @page{size:A3 landscape;margin:10mm}
     header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .actions,.statusbar,.toast,.modal,nav.pages,.tabs{display:none !important}
+    .actions,.statusbar,.toast,.modal,nav.pages,.tabs,.steps{display:none !important}
+    .stepview{display:block !important;margin-bottom:10mm}
     .panel{display:block !important;break-before:page;margin-bottom:10mm}
-    .panel:first-of-type{break-before:auto}
     .layout{grid-template-columns:1fr}
     aside{position:static}
     .side .row,.side textarea{display:none}
     .code-list{max-height:none}
+    .canvas2{break-before:page}
     body{background:#fff}
     *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
@@ -157,8 +229,7 @@
   <h1>SkillAIbility <small>WP3 · Assessment Matrix</small></h1>
   <nav class="pages"><a href="index.html">Human-centric workforce canvas</a><a href="inclusion.html" class="active">Assessment matrix</a></nav>
   <div class="meta">
-    <label>Group / team <input id="m_group" placeholder="e.g. Group A" autocomplete="off"></label>
-    <label>Company / use case <input id="m_case" placeholder="e.g. Volvo – final assembly" autocomplete="off"></label>
+    <label>Company <input id="m_case" placeholder="e.g. Volvo" autocomplete="off"></label>
     <label>Participants <input id="m_people" placeholder="names or roles" autocomplete="off"></label>
     <label>Date <input id="m_date" type="date"></label>
   </div>
@@ -167,24 +238,111 @@
     <button class="btn-ghost" onclick="importJSON()" title="Load a JSON file">⬆ Import</button>
     <button class="btn-ghost" onclick="window.print()" title="Print or save as PDF">🖨 Print</button>
     <button class="btn-ghost" onclick="confirmReset()" title="Reset to the research baseline">↺ Reset</button>
-    <button class="btn-primary" id="submitBtn" onclick="submitMatrix()">Submit matrix</button>
+    <button class="btn-primary" id="submitBtn" onclick="submitMatrix()">Submit</button>
   </div>
 </header>
 
 <main>
-  <div class="framing">
-    <h2>Organisation → Inclusion</h2>
-    <p>For each <b>worker group</b> (rows) and each <b>outcome</b> the technology should deliver (columns), select which <b>requirements</b> apply. Cells are pre-filled with the WP3 research baseline – confirm, remove or add codes based on your own case. Click a cell to edit it; define new codes in the legend on the right (★ marks a frequent requirement).</p>
-    <div class="outcomes">
-      <span><b>Augmentation</b><i>enhance what workers can do</i></span>
-      <span><b>Inclusion</b><i>make the job accessible</i></span>
-      <span><b>Symbiosis</b><i>human–AI work as one system</i></span>
-      <span><b>Empowerment</b><i>workers grow and decide</i></span>
-    </div>
+  <div class="steps">
+    <button class="stepbtn active" id="stepbtn1" onclick="setStep(1)"><span class="sn">1</span><span>Assessment matrix<small>Map requirements per worker group × outcome</small></span></button>
+    <button class="stepbtn" id="stepbtn2" onclick="setStep(2)"><span class="sn">2</span><span>Solution canvas<small>Design your solution for the personas, linked to step 1</small></span></button>
   </div>
 
-  <div class="tabs" id="tabs"></div>
-  <div id="panels"></div>
+  <!-- ================= STEP 1 ================= -->
+  <div class="stepview active" id="step1">
+    <div class="framing">
+      <h2>Step 1 · Organisation → Inclusion</h2>
+      <p>For each <b>worker group</b> (rows) and each <b>outcome</b> the technology should deliver (columns), select which <b>requirements</b> apply. Cells are pre-filled with the WP3 research baseline – confirm, remove or add codes based on your own case. Click a cell to edit it; define new codes in the legend on the right (★ marks a frequent requirement). Your choices here feed the solution canvas in step 2.</p>
+      <div class="outcomes">
+        <span><b>Augmentation</b><i>enhance what workers can do</i></span>
+        <span><b>Inclusion</b><i>make the job accessible</i></span>
+        <span><b>Symbiosis</b><i>human–AI work as one system</i></span>
+        <span><b>Empowerment</b><i>workers grow and decide</i></span>
+      </div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div id="panels"></div>
+  </div>
+
+  <!-- ================= STEP 2 ================= -->
+  <div class="stepview" id="step2">
+    <div class="framing">
+      <h2>Step 2 · Solution canvas</h2>
+      <p>Design the solution for your case. The <b>Persona</b> box links to the worker groups of step 1, and the three <b>Solution layers</b> (task · technology · organisation) draw on the requirement codes you mapped in the matrix – codes ringed in yellow are the ones step 1 assigned to your selected personas. Click codes to include them, and add free text for anything beyond the codes.</p>
+    </div>
+    <div class="canvas2">
+
+      <section class="box blue" id="c_challenge">
+        <span class="step">1</span><h2>Challenge</h2>
+        <p class="q">What is the main challenge in the process?</p>
+        <textarea data-k2="challenge" placeholder="Describe the main challenge…"></textarea>
+      </section>
+
+      <section class="box blue" id="c_persona">
+        <span class="step">1</span><h2>Persona</h2>
+        <p class="q">Which worker groups is this solution for?</p>
+        <p class="link-hint">↳ linked to the rows of the step 1 matrix</p>
+        <div class="persona-list" id="personaList"></div>
+        <textarea data-k2="persona_notes" placeholder="Characteristics of your specific persona(s)…" style="min-height:48px"></textarea>
+      </section>
+
+      <section class="box blue" id="c_pain">
+        <span class="step">1</span><h2>Pain points</h2>
+        <p class="q">What are the personas' central pain points connected to the main challenge?</p>
+        <textarea data-k2="pain_points" placeholder="List the central pain points…"></textarea>
+      </section>
+
+      <section class="box blue" id="c_goals">
+        <span class="step">1</span><h2>Goals</h2>
+        <p class="q">What stakeholder goals does the solution need to consider?</p>
+        <textarea data-k2="goals" placeholder="List stakeholder goals…"></textarea>
+      </section>
+
+      <section class="box green" id="c_solution">
+        <span class="step">2</span><h2>Solution</h2>
+        <p class="q">Define your solution in three layers.</p>
+        <p class="link-hint">↳ linked to the requirement lists of the step 1 matrix</p>
+        <p class="sug-legend"><span class="sw"></span>= assigned to your selected personas in step 1</p>
+        <div id="layers"></div>
+      </section>
+
+      <section class="box green" id="c_uvp">
+        <span class="step">2</span><h2>Unique value proposition</h2>
+        <p class="q">How does the solution address the goals and pain points?</p>
+        <textarea data-k2="uvp" placeholder="What makes this solution valuable…"></textarea>
+      </section>
+
+      <section class="box yellow" id="c_risks">
+        <span class="step">3</span><h2>Risks</h2>
+        <p class="q">What risks could the proposed solution entail?</p>
+        <textarea data-k2="risks" placeholder="List potential risks…"></textarea>
+      </section>
+
+      <section class="box yellow" id="c_kpis">
+        <span class="step">3</span><h2>KPIs</h2>
+        <p class="q">What will be measured to track success?</p>
+        <div class="kpi-grid">
+          <label><b>Social</b><textarea data-k2="kpi_social" placeholder="well-being, stress level, acceptance…"></textarea></label>
+          <label><b>Technical</b><textarea data-k2="kpi_technical" placeholder="accuracy, reliability…"></textarea></label>
+          <label><b>Operational</b><textarea data-k2="kpi_operational" placeholder="throughput, scrap rate…"></textarea></label>
+          <label><b>Economic</b><textarea data-k2="kpi_economic" placeholder="ROI, revenue per worker…"></textarea></label>
+        </div>
+      </section>
+
+      <section class="box yellow" id="c_skills">
+        <span class="step">3</span><h2>Skills</h2>
+        <p class="q">What skills will be needed?</p>
+        <textarea data-k2="skills" placeholder="effective prompting, task allocation, leadership…"></textarea>
+      </section>
+
+      <section class="box grey" id="c_action">
+        <span class="step">4</span><h2>Action plan</h2>
+        <p class="q">What actions are needed for successful implementation?</p>
+        <textarea data-k2="action_plan" placeholder="time studies, workshops, training, pilot test…"></textarea>
+      </section>
+
+    </div>
+  </div>
 </main>
 
 <div class="statusbar">
@@ -201,8 +359,8 @@
    DATA MODEL
    ===================================================================== */
 const WORKSHOP_ID = "WP3";
-const STORAGE_KEY = "skillaibility_wp3_inclusion_v1";
-const FORM = "inclusion";
+const STORAGE_KEY = "skillaibility_wp3_assessment_v2";
+const FORM = "assessment";
 
 const GROUPS = [
   { id:"novice",    name:"Novice and learning-vulnerable workers" },
@@ -220,7 +378,8 @@ const OUTCOMES = [
 
 const DIMENSIONS = [
   {
-    id:"TA", n:"1", name:"Task requirements", short:"Task",
+    id:"TA", n:"1", name:"Task requirements", short:"Task", layer:"Task layer",
+    layerHint:"Which task requirements does your solution build on?",
     charsTitle:"Task characteristics",
     chars:[
       "<b>Demand taxonomy:</b> core demands (physical / cognitive / sensing) set task feasibility; contextual demands (leadership, training, social inclusion) decide sustainability of inclusion. <span class='ref'>(SPS 2026)</span>",
@@ -238,7 +397,8 @@ const DIMENSIONS = [
     }
   },
   {
-    id:"TE", n:"2", name:"Technology requirements", short:"Technology",
+    id:"TE", n:"2", name:"Technology requirements", short:"Technology", layer:"Technology layer",
+    layerHint:"Which technology requirements does your solution implement?",
     charsTitle:"Technology characteristics",
     chars:[
       "<b>Human–AI collaboration principles:</b> trust, autonomy, usability for shared tasks. <span class='ref'>(APMS 2026)</span>",
@@ -266,7 +426,8 @@ const DIMENSIONS = [
     }
   },
   {
-    id:"OR", n:"3", name:"Organisation conditions", short:"Organisation",
+    id:"OR", n:"3", name:"Organisation conditions", short:"Organisation", layer:"Organisational conditions layer",
+    layerHint:"Which organisational conditions does your solution require?",
     charsTitle:"Work organisation conditions",
     chars:[
       "Operator involvement through the whole AI development and implementation process. <span class='ref'>[1]</span>",
@@ -290,10 +451,14 @@ const DIMENSIONS = [
   }
 ];
 
-/* state: { dims: { TA:{ codes:[{id,label,freq}], cells:{ "group:outcome":[ids] }, notes:{ "group:outcome":"" } } } } */
-let state = null;
+const CANVAS_KEYS = ["challenge","persona_notes","pain_points","goals","uvp","risks","kpi_social","kpi_technical","kpi_operational","kpi_economic","skills","action_plan"];
+
+/* state (step 1): { dims: { TA:{ codes, cells, notes } } }
+   state2 (step 2): { personas:[ids], fields:{key:text}, sol:{ TA:{codes:[],text:""}, ... } } */
+let state = null, state2 = null;
 let activeDim = "TA";
-let selected = null;   // "group:outcome" in active dim
+let selected = null;
+let step = 1;
 
 function freshState(){
   const s = { dims:{} };
@@ -303,12 +468,25 @@ function freshState(){
   });
   return s;
 }
+function freshState2(){
+  const fields={}; CANVAS_KEYS.forEach(k=>fields[k]="");
+  return { personas:[], fields, sol:{ TA:{codes:[],text:""}, TE:{codes:[],text:""}, OR:{codes:[],text:""} } };
+}
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-const dimById = id => DIMENSIONS.find(d=>d.id===id);
 
 /* =====================================================================
-   RENDER
+   STEP SWITCH
+   ===================================================================== */
+function setStep(n){
+  step=n;
+  $("#stepbtn1").classList.toggle("active",n===1); $("#stepbtn2").classList.toggle("active",n===2);
+  $("#step1").classList.toggle("active",n===1); $("#step2").classList.toggle("active",n===2);
+  if(n===2) renderStep2();
+}
+
+/* =====================================================================
+   STEP 1 RENDER (matrix)
    ===================================================================== */
 function renderAll(){
   const tabs=$("#tabs"); tabs.innerHTML="";
@@ -322,13 +500,11 @@ function renderAll(){
   DIMENSIONS.forEach(d=>panels.appendChild(renderPanel(d)));
   updateCounts();
 }
-
 function renderPanel(d){
   const st=state.dims[d.id];
   const p=document.createElement("section"); p.className="panel"+(d.id===activeDim?" active":""); p.dataset.dim=d.id;
   p.innerHTML=`<div class="chars"><h3>${d.charsTitle}</h3><ul>${d.chars.map(c=>`<li>${c}</li>`).join("")}</ul></div>
     <div class="layout"><div class="matrix-wrap"></div><aside></aside></div>`;
-  // matrix
   const t=document.createElement("table"); t.className="matrix";
   t.innerHTML=`<thead><tr><th class="corner"></th>${OUTCOMES.map(o=>`<th>${o.name}</th>`).join("")}</tr></thead>`;
   const tb=document.createElement("tbody");
@@ -340,7 +516,7 @@ function renderPanel(d){
       const td=document.createElement("td"); td.className="cell"+(ids.length?" has":"")+(selected===key&&d.id===activeDim?" selected":"");
       td.dataset.key=key; td.title=`${g.name} × ${o.name} – click to edit`;
       td.innerHTML=`<span class="plus">✎</span><div class="chips">${ids.map(id=>chipHTML(d.id,id)).join("")}</div>${st.notes[key]?'<span class="note-ind" title="has a note">📝</span>':''}`;
-      td.onclick=()=>{ selected=(selected===key)?null:key; renderAll(); if(selected) setTimeout(()=>{ const a=$(`.panel.active aside`); if(window.innerWidth<1100) a.scrollIntoView({behavior:"smooth",block:"nearest"}); },0); };
+      td.onclick=()=>{ selected=(selected===key)?null:key; renderAll(); };
       tr.appendChild(td);
     });
     tb.appendChild(tr);
@@ -354,7 +530,6 @@ function esc(s){ return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&l
 
 function renderSide(d){
   const st=state.dims[d.id]; const wrap=document.createElement("div");
-  // --- cell editor / legend ---
   const box=document.createElement("div"); box.className="side";
   if(selected){
     const [gid,oid]=selected.split(":"); const g=GROUPS.find(x=>x.id===gid), o=OUTCOMES.find(x=>x.id===oid);
@@ -382,25 +557,72 @@ function renderSide(d){
   if(selected){ const done=document.createElement("button"); done.className="btn-navy"; done.textContent="Done"; done.onclick=()=>{ selected=null; renderAll(); }; rowBtns.appendChild(done); }
   box.appendChild(rowBtns);
   wrap.appendChild(box);
-  // --- note for selected cell ---
   if(selected){
     const nb=document.createElement("div"); nb.className="side";
     nb.innerHTML=`<h4>Note for this cell</h4>`;
     const ta=document.createElement("textarea"); ta.placeholder="Why these requirements? Evidence from your case, disagreements, ideas…"; ta.value=st.notes[selected]||"";
-    ta.addEventListener("input",()=>{ st.notes[selected]=ta.value; scheduleSave(); const td=$(`.panel.active td[data-key="${selected}"]`); const ind=td.querySelector(".note-ind"); if(ta.value.trim()&&!ind) td.insertAdjacentHTML("beforeend",'<span class="note-ind">📝</span>'); if(!ta.value.trim()&&ind) ind.remove(); });
+    ta.addEventListener("input",()=>{ st.notes[selected]=ta.value; scheduleSave(); });
     nb.appendChild(ta); wrap.appendChild(nb);
   }
-  // --- frequent ---
   const fr=st.codes.filter(c=>c.freq);
   if(fr.length){ const fb=document.createElement("div"); fb.className="side freq-box"; fb.innerHTML=`<h4>★ Frequent requirements</h4>`+fr.map(c=>`<b>${c.id}</b>${esc(c.label)||"<i>(no description)</i>"}<br>`).join(""); wrap.appendChild(fb); }
   return wrap;
 }
-
 function updateCounts(){
-  let total=0, filled=0;
-  DIMENSIONS.forEach(d=>{ const st=state.dims[d.id]; const n=Object.values(st.cells).filter(a=>a.length).length; const c=Object.values(st.cells).reduce((s,a)=>s+a.length,0); total+=20; filled+=n; const el=$("#cnt_"+d.id); if(el) el.textContent=`${n}/20 cells · ${c} codes`; });
-  $("#progress").textContent=`${filled} / ${total} cells filled`;
+  let filled=0;
+  DIMENSIONS.forEach(d=>{ const st=state.dims[d.id]; const n=Object.values(st.cells).filter(a=>a.length).length; const c=Object.values(st.cells).reduce((s,a)=>s+a.length,0); filled+=n; const el=$("#cnt_"+d.id); if(el) el.textContent=`${n}/20 cells · ${c} codes`; });
+  const f2=CANVAS_KEYS.filter(k=>state2.fields[k].trim()).length + (state2.personas.length?1:0) + (["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim())?1:0);
+  $("#progress").textContent=`Step 1: ${filled}/60 cells · Step 2: ${f2}/14 boxes`;
 }
+
+/* =====================================================================
+   STEP 2 RENDER (linked canvas)
+   ===================================================================== */
+function suggestedCodes(dim){
+  const st=state.dims[dim]; const out=new Set();
+  state2.personas.forEach(pid=>{ OUTCOMES.forEach(o=>{ (st.cells[pid+":"+o.id]||[]).forEach(c=>out.add(c)); }); });
+  return out;
+}
+function renderStep2(){
+  const pl=$("#personaList"); pl.innerHTML="";
+  GROUPS.forEach(g=>{
+    const on=state2.personas.includes(g.id);
+    const div=document.createElement("div"); div.className="pchip"+(on?" on":"");
+    div.innerHTML=`<span class="pc">${on?"☑":"☐"}</span>${g.name}`;
+    div.onclick=()=>{ const i=state2.personas.indexOf(g.id); i>=0?state2.personas.splice(i,1):state2.personas.push(g.id); scheduleSave(); renderStep2(); };
+    pl.appendChild(div);
+  });
+  const ly=$("#layers"); ly.innerHTML="";
+  DIMENSIONS.forEach(d=>{
+    const st=state.dims[d.id]; const sol=state2.sol[d.id]; const sug=suggestedCodes(d.id);
+    const div=document.createElement("div"); div.className="layer"; div.dataset.dim=d.id;
+    div.innerHTML=`<h5><span class="dotc"></span>${d.layer}</h5><p class="lh">${d.layerHint}</p>`;
+    const chips=document.createElement("div"); chips.className="codechips";
+    const codes=[...st.codes].sort((a,b)=>((sug.has(b.id)?1:0)-(sug.has(a.id)?1:0))||(parseInt(a.id.replace(/\D/g,""))-parseInt(b.id.replace(/\D/g,""))));
+    let any=false;
+    codes.forEach(c=>{
+      if(!c.label.trim() && !sug.has(c.id) && !sol.codes.includes(c.id)) return; // hide unnamed unused codes
+      any=true;
+      const on=sol.codes.includes(c.id);
+      const sp=document.createElement("span"); sp.className=`cchip ${d.id}${on?" on":""}${sug.has(c.id)?" sug":""}`;
+      sp.title=c.label||c.id; sp.textContent=c.id+(c.label?" · "+(c.label.length>34?c.label.slice(0,32)+"…":c.label):"");
+      sp.onclick=()=>{ const i=sol.codes.indexOf(c.id); i>=0?sol.codes.splice(i,1):sol.codes.push(c.id); scheduleSave(); renderStep2(); };
+      chips.appendChild(sp);
+    });
+    if(!any){ const e=document.createElement("p"); e.className="empty"; e.textContent="No codes defined yet – add them in step 1."; div.appendChild(e); }
+    else div.appendChild(chips);
+    const ta=document.createElement("textarea"); ta.placeholder="Anything beyond the codes for this layer…"; ta.value=sol.text;
+    ta.addEventListener("input",()=>{ sol.text=ta.value; scheduleSave(); });
+    div.appendChild(ta);
+    ly.appendChild(div);
+  });
+  $$("#step2 textarea[data-k2]").forEach(t=>{ if(t.value!==(state2.fields[t.dataset.k2]||"")) t.value=state2.fields[t.dataset.k2]||""; });
+  updateCounts();
+}
+document.addEventListener("input",e=>{
+  if(e.target.matches("#step2 textarea[data-k2]")){ state2.fields[e.target.dataset.k2]=e.target.value; scheduleSave(); }
+  if(e.target.matches("header input")) scheduleSave();
+});
 
 /* =====================================================================
    PERSISTENCE
@@ -409,12 +631,13 @@ let saveTimer;
 function collect(){
   return {
     form:FORM, workshop:WORKSHOP_ID, submission_id:getSubmissionId(),
-    group:$("#m_group").value.trim(), use_case:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
+    company:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
     submitted_at:new Date().toISOString(), user_agent:navigator.userAgent,
-    dims:state.dims
+    dims:state.dims,
+    canvas:{ personas:state2.personas, fields:state2.fields, sol:state2.sol }
   };
 }
-function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-INC-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id);} return id; }
+function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-ASM-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id);} return id; }
 function scheduleSave(){
   $("#dot").className="dot dirty"; $("#status").textContent="Unsaved changes…";
   clearTimeout(saveTimer);
@@ -422,15 +645,19 @@ function scheduleSave(){
   updateCounts();
 }
 function load(d){
-  $("#m_group").value=d.group||""; $("#m_case").value=d.use_case||""; $("#m_people").value=d.participants||""; $("#m_date").value=d.date||new Date().toISOString().slice(0,10);
+  $("#m_case").value=d.company||d.use_case||""; $("#m_people").value=d.participants||""; $("#m_date").value=d.date||new Date().toISOString().slice(0,10);
   if(d.dims){ const s=freshState(); DIMENSIONS.forEach(dim=>{ const src=d.dims[dim.id]; if(!src) return; if(Array.isArray(src.codes)&&src.codes.length) s.dims[dim.id].codes=src.codes; if(src.cells) s.dims[dim.id].cells={...s.dims[dim.id].cells,...src.cells}; if(src.notes) s.dims[dim.id].notes=src.notes; }); state=s; }
+  const s2=freshState2();
+  if(d.canvas){ if(Array.isArray(d.canvas.personas)) s2.personas=d.canvas.personas.filter(p=>GROUPS.some(g=>g.id===p));
+    if(d.canvas.fields) CANVAS_KEYS.forEach(k=>{ if(typeof d.canvas.fields[k]==="string") s2.fields[k]=d.canvas.fields[k]; });
+    if(d.canvas.sol) ["TA","TE","OR"].forEach(x=>{ const src=d.canvas.sol[x]; if(src){ if(Array.isArray(src.codes)) s2.sol[x].codes=src.codes; if(typeof src.text==="string") s2.sol[x].text=src.text; } }); }
+  state2=s2;
 }
-document.addEventListener("input",e=>{ if(e.target.matches("header input")) scheduleSave(); });
 
 (function init(){
-  state=freshState(); $("#m_date").value=new Date().toISOString().slice(0,10);
+  state=freshState(); state2=freshState2(); $("#m_date").value=new Date().toISOString().slice(0,10);
   try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ load(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
-  renderAll();
+  renderAll(); renderStep2();
 })();
 
 /* =====================================================================
@@ -441,27 +668,29 @@ function modal(title,bodyHTML,buttons){ $("#modalTitle").textContent=title; $("#
 function closeModal(){ $("#modal").classList.remove("open"); }
 $("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeModal(); });
 
-function slug(){ const d=collect(); return [WORKSHOP_ID+"-inclusion", d.group||"matrix", d.date||""].filter(Boolean).join("_").replace(/[^\w\-]+/g,"-"); }
-function exportJSON(){ const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=slug()+".json"; a.click(); toast("Matrix exported as JSON","ok"); }
+function slug(){ const d=collect(); return [WORKSHOP_ID+"-assessment", d.company||"matrix", d.date||""].filter(Boolean).join("_").replace(/[^\w\-]+/g,"-"); }
+function exportJSON(){ const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=slug()+".json"; a.click(); toast("Exported as JSON","ok"); }
 function importJSON(){ $("#fileInput").click(); }
-$("#fileInput").addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ load(JSON.parse(r.result)); renderAll(); scheduleSave(); toast("Matrix loaded","ok"); }catch(err){ toast("Could not read that file","err"); } }; r.readAsText(f); e.target.value=""; });
-function confirmReset(){ modal("Reset to the research baseline?","<p>All cells, code descriptions and notes go back to the pre-filled WP3 baseline. Header fields are kept. Export first if you want a copy.</p>",[{label:"Cancel"},{label:"Reset matrix",cls:"btn-danger",onClick:()=>{ state=freshState(); selected=null; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); renderAll(); scheduleSave(); toast("Matrix reset to baseline"); }}]); }
+$("#fileInput").addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ load(JSON.parse(r.result)); renderAll(); renderStep2(); scheduleSave(); toast("Loaded","ok"); }catch(err){ toast("Could not read that file","err"); } }; r.readAsText(f); e.target.value=""; });
+function confirmReset(){ modal("Reset both steps?","<p>Step 1 goes back to the pre-filled WP3 baseline and step 2 is cleared. Company, participants and date are kept. Export first if you want a copy.</p>",[{label:"Cancel"},{label:"Reset",cls:"btn-danger",onClick:()=>{ state=freshState(); state2=freshState2(); selected=null; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); renderAll(); renderStep2(); scheduleSave(); toast("Reset to baseline"); }}]); }
 
 function submitMatrix(){
-  const d=collect(); const missing=[]; if(!d.group) missing.push("Group / team"); if(!d.use_case) missing.push("Company / use case");
+  const d=collect();
+  if(!d.company){ modal("Almost there","<p><b>Please fill in the Company field</b> (top bar) – it identifies your group's submission.</p>",[{label:"OK"}]); return; }
   let body="";
-  if(missing.length){ modal("Almost there",`<p><b>Please fill in:</b> ${missing.join(", ")} (top bar).</p>`,[{label:"OK"}]); return; }
-  const undefinedUsed=[]; DIMENSIONS.forEach(dim=>{ const st=state.dims[dim.id]; const used=new Set(Object.values(st.cells).flat()); st.codes.forEach(c=>{ if(used.has(c.id)&&!c.label.trim()) undefinedUsed.push(c.id); }); });
-  if(undefinedUsed.length) body+=`<p>Codes used in the matrix but without a description: <b>${undefinedUsed.join(", ")}</b>. You can still submit.</p>`;
+  if(!d.canvas.personas.length) body+="<p>No persona selected in step 2 yet.</p>";
+  const undefinedUsed=[]; DIMENSIONS.forEach(dim=>{ const st=state.dims[dim.id]; const used=new Set(Object.values(st.cells).flat().concat(state2.sol[dim.id].codes)); st.codes.forEach(c=>{ if(used.has(c.id)&&!c.label.trim()) undefinedUsed.push(c.id); }); });
+  if(undefinedUsed.length) body+=`<p>Codes used but without a description: <b>${undefinedUsed.join(", ")}</b>. You can still submit.</p>`;
   if(!SUBMIT_URL) body+=`<p><i>No collection backend is configured, so a JSON file will be downloaded instead – please send it to the facilitator.</i></p>`;
-  modal("Submit this matrix?", body||"<p>All three dimensions (task, technology, organisation) will be sent to the workshop facilitators.</p>",[{label:"Cancel"},{label:"Submit",cls:"btn-primary",onClick:()=>doSubmit(d)}]);
+  else body+=`<p>Both steps will be sent to the workshop facilitators, and the results are emailed to the research team automatically.</p>`;
+  modal("Submit your assessment?", body,[{label:"Cancel"},{label:"Submit",cls:"btn-primary",onClick:()=>doSubmit(d)}]);
 }
 async function doSubmit(d){
   if(!SUBMIT_URL){ exportJSON(); return; }
   const btn=$("#submitBtn"); btn.disabled=true; btn.textContent="Submitting…";
-  try{ await fetch(SUBMIT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)}); toast("✓ Matrix submitted – thank you!","ok",5000); $("#status").textContent="Submitted "+new Date().toLocaleTimeString()+" · you can keep editing and re-submit"; }
+  try{ await fetch(SUBMIT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)}); toast("✓ Submitted – thank you!","ok",5000); $("#status").textContent="Submitted "+new Date().toLocaleTimeString()+" · you can keep editing and re-submit"; }
   catch(err){ toast("Submission failed (offline?). A JSON copy was downloaded instead.","err",6000); exportJSON(); }
-  finally{ btn.disabled=false; btn.textContent="Submit matrix"; }
+  finally{ btn.disabled=false; btn.textContent="Submit"; }
 }
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } if(e.key==="Escape"&&selected){ selected=null; renderAll(); } });
 </script>
