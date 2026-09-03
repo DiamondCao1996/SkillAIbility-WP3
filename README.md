@@ -5,10 +5,10 @@ any laptop or tablet, and every submission lands in a Google Sheet owned by the 
 
 | Tool | Live page |
 |---|---|
-| **Solution canvas** – Challenge → Persona → Pain points → Goals → Solution → UVP → Risks → KPIs → Skills → Action plan | https://diamondcao1996.github.io/SkillAIbility-WP3/ |
-| **Inclusion matrix** – *Organisation → Inclusion*: task, technology and organisation requirements per worker group × outcome | https://diamondcao1996.github.io/SkillAIbility-WP3/inclusion.html |
+| **Human-centric workforce canvas** – Challenge → Persona → Pain points → Goals → Solution → UVP → Risks → KPIs → Skills → Action plan | https://diamondcao1996.github.io/SkillAIbility-WP3/ |
+| **Assessment matrix** – *Organisation → Inclusion*: task, technology and organisation requirements per worker group × outcome | https://diamondcao1996.github.io/SkillAIbility-WP3/inclusion.html |
 
-## The solution canvas
+## The human-centric workforce canvas
 
 * The familiar canvas layout (Challenge → Persona → Pain points → Goals → Solution → UVP → Risks → KPIs → Skills → Action plan), with the original prompts and examples.
 * Header fields for *Group / team*, *Company / use case*, *Participants* and *Date*.
@@ -18,7 +18,7 @@ any laptop or tablet, and every submission lands in a Google Sheet owned by the 
 * **Print** – A3 landscape print / save as PDF, keeps the colours.
 * Works on desktop, tablet and phone (layout reflows).
 
-## The inclusion matrix
+## The assessment matrix (`inclusion.html`)
 
 Three dimensions, each a 5 × 4 grid of **worker groups** (novice / learning-vulnerable, deaf and
 hard-of-hearing, aging, physical support needs, cognitive support needs) × **outcomes**
