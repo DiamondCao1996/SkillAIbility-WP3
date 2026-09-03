@@ -134,6 +134,47 @@ function saveAssessment_(d) {
   if (codeRows.length) codeSh.getRange(codeSh.getLastRow() + 1, 1, codeRows.length, codeRows[0].length).setValues(codeRows);
 }
 
+/* ---------- Use case matching toolkit ---------- */
+var UC_NAMES = {
+  U1:"Cobot assisted clip insertion", U2:"Human-in-the-loop digital twin",
+  U3:"Gesture based human robot interaction through physical AI", U4:"MR training for adhesive application",
+  U5:"Humanoid social robot instructions", U6:"Digitally Assistive Assembly",
+  U7:"Haptic feedback for hard of hearing operators", U8:"Supportive order picking activities",
+  U9:"Knowledge of AI use in manufacturing", U10:"Visual guidance",
+  U11:"AR-guided CNC Milling Machine Maintenance", U12:"Cobot-supported assembly for chassis fixing components",
+  U13:"Confidence Building via Step-by-Step Support", U14:"Visual safety training",
+  U15:"Visual Process Feedback", U16:"Visual Feedback for Weld Quality",
+  U17:"AR Assembly for People with Cognitive Special Needs",
+  U18:"VR Safety Training for Low-Skilled Workers in Hazardous Gas Installations",
+  U19:"AI Multilingual Assistant for Migrant Learners in Manufacturing Training"
+};
+var UC_HEADERS = ["received_at", "submission_id", "company", "participants", "date", "partner", "use_case", "use_case_name", "ta_codes", "te_codes", "or_codes", "coverage", "missing", "submitted_at"];
+function saveUseCases_(d) {
+  var sh = sheet_("UseCases", UC_HEADERS);
+  var rows = [];
+  var cases = d.cases || {};
+  Object.keys(cases).sort().forEach(function (id) {
+    var c = cases[id] || {}; var codes = c.codes || {};
+    var any = (codes.TA || []).length || (codes.TE || []).length || (codes.OR || []).length || c.coverage || (c.missing || "").trim();
+    if (!any) return;
+    rows.push([new Date(), str_(d.submission_id), str_(d.company), str_(d.participants), str_(d.date), str_(d.partner).toUpperCase(), id, UC_NAMES[id] || "",
+      (codes.TA || []).join(", "), (codes.TE || []).join(", "), (codes.OR || []).join(", "),
+      str_(c.coverage), str_(c.missing), str_(d.submitted_at)]);
+  });
+  if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
+  // code label snapshot (lists may have been edited in the matrix)
+  if (d.code_labels) {
+    var codeSh = sheet_("Assessment_codes", ["received_at", "submission_id", "company", "dimension", "code", "label", "frequent"]);
+    var codeRows = [];
+    DIMS.forEach(function (dim) {
+      (d.code_labels[dim] || []).forEach(function (c) {
+        codeRows.push([new Date(), str_(d.submission_id), str_(d.company), dim, c.id, str_(c.label), c.freq ? "yes" : "no"]);
+      });
+    });
+    if (codeRows.length) codeSh.getRange(codeSh.getLastRow() + 1, 1, codeRows.length, codeRows[0].length).setValues(codeRows);
+  }
+}
+
 /* ---------- email: summary + cumulative workbook as .xlsx ---------- */
 function exportXlsx_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -144,7 +185,8 @@ function exportXlsx_() {
   return resp.getBlob().setName("SkillAIbility_WP3_submissions_" + stamp + ".xlsx");
 }
 function summaryHtml_(d) {
-  var h = "<h2 style='font-family:sans-serif'>SkillAIbility WP3 – new " + (d.form === "assessment" ? "assessment" : "canvas") + " submission</h2>";
+  var kind = d.form === "assessment" ? "assessment" : d.form === "usecases" ? "use case matching" : "canvas";
+  var h = "<h2 style='font-family:sans-serif'>SkillAIbility WP3 – new " + kind + " submission</h2>";
   h += "<table style='font-family:sans-serif;font-size:13px;border-collapse:collapse'>";
   function tr(k, v) { if (v) h += "<tr><td style='padding:3px 10px 3px 0;font-weight:bold;vertical-align:top;white-space:nowrap'>" + k + "</td><td style='padding:3px 0'>" + String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>") + "</td></tr>"; }
   tr("Company", d.company); tr("Participants", d.participants); tr("Date", d.date); tr("Submission id", d.submission_id);
@@ -164,6 +206,18 @@ function summaryHtml_(d) {
       return dim + ": " + n + " codes";
     }).join(" · ");
     tr("Matrix (step 1)", counts);
+  } else if (d.form === "usecases") {
+    tr("Institute", str_(d.partner).toUpperCase());
+    var cases = d.cases || {};
+    Object.keys(cases).sort().forEach(function (id) {
+      var c = cases[id] || {}; var codes = c.codes || {};
+      var bits = [];
+      var all = (codes.TA || []).concat(codes.TE || [], codes.OR || []);
+      if (all.length) bits.push("codes: " + all.join(", "));
+      if (c.coverage) bits.push("sufficient: " + c.coverage);
+      if ((c.missing || "").trim()) bits.push("missing: " + c.missing);
+      if (bits.length) tr(id + " – " + (UC_NAMES[id] || ""), bits.join(" | "));
+    });
   } else {
     CANVAS_FIELDS.forEach(function (k) { tr(k.replace(/_/g, " "), d[k]); });
   }
@@ -173,7 +227,8 @@ function summaryHtml_(d) {
 function notify_(d) {
   if (!SEND_EMAIL) return;
   try {
-    var subject = "[SkillAIbility WP3] " + (d.form === "assessment" ? "Assessment" : "Canvas") + " submission – " + (d.company || "unknown company");
+    var kind = d.form === "assessment" ? "Assessment" : d.form === "usecases" ? "Use case matching" : "Canvas";
+    var subject = "[SkillAIbility WP3] " + kind + " submission – " + (d.company || "unknown company");
     MailApp.sendEmail({ to: EMAIL_TO, subject: subject, htmlBody: summaryHtml_(d), attachments: [exportXlsx_()] });
   } catch (err) {
     // Never fail the submission because of email problems; log instead.
@@ -187,7 +242,9 @@ function doPost(e) {
   lock.waitLock(20000);
   try {
     var data = JSON.parse(e.postData.contents || "{}");
-    if (data.form === "assessment" || data.form === "inclusion") saveAssessment_(data); else saveCanvas_(data);
+    if (data.form === "assessment" || data.form === "inclusion") saveAssessment_(data);
+    else if (data.form === "usecases") saveUseCases_(data);
+    else saveCanvas_(data);
     notify_(data);
     return ContentService.createTextOutput(JSON.stringify({ ok: true, id: data.submission_id, form: data.form || "canvas" }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -203,7 +260,8 @@ function doPost(e) {
 function doGet() {
   var c = sheet_("Canvas", canvasHeaders_()).getLastRow() - 1;
   var a = sheet_("Assessment", assessmentHeaders_()).getLastRow() - 1;
-  return ContentService.createTextOutput("SkillAIbility WP3 collector is running. Canvas rows: " + c + " · Assessment rows: " + a)
+  var u = sheet_("UseCases", UC_HEADERS).getLastRow() - 1;
+  return ContentService.createTextOutput("SkillAIbility WP3 collector is running. Canvas rows: " + c + " · Assessment rows: " + a + " · UseCase rows: " + u)
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
@@ -214,6 +272,7 @@ function setup() {
   sheet_("Assessment", assessmentHeaders_());
   sheet_("Assessment_cells", ["received_at", "submission_id", "company", "source", "dimension", "worker_group", "outcome", "code", "code_label", "frequent", "note"]);
   sheet_("Assessment_codes", ["received_at", "submission_id", "company", "dimension", "code", "label", "frequent"]);
+  sheet_("UseCases", UC_HEADERS);
   var s0 = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
   if (s0 && s0.getLastRow() === 0) SpreadsheetApp.getActiveSpreadsheet().deleteSheet(s0);
   if (SEND_EMAIL) {

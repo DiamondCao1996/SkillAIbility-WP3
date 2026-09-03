@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SkillAIbility WP3 – Use Case Matching Toolkit</title>
+<style>
+  :root{
+    --navy:#0b1b3f; --bg:#eef0f3; --ink:#0b1b3f; --muted:#3b4560;
+    --blue:#c9eefb; --blue-b:#41c3ec; --blue-d:#1a8fb8;
+    --green:#d9f2c9; --green-b:#9fd65c; --green-d:#4f8f1c;
+    --yellow:#fce9a9; --yellow-b:#f0d34a; --yellow-d:#a8860b;
+    --radius:18px;
+    --p-chalmers:#f9f871; --p-ntnu:#29abe2; --p-lms:#5fe3c0; --p-made:#c5cae9; --p-tknika:#f8d0d8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+
+  header{background:var(--navy);color:#fff;padding:12px 24px 14px;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"title nav actions" "meta meta meta";gap:12px 24px;align-items:center}
+  header h1{grid-area:title;font-size:20px;margin:0;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+  nav.pages{grid-area:nav;justify-self:start}
+  .actions{grid-area:actions}
+  .meta{grid-area:meta}
+  @media (max-width:900px){header{grid-template-columns:1fr;grid-template-areas:"title" "nav" "meta" "actions"}}
+  header h1 small{font-weight:400;opacity:.75;margin-left:8px;font-size:13px}
+  nav.pages{display:flex;gap:4px;background:rgba(255,255,255,.1);padding:4px;border-radius:10px;flex-wrap:wrap}
+  nav.pages a{color:#fff;text-decoration:none;padding:6px 12px;border-radius:7px;font-size:13.5px;opacity:.8}
+  nav.pages a.active{background:#41c3ec;color:var(--navy);opacity:1;font-weight:600}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 14px}
+  .meta label{display:flex;flex:1 1 200px;flex-direction:column;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.85}
+  .meta input{margin-top:3px;width:100%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:6px 9px;font-size:14px;min-width:150px;outline:none}
+  .meta input:focus{background:rgba(255,255,255,.18);border-color:#fff}
+  .meta input::placeholder{color:rgba(255,255,255,.5)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  button{border:0;border-radius:9px;padding:9px 14px;font-size:14px;cursor:pointer;font-weight:600;transition:.15s;font-family:inherit}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff}
+  .btn-ghost:hover{background:rgba(255,255,255,.22)}
+  .btn-primary{background:#41c3ec;color:var(--navy)}
+  .btn-primary:hover{background:#6ad3f2}
+  .btn-primary:disabled{opacity:.6;cursor:wait}
+
+  main{padding:18px 22px 70px;max-width:1500px;margin:0 auto}
+
+  /* tool guide strip */
+  .toolstrip{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .toolstrip a{flex:1;min-width:230px;text-decoration:none;color:var(--ink);background:#fff;border:2px solid #d8dce4;border-radius:12px;padding:9px 13px;font-size:12.5px;line-height:1.35}
+  .toolstrip a b{display:block;font-size:13.5px;margin-bottom:1px}
+  .toolstrip a.current{border-color:var(--navy);box-shadow:0 0 0 2px rgba(11,27,63,.08)}
+  .toolstrip a:hover{border-color:var(--navy)}
+
+  .framing{background:#fff;border-radius:var(--radius);padding:14px 20px;margin-bottom:16px;border-left:6px solid var(--navy)}
+  .framing h2{margin:0 0 4px;font-size:18px;font-weight:600}
+  .framing p{margin:0;font-size:14px;color:var(--muted);line-height:1.45}
+
+  /* partner picker */
+  .partners{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .partner{flex:1;min-width:130px;border:2.5px solid rgba(11,27,63,.25);border-radius:14px;padding:14px 10px;text-align:center;font-weight:700;font-size:15px;cursor:pointer;letter-spacing:.5px;user-select:none;color:var(--ink)}
+  .partner:hover{border-color:var(--navy)}
+  .partner.on{border-color:var(--navy);box-shadow:0 0 0 3px rgba(11,27,63,.15)}
+  .partner small{display:block;font-weight:500;font-size:11.5px;margin-top:3px;opacity:.7}
+
+  /* use case cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:14px}
+  @media (max-width:900px){.cards{grid-template-columns:1fr}}
+  .uc{background:#fff;border:2.5px solid #d8dce4;border-radius:var(--radius);padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+  .uc.done{border-color:var(--green-b)}
+  .uc-head{display:flex;gap:10px;align-items:flex-start}
+  .uc-id{border-radius:10px;padding:6px 10px;font-weight:800;font-size:15px;white-space:nowrap}
+  .uc-title{font-weight:600;font-size:15px;line-height:1.3;margin-top:3px}
+  .uc-tags{display:flex;flex-wrap:wrap;gap:5px}
+  .tag{font-size:11.5px;background:#eef0f3;border-radius:999px;padding:3px 9px;color:var(--muted)}
+  .tag.tech{background:var(--navy);color:#fff}
+  .uc h6{margin:2px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .uc .grouptags .tag{background:var(--blue)}
+  .linkrow{border-top:1px dashed #d8dce4;padding-top:8px}
+  .linkrow .lr-head{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;margin-bottom:5px}
+  .lr-head .dotc{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .linkrow[data-dim=TA] .dotc{background:var(--blue-d)} .linkrow[data-dim=TE] .dotc{background:var(--green-d)} .linkrow[data-dim=OR] .dotc{background:var(--yellow-d)}
+  .codechips{display:flex;flex-wrap:wrap;gap:5px}
+  .cchip{font-size:11.5px;font-weight:600;border-radius:999px;padding:3px 9px;cursor:pointer;border:1.5px solid;background:#fff;user-select:none;line-height:1.3}
+  .cchip.TA{border-color:var(--blue-d);color:var(--blue-d)} .cchip.TE{border-color:var(--green-d);color:var(--green-d)} .cchip.OR{border-color:var(--yellow-d);color:var(--yellow-d)}
+  .cchip.on.TA{background:var(--blue-d);color:#fff} .cchip.on.TE{background:var(--green-d);color:#fff} .cchip.on.OR{background:var(--yellow-d);color:#fff}
+  .coverage{border-top:1px dashed #d8dce4;padding-top:9px}
+  .coverage .cq{font-size:13px;font-weight:600;margin:0 0 6px}
+  .covopts{display:flex;gap:6px;flex-wrap:wrap}
+  .cov{flex:1;min-width:110px;border:1.5px solid #c7ccd6;border-radius:9px;background:#f7f8fa;padding:6px 8px;font-size:12.5px;cursor:pointer;text-align:center;user-select:none}
+  .cov:hover{border-color:var(--navy)}
+  .cov.on.yes{background:#d9f2c9;border-color:var(--green-d);font-weight:700}
+  .cov.on.partly{background:var(--yellow);border-color:var(--yellow-d);font-weight:700}
+  .cov.on.no{background:#f8d0d8;border-color:#c2566b;font-weight:700}
+  .uc textarea{width:100%;min-height:44px;resize:vertical;border:1px dashed rgba(11,27,63,.3);border-radius:9px;background:#fbfcfe;padding:7px 10px;font:inherit;font-size:13px;outline:none;margin-top:7px}
+  .uc textarea:focus{background:#fff;border-style:solid;border-color:var(--navy)}
+  .empty-note{background:#fff;border:2px dashed #c7ccd6;border-radius:var(--radius);padding:28px;text-align:center;color:var(--muted);font-size:14.5px}
+  .sync-note{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .sync-note b{color:var(--green-d)}
+
+  /* footer / status / toast / modal */
+  .statusbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d8dce4;padding:8px 22px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:5}
+  .statusbar .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9aa3b5;margin-right:6px;vertical-align:middle}
+  .statusbar .dot.saved{background:#3ec26f}.statusbar .dot.dirty{background:#f0b429}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.25);font-size:14px;z-index:20;opacity:0;pointer-events:none;transition:.25s;max-width:90vw}
+  .toast.show{opacity:1}.toast.ok{background:#1f8f4c}.toast.err{background:#b3261e}
+  .modal{position:fixed;inset:0;background:rgba(11,27,63,.55);display:none;align-items:center;justify-content:center;z-index:30;padding:20px}
+  .modal.open{display:flex}
+  .modal .card{background:#fff;border-radius:16px;padding:22px 26px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .modal h3{margin:0 0 8px;font-size:20px}
+  .modal p{margin:6px 0;font-size:14.5px;line-height:1.45;color:#333}
+  .modal .row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  .modal .btn-cancel{background:#e7e9ee;color:var(--ink)}
+  .modal .btn-danger{background:#b3261e;color:#fff}
+
+  @media print{
+    @page{size:A3 landscape;margin:10mm}
+    header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .actions,.statusbar,.toast,.modal,nav.pages,.toolstrip,.partners{display:none !important}
+    .cards{grid-template-columns:1fr 1fr}
+    .uc{break-inside:avoid}
+    body{background:#fff}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SkillAIbility <small>WP3 · Use Case Matching Toolkit</small></h1>
+  <nav class="pages"><a href="index.html">Workforce canvas</a><a href="inclusion.html">Assessment matrix</a><a href="usecases.html" class="active">Use case matching</a></nav>
+  <div class="meta">
+    <label>Company <input id="m_case" placeholder="e.g. Volvo" autocomplete="off"></label>
+    <label>Participants <input id="m_people" placeholder="names or roles" autocomplete="off"></label>
+    <label>Date <input id="m_date" type="date"></label>
+  </div>
+  <div class="actions">
+    <button class="btn-ghost" onclick="exportJSON()" title="Download as JSON">⬇ Export</button>
+    <button class="btn-ghost" onclick="importJSON()" title="Load a JSON file">⬆ Import</button>
+    <button class="btn-ghost" onclick="window.print()" title="Print or save as PDF">🖨 Print</button>
+    <button class="btn-ghost" onclick="confirmClear()" title="Clear all matching work">✕ Clear</button>
+    <button class="btn-primary" id="submitBtn" onclick="submitCases()">Submit</button>
+  </div>
+</header>
+
+<main>
+  <div class="toolstrip">
+    <a href="index.html"><b>1 · Workforce canvas</b>Open-ended discussion and brainstorming around your own case.</a>
+    <a href="inclusion.html"><b>2 · Assessment matrix</b>Organise the ideas into actionable requirement checklists, then design a linked solution.</a>
+    <a href="usecases.html" class="current"><b>3 · Use case matching</b>Match your institute's use cases against the requirement lists and mark the gaps.</a>
+  </div>
+
+  <div class="framing">
+    <h2>Match the SkillAIbility use cases to the requirement lists</h2>
+    <p>Choose your <b>institute</b> to see its use cases from the high-level mapping. For each use case, tick which <b>task (TA)</b>, <b>technology (TE)</b> and <b>organisation (OR)</b> requirements from the assessment matrix it addresses, then judge whether the lists are <b>sufficient</b> for this use case – and note what is missing. The code lists stay in sync with your assessment matrix on this device, including codes you renamed or added there.</p>
+  </div>
+
+  <p class="sync-note" id="syncNote"></p>
+  <div class="partners" id="partners"></div>
+  <div id="cardsHost"></div>
+</main>
+
+<div class="statusbar">
+  <span><span class="dot" id="dot"></span><span id="status">Draft saved locally in this browser</span></span>
+  <span id="progress"></span>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="card"><h3 id="modalTitle"></h3><div id="modalBody"></div><div class="row" id="modalRow"></div></div></div>
+<input type="file" id="fileInput" accept="application/json" style="display:none">
+
+<script src="config.js"></script>
+<script src="usecases-data.js"></script>
+<script>
+const WORKSHOP_ID="WP3";
+const STORAGE_KEY="skillaibility_wp3_usecases_v1";
+const MATRIX_KEY="skillaibility_wp3_assessment_v2";
+const FORM="usecases";
+const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+/* state: { partner:"", cases:{ U1:{codes:{TA:[],TE:[],OR:[]}, coverage:"", missing:""} } } */
+let state={ partner:"", cases:{} };
+function caseState(id){ return state.cases[id]||(state.cases[id]={codes:{TA:[],TE:[],OR:[]},coverage:"",missing:""}); }
+
+/* ---- live code lists from the assessment matrix draft (same browser) ---- */
+function matrixCodes(){
+  let dims=null;
+  try{ const raw=localStorage.getItem(MATRIX_KEY); if(raw) dims=(JSON.parse(raw)||{}).dims||null; }catch(e){}
+  const out={}; let live=false;
+  ["TA","TE","OR"].forEach(d=>{
+    const fromDraft=dims&&dims[d]&&Array.isArray(dims[d].codes)?dims[d].codes.filter(c=>c.label&&c.label.trim()):null;
+    if(fromDraft&&fromDraft.length){ out[d]=fromDraft; live=true; } else out[d]=BASELINE_CODES[d];
+  });
+  out._live=live; return out;
+}
+
+/* ---------- render ---------- */
+function renderPartners(){
+  const host=$("#partners"); host.innerHTML="";
+  PARTNERS.forEach(p=>{
+    const b=document.createElement("div"); b.className="partner"+(state.partner===p.id?" on":""); b.style.background=p.color;
+    b.innerHTML=`${p.name}<small>${USE_CASES.filter(u=>u.partner===p.id).length} use cases</small>`;
+    b.onclick=()=>{ state.partner=(state.partner===p.id)?"":p.id; scheduleSave(); render(); };
+    host.appendChild(b);
+  });
+}
+function groupName(gid){ return (GROUPS_UC.find(g=>g.id===gid)||{}).name||gid; }
+function renderCards(){
+  const host=$("#cardsHost"); host.innerHTML="";
+  if(!state.partner){ host.innerHTML=`<div class="empty-note">👆 Choose your institute above to see its use cases from the SkillAIbility high-level mapping.</div>`; updateCounts(); return; }
+  const mc=matrixCodes();
+  $("#syncNote").innerHTML=mc._live?`<b>● Linked:</b> code lists loaded live from your assessment matrix on this device (edits there appear here).`:`○ Using the WP3 baseline code lists – open the assessment matrix on this device to link your own edits.`;
+  const list=USE_CASES.filter(u=>u.partner===state.partner);
+  const wrap=document.createElement("div"); wrap.className="cards";
+  const pcol=(PARTNERS.find(p=>p.id===state.partner)||{}).color||"#eee";
+  list.forEach(u=>{
+    const cs=caseState(u.id);
+    const card=document.createElement("div"); card.className="uc"+(cs.coverage?" done":"");
+    const gtags=[...new Set(u.map.map(m=>m.split(":")[0]))].map(g=>`<span class="tag">${esc(groupName(g))}</span>`).join("");
+    const ptags=[...new Set(u.map.map(m=>m.split(":")[1]))].map(p=>`<span class="tag">${esc(p)}</span>`).join("");
+    card.innerHTML=`
+      <div class="uc-head"><span class="uc-id" style="background:${pcol}">${u.id}</span><div><div class="uc-title">${esc(u.name)}</div></div></div>
+      <div class="uc-tags">${u.tech.map(t=>`<span class="tag tech">${esc(t)}</span>`).join("")}<span class="tag" title="${esc(NACE[u.nace]||"")}">NACE ${u.nace}</span></div>
+      <h6>Target groups · pathways (from the mapping)</h6>
+      <div class="uc-tags grouptags">${gtags}${ptags}</div>`;
+    ["TA","TE","OR"].forEach(dim=>{
+      const row=document.createElement("div"); row.className="linkrow"; row.dataset.dim=dim;
+      row.innerHTML=`<div class="lr-head"><span class="dotc"></span>${dim==="TA"?"Task requirements":dim==="TE"?"Technology requirements":"Organisation conditions"} this use case addresses</div>`;
+      const chips=document.createElement("div"); chips.className="codechips";
+      mc[dim].forEach(c=>{
+        const on=cs.codes[dim].includes(c.id);
+        const sp=document.createElement("span"); sp.className=`cchip ${dim}${on?" on":""}`; sp.title=c.label||c.id;
+        sp.textContent=c.id+(c.label?" · "+(c.label.length>28?c.label.slice(0,26)+"…":c.label):"");
+        sp.onclick=()=>{ const a=cs.codes[dim]; const i=a.indexOf(c.id); i>=0?a.splice(i,1):a.push(c.id); scheduleSave(); render(); };
+        chips.appendChild(sp);
+      });
+      row.appendChild(chips); card.appendChild(row);
+    });
+    const cov=document.createElement("div"); cov.className="coverage";
+    cov.innerHTML=`<p class="cq">Are the requirement lists sufficient for this use case?</p>`;
+    const opts=document.createElement("div"); opts.className="covopts";
+    [["yes","✓ Yes, they cover it"],["partly","◐ Partly – some gaps"],["no","✗ No – lists are missing key items"]].forEach(([v,l])=>{
+      const o=document.createElement("div"); o.className="cov "+v+(cs.coverage===v?" on "+v:""); o.textContent=l;
+      o.onclick=()=>{ cs.coverage=(cs.coverage===v)?"":v; scheduleSave(); render(); };
+      opts.appendChild(o);
+    });
+    cov.appendChild(opts);
+    const ta=document.createElement("textarea"); ta.placeholder="What is missing from the lists for this use case? New requirements to add…"; ta.value=cs.missing;
+    ta.addEventListener("input",()=>{ cs.missing=ta.value; scheduleSave(); });
+    cov.appendChild(ta); card.appendChild(cov);
+    wrap.appendChild(card);
+  });
+  host.appendChild(wrap);
+  updateCounts();
+}
+function render(){ renderPartners(); renderCards(); }
+window.addEventListener("storage",e=>{ if(e.key===MATRIX_KEY) renderCards(); });
+
+function updateCounts(){
+  const list=state.partner?USE_CASES.filter(u=>u.partner===state.partner):[];
+  const done=list.filter(u=>{ const c=state.cases[u.id]; return c&&c.coverage; }).length;
+  const linked=Object.values(state.cases).reduce((s,c)=>s+c.codes.TA.length+c.codes.TE.length+c.codes.OR.length,0);
+  $("#progress").textContent=state.partner?`${done} / ${list.length} use cases assessed · ${linked} code links`:"Choose an institute to start";
+}
+
+/* ---------- persistence ---------- */
+let saveTimer;
+function collect(){
+  return { form:FORM, workshop:WORKSHOP_ID, submission_id:getSubmissionId(),
+    company:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
+    submitted_at:new Date().toISOString(), user_agent:navigator.userAgent,
+    partner:state.partner, cases:state.cases,
+    code_labels:(function(){ const mc=matrixCodes(); const o={}; ["TA","TE","OR"].forEach(d=>o[d]=mc[d]); return o; })()
+  };
+}
+function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-UC-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id);} return id; }
+function scheduleSave(){
+  $("#dot").className="dot dirty"; $("#status").textContent="Unsaved changes…";
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(collect())); }catch(e){} $("#dot").className="dot saved"; $("#status").textContent="Draft saved locally · "+new Date().toLocaleTimeString(); },400);
+}
+function load(d){
+  $("#m_case").value=d.company||""; $("#m_people").value=d.participants||""; $("#m_date").value=d.date||new Date().toISOString().slice(0,10);
+  state={ partner:d.partner||"", cases:{} };
+  if(d.cases) Object.keys(d.cases).forEach(id=>{ const c=d.cases[id]||{}; state.cases[id]={ codes:{TA:(c.codes&&c.codes.TA)||[],TE:(c.codes&&c.codes.TE)||[],OR:(c.codes&&c.codes.OR)||[]}, coverage:c.coverage||"", missing:c.missing||"" }; });
+}
+document.addEventListener("input",e=>{ if(e.target.matches("header input")) scheduleSave(); });
+
+(function init(){
+  $("#m_date").value=new Date().toISOString().slice(0,10);
+  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ load(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
+  // share company/participants with the other tools if empty
+  if(!$("#m_case").value){ try{ const m=JSON.parse(localStorage.getItem(MATRIX_KEY)||"{}"); if(m.company) $("#m_case").value=m.company; if(m.participants&&!$("#m_people").value) $("#m_people").value=m.participants; }catch(e){} }
+  render();
+})();
+
+/* ---------- actions ---------- */
+function toast(msg,cls="",ms=3500){ const t=$("#toast"); t.textContent=msg; t.className="toast show "+cls; clearTimeout(t._t); t._t=setTimeout(()=>t.className="toast",ms); }
+function modal(title,bodyHTML,buttons){ $("#modalTitle").textContent=title; $("#modalBody").innerHTML=bodyHTML; const row=$("#modalRow"); row.innerHTML=""; buttons.forEach(b=>{ const btn=document.createElement("button"); btn.textContent=b.label; btn.className=b.cls||"btn-cancel"; btn.onclick=()=>{ closeModal(); b.onClick&&b.onClick(); }; row.appendChild(btn); }); $("#modal").classList.add("open"); }
+function closeModal(){ $("#modal").classList.remove("open"); }
+$("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeModal(); });
+
+function slug(){ const d=collect(); return [WORKSHOP_ID+"-usecases", d.partner||"", d.company||"", d.date||""].filter(Boolean).join("_").replace(/[^\w\-]+/g,"-"); }
+function exportJSON(){ const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=slug()+".json"; a.click(); toast("Exported as JSON","ok"); }
+function importJSON(){ $("#fileInput").click(); }
+$("#fileInput").addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ load(JSON.parse(r.result)); render(); scheduleSave(); toast("Loaded","ok"); }catch(err){ toast("Could not read that file","err"); } }; r.readAsText(f); e.target.value=""; });
+function confirmClear(){ modal("Clear all matching work?","<p>All code links, sufficiency marks and notes will be removed. Company, participants and date are kept. Export first if you want a copy.</p>",[{label:"Cancel"},{label:"Clear",cls:"btn-danger",onClick:()=>{ state={partner:state.partner,cases:{}}; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); render(); scheduleSave(); toast("Cleared"); }}]); }
+
+function submitCases(){
+  const d=collect();
+  if(!d.company){ modal("Almost there","<p><b>Please fill in the Company field</b> (top bar).</p>",[{label:"OK"}]); return; }
+  if(!d.partner){ modal("Almost there","<p><b>Please choose your institute</b> first.</p>",[{label:"OK"}]); return; }
+  const list=USE_CASES.filter(u=>u.partner===d.partner);
+  const unassessed=list.filter(u=>!(d.cases[u.id]&&d.cases[u.id].coverage)).map(u=>u.id);
+  let body="";
+  if(unassessed.length) body+=`<p>Not yet assessed: <b>${unassessed.join(", ")}</b>. You can still submit and re-submit later.</p>`;
+  if(!SUBMIT_URL) body+=`<p><i>No collection backend is configured, so a JSON file will be downloaded instead – please send it to the facilitator.</i></p>`;
+  else body+=`<p>Your use case matching will be sent to the workshop facilitators, and the results are emailed to the research team automatically.</p>`;
+  modal("Submit use case matching?", body,[{label:"Cancel"},{label:"Submit",cls:"btn-primary",onClick:()=>doSubmit(d)}]);
+}
+async function doSubmit(d){
+  if(!SUBMIT_URL){ exportJSON(); return; }
+  const btn=$("#submitBtn"); btn.disabled=true; btn.textContent="Submitting…";
+  try{ await fetch(SUBMIT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)}); toast("✓ Submitted – thank you!","ok",5000); $("#status").textContent="Submitted "+new Date().toLocaleTimeString()+" · you can keep editing and re-submit"; }
+  catch(err){ toast("Submission failed (offline?). A JSON copy was downloaded instead.","err",6000); exportJSON(); }
+  finally{ btn.disabled=false; btn.textContent="Submit"; }
+}
+document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
+</script>
+</body>
+</html>

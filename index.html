@@ -40,6 +40,11 @@
   .btn-primary:hover{background:#6ad3f2}
   .btn-primary:disabled{opacity:.6;cursor:wait}
 
+  .toolstrip{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .toolstrip a{flex:1;min-width:230px;text-decoration:none;color:var(--ink);background:#fff;border:2px solid #d8dce4;border-radius:12px;padding:9px 13px;font-size:12.5px;line-height:1.35}
+  .toolstrip a b{display:block;font-size:13.5px;margin-bottom:1px}
+  .toolstrip a.current{border-color:var(--navy);box-shadow:0 0 0 2px rgba(11,27,63,.08)}
+  .toolstrip a:hover{border-color:var(--navy)}
   /* ---------- canvas ---------- */
   main{padding:18px 22px 60px;max-width:1900px;margin:0 auto}
   .canvas{
@@ -121,7 +126,7 @@
   @media print{
     @page{size:A3 landscape;margin:10mm}
     header{background:var(--navy) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .actions,.statusbar,.toast,.modal,nav.pages{display:none !important}
+    .actions,.statusbar,.toast,.modal,nav.pages,.toolstrip{display:none !important}
     body{background:#fff}
     main{padding:8mm 0}
     .box{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid}
@@ -134,7 +139,7 @@
 
 <header>
   <h1>SkillAIbility <small>WP3 · Human-centric Workforce Canvas</small></h1>
-  <nav class="pages"><a href="index.html" class="active">Human-centric workforce canvas</a><a href="inclusion.html">Assessment matrix</a></nav>
+  <nav class="pages"><a href="index.html" class="active">Workforce canvas</a><a href="inclusion.html">Assessment matrix</a><a href="usecases.html">Use case matching</a></nav>
   <div class="meta">
     <label>Company <input id="m_case" placeholder="e.g. Volvo" autocomplete="off"></label>
     <label>Participants <input id="m_people" placeholder="names or roles" autocomplete="off"></label>
@@ -150,6 +155,11 @@
 </header>
 
 <main>
+  <div class="toolstrip">
+    <a href="index.html" class="current"><b>1 · Workforce canvas</b>Open-ended discussion and brainstorming around your own case.</a>
+    <a href="inclusion.html"><b>2 · Assessment matrix</b>Organise the ideas into actionable requirement checklists, then design a linked solution.</a>
+    <a href="usecases.html"><b>3 · Use case matching</b>Match your institute's use cases against the requirement lists and mark the gaps.</a>
+  </div>
   <div class="canvas" id="canvas">
 
     <section class="box blue" id="challenge">

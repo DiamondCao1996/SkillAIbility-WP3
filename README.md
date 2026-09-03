@@ -7,6 +7,15 @@ any laptop or tablet, and every submission lands in a Google Sheet owned by the 
 |---|---|
 | **Human-centric workforce canvas** – Challenge → Persona → Pain points → Goals → Solution → UVP → Risks → KPIs → Skills → Action plan | https://diamondcao1996.github.io/SkillAIbility-WP3/ |
 | **Assessment matrix** – two steps: (1) requirement matrix per worker group × outcome, (2) a solution canvas linked to the matrix | https://diamondcao1996.github.io/SkillAIbility-WP3/inclusion.html |
+| **Use case matching toolkit** – match your institute's SkillAIbility use cases against the requirement lists and mark gaps | https://diamondcao1996.github.io/SkillAIbility-WP3/usecases.html |
+
+**How the tools fit together** (also shown as a guide strip on every page): the **canvas** is for
+open-ended discussion and brainstorming around a case; the **assessment matrix** organises those
+ideas into actionable requirement checklists and turns them into a linked solution design; the
+**use case matching toolkit** tests the requirement lists against the project's real use cases and
+surfaces what is missing. The tools stay interconnected in the browser: the matrix code lists
+(including renamed/added codes) feed both the step-2 solution canvas and the use case toolkit, and
+the step-2 persona picker shows the SkillAIbility use cases mapped to the selected worker groups.
 
 ## The human-centric workforce canvas
 
@@ -38,6 +47,16 @@ from the step-1 lists, with the codes step 1 assigned to the selected personas r
 as suggestions. Free-text boxes for challenge, pain points, goals, UVP, risks, KPIs, skills and
 action plan complete the canvas. One **Submit** sends both steps together. **Reset** returns to
 the baseline; the baseline lives in `DIMENSIONS` at the top of the script in `inclusion.html`.
+
+## The use case matching toolkit (`usecases.html`)
+
+Built from the *SkillAIbility high-level mapping of use cases across target groups and pathways*
+(all 19 use cases with technology, NACE sector and target-group × pathway placements are embedded
+in `usecases-data.js`). Participants choose their **institute** (CHALMERS, NTNU, LMS, MADE,
+TKNIKA) and see only that institute's use cases. For each one they tick which **TA / TE / OR
+requirements** from the assessment matrix the use case addresses – the lists load live from the
+matrix draft in the same browser – then judge whether the lists are **sufficient** for the use
+case (yes / partly / no) and note what is missing.
 
 ## Facilitator setup (≈3 minutes, one time)
 
@@ -104,6 +123,7 @@ The script creates four tabs in the sheet:
 | `Assessment` | One row per assessment submission: metadata, selected personas, all step-2 canvas fields, the three solution layers (codes + free text), one column per matrix cell (`TE:aging:inclusion` = "TE8", …), one note column per cell, and the code definitions as JSON |
 | `Assessment_cells` | Long format, one row per code entry – `source` says whether it came from the step-1 matrix (with worker group × outcome) or the step-2 solution layers. Pivot this for frequency analysis |
 | `Assessment_codes` | Code definitions as each group left them – shows renamed / newly added codes |
+| `UseCases` | One row per (submission, use case): institute, linked TA/TE/OR codes, sufficiency verdict (`yes`/`partly`/`no`) and the missing-items note |
 
 Metadata on every row: `submission_id`, `company`, `participants`, `date`, `received_at`.
 
@@ -122,9 +142,11 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 
 | File | Purpose |
 |---|---|
-| `index.html` | Solution canvas – single self-contained page, no build step, no dependencies |
-| `inclusion.html` | Inclusion matrix – same, with the research baseline embedded |
-| `config.js` | One setting: the Google Apps Script URL both pages submit to |
+| `index.html` | Human-centric workforce canvas – single self-contained page, no build step, no dependencies |
+| `inclusion.html` | Assessment matrix (two steps) – same, with the research baseline embedded |
+| `usecases.html` | Use case matching toolkit |
+| `usecases-data.js` | The 19 use cases, partners, NACE codes and mapping placements |
+| `config.js` | One setting: the Google Apps Script URL all pages submit to |
 | `apps-script/Code.gs` | Google Apps Script that writes submissions to the Google Sheet |
 | `canvas-original.png` | The original static canvas the interactive version is based on |
 
