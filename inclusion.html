@@ -83,7 +83,8 @@
   .panel[data-dim=TA]{border-color:var(--blue-b)} .panel[data-dim=TE]{border-color:var(--green-b)} .panel[data-dim=OR]{border-color:var(--yellow-b)}
   .panel .chars{border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px;line-height:1.5}
   .panel[data-dim=TA] .chars{background:var(--blue)} .panel[data-dim=TE] .chars{background:var(--green)} .panel[data-dim=OR] .chars{background:var(--yellow)}
-  .panel .chars h3{margin:0 0 6px;font-size:16px;font-weight:600}
+  .panel .chars h3{margin:0 0 3px;font-size:16px;font-weight:600}
+  .panel .chars .def{margin:0 0 8px;font-style:italic;font-size:13.5px;color:var(--muted)}
   .panel .chars ul{margin:0;padding-left:18px}
   .panel .chars li{margin:2px 0}
   .panel .chars .ref{font-size:12px;opacity:.7}
@@ -413,6 +414,7 @@ const DIMENSIONS = [
     id:"TA", n:"1", name:"Task requirements", short:"Task", layer:"Task layer",
     layerHint:"Which task requirements does your solution build on?",
     charsTitle:"Task characteristics",
+    charsDef:"The nature of the task and its characteristics that influence how a worker can perform it.",
     chars:[
       "<b>Demand taxonomy:</b> core demands (physical / cognitive / sensing) set task feasibility; contextual demands (leadership, training, social inclusion) decide sustainability of inclusion. <span class='ref'>(SPS 2026)</span>",
       "Task allocation and redistributed-workload evidence from interviews; empowerment and performance perspective. <span class='ref'>[1]</span>",
@@ -432,6 +434,7 @@ const DIMENSIONS = [
     id:"TE", n:"2", name:"Technology requirements", short:"Technology", layer:"Technology layer",
     layerHint:"Which technology requirements does your solution implement?",
     charsTitle:"Technology characteristics",
+    charsDef:"The features and functionality of the technology, equipment, and tools that influence how a worker can perform the task.",
     chars:[
       "<b>Human–AI collaboration principles:</b> trust, autonomy, usability for shared tasks. <span class='ref'>(APMS 2026)</span>",
       "Conditional trust, reliability and honest expectations as fit conditions for adoption. <span class='ref'>[1]</span>",
@@ -461,6 +464,7 @@ const DIMENSIONS = [
     id:"OR", n:"3", name:"Organisation conditions", short:"Organisation", layer:"Organisational conditions layer",
     layerHint:"Which organisational conditions does your solution require?",
     charsTitle:"Work organisation conditions",
+    charsDef:"The way work is structured, coordinated, and supported that influences how a worker can perform the task.",
     chars:[
       "Operator involvement through the whole AI development and implementation process. <span class='ref'>[1]</span>",
       "<b>Social environment and learning by doing:</b> protecting social learning, problem-solving and knowledge sharing. <span class='ref'>[1]</span>",
@@ -538,7 +542,7 @@ function renderAll(){
 function renderPanel(d){
   const st=state.dims[d.id];
   const p=document.createElement("section"); p.className="panel"+(d.id===activeDim?" active":""); p.dataset.dim=d.id;
-  p.innerHTML=`<div class="chars"><h3>${d.charsTitle}</h3><ul>${d.chars.map(c=>`<li>${c}</li>`).join("")}</ul></div>
+  p.innerHTML=`<div class="chars"><h3>${d.charsTitle}</h3><p class="def">${d.charsDef}</p><ul>${d.chars.map(c=>`<li>${c}</li>`).join("")}</ul></div>
     <div class="layout"><div class="matrix-wrap"></div><aside></aside></div>`;
   const fullP=expandedPanels.has(d.id);
   const mh=document.createElement("div"); mh.className="matrix-head";
