@@ -104,6 +104,12 @@
   td.cell.selected{outline:3px solid var(--navy);outline-offset:-1px}
   .chips{display:flex;flex-wrap:wrap;gap:4px}
   .chip{font-size:12px;font-weight:600;padding:3px 7px;border-radius:999px;color:#fff;white-space:nowrap}
+  table.matrix.fullcodes .chips{flex-direction:column;align-items:stretch}
+  table.matrix.fullcodes .chip{white-space:normal;border-radius:9px;text-align:left;font-weight:500;font-size:11.5px;line-height:1.3;padding:4px 8px}
+  table.matrix.fullcodes .chip b{font-weight:700;margin-right:4px}
+  table.matrix.fullcodes td.cell{height:auto;min-height:74px}
+  .matrix-head{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+  .matrix-head span{font-size:13px;font-weight:600;color:var(--muted)}
   .chip.TA{background:var(--blue-d)} .chip.TE{background:var(--green-d)} .chip.OR{background:var(--yellow-d)}
   .chip.freq::after{content:"★";margin-left:3px;font-size:10px}
   td.cell .note-ind{position:absolute;right:6px;bottom:4px;font-size:11px;opacity:.55}
@@ -116,6 +122,10 @@
   .side h4{margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
   .side .hint{font-size:13px;color:var(--muted);margin:0 0 8px;line-height:1.4}
   .code-list{display:flex;flex-direction:column;gap:5px;max-height:52vh;overflow:auto;padding-right:4px}
+  .code-list.full{max-height:none}
+  .code textarea.lbl{flex:1;border:0;border-bottom:1px dashed #bbb;background:transparent;font:inherit;font-size:13px;line-height:1.35;padding:1px 2px;outline:none;color:var(--ink);min-width:0;resize:none;overflow:hidden}
+  .code textarea.lbl:focus{border-bottom:1.5px solid var(--navy)}
+  .code textarea.lbl::placeholder{color:#aab}
   .code{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:8px;background:#fff;border:1.5px solid #e3e6ec;font-size:13px;line-height:1.3}
   .code.editing{cursor:default}
   .code.pick{cursor:pointer}
@@ -479,6 +489,8 @@ const CANVAS_KEYS = ["challenge","persona_notes","pain_points","goals","uvp","ri
    state2 (step 2): { personas:[ids], fields:{key:text}, sol:{ TA:{codes:[],text:""}, ... } } */
 let state = null, state2 = null;
 const expandedLayers = new Set();   // dims whose step-2 code list shows full descriptions
+const expandedPanels = new Set();   // dims whose step-1 matrix cells show full descriptions
+const expandedLegends = new Set();  // dims whose step-1 legend shows wrapped full text
 let activeDim = "TA";
 let selected = null;
 let step = 1;
@@ -528,7 +540,15 @@ function renderPanel(d){
   const p=document.createElement("section"); p.className="panel"+(d.id===activeDim?" active":""); p.dataset.dim=d.id;
   p.innerHTML=`<div class="chars"><h3>${d.charsTitle}</h3><ul>${d.chars.map(c=>`<li>${c}</li>`).join("")}</ul></div>
     <div class="layout"><div class="matrix-wrap"></div><aside></aside></div>`;
-  const t=document.createElement("table"); t.className="matrix";
+  const fullP=expandedPanels.has(d.id);
+  const mh=document.createElement("div"); mh.className="matrix-head";
+  mh.innerHTML=`<span>Matrix</span>`;
+  const mb=document.createElement("button"); mb.className="expand-btn"; mb.textContent=fullP?"▲ Compact codes":"▼ Expand codes";
+  mb.title=fullP?"Show code ids only in the cells":"Show the full text of every code inside the cells";
+  mb.onclick=()=>{ fullP?expandedPanels.delete(d.id):expandedPanels.add(d.id); renderAll(); };
+  mh.appendChild(mb);
+  p.querySelector(".matrix-wrap").appendChild(mh);
+  const t=document.createElement("table"); t.className="matrix"+(fullP?" fullcodes":"");
   t.innerHTML=`<thead><tr><th class="corner"></th>${OUTCOMES.map(o=>`<th>${o.name}</th>`).join("")}</tr></thead>`;
   const tb=document.createElement("tbody");
   GROUPS.forEach(g=>{
@@ -548,25 +568,34 @@ function renderPanel(d){
   p.querySelector("aside").appendChild(renderSide(d));
   return p;
 }
-function chipHTML(dim,id){ const c=state.dims[dim].codes.find(x=>x.id===id); return `<span class="chip ${dim}${c&&c.freq?" freq":""}" title="${c?esc(c.label):""}">${id}</span>`; }
+function chipHTML(dim,id){ const c=state.dims[dim].codes.find(x=>x.id===id); const full=expandedPanels.has(dim);
+  const body=full?`<b>${id}</b>${esc(c&&c.label||"")}`:id;
+  return `<span class="chip ${dim}${c&&c.freq?" freq":""}" title="${c?esc(c.label):""}">${body}</span>`; }
 function esc(s){ return String(s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
 
 function renderSide(d){
   const st=state.dims[d.id]; const wrap=document.createElement("div");
   const box=document.createElement("div"); box.className="side";
+  const fullL=expandedLegends.has(d.id);
   if(selected){
     const [gid,oid]=selected.split(":"); const g=GROUPS.find(x=>x.id===gid), o=OUTCOMES.find(x=>x.id===oid);
     box.innerHTML=`<h4>Editing cell</h4><p class="sel-title">${g.name} <span>×</span> ${o.name}</p><p class="hint">Tick the ${d.short.toLowerCase()} requirements that apply. Edit a code's description directly in the list.</p>`;
   } else {
     box.innerHTML=`<h4>${d.id}: ${d.name}</h4><p class="hint">Click a cell in the matrix to assign codes. You can rename codes here and mark frequent ones with ★.</p>`;
   }
-  const list=document.createElement("div"); list.className="code-list";
+  const lb=document.createElement("button"); lb.className="expand-btn"; lb.style.margin="0 0 8px"; lb.textContent=fullL?"▲ Compact list":"▼ Expand list";
+  lb.title=fullL?"Back to the compact list":"Show the full text of every code";
+  lb.onclick=()=>{ fullL?expandedLegends.delete(d.id):expandedLegends.add(d.id); renderAll(); };
+  box.appendChild(lb);
+  const list=document.createElement("div"); list.className="code-list"+(fullL?" full":"");
   st.codes.forEach(c=>{
     const on=selected && (st.cells[selected]||[]).includes(c.id);
     const row=document.createElement("div"); row.className="code "+(selected?"pick":"editing")+(on?" on":"");
-    row.innerHTML=`${selected?`<span class="check">${on?"☑":"☐"}</span>`:""}<span class="id ${d.id}">${c.id}</span><input class="lbl" value="${esc(c.label)}" placeholder="describe this requirement…"><span class="star${c.freq?" on":""}" title="Frequent requirement">★</span>`;
+    const lblField=fullL?`<textarea class="lbl" rows="${Math.max(1,Math.ceil((c.label||"").length/30))}" placeholder="describe this requirement…">${esc(c.label)}</textarea>`
+                        :`<input class="lbl" value="${esc(c.label)}" placeholder="describe this requirement…">`;
+    row.innerHTML=`${selected?`<span class="check">${on?"☑":"☐"}</span>`:""}<span class="id ${d.id}">${c.id}</span>${lblField}<span class="star${c.freq?" on":""}" title="Frequent requirement">★</span>`;
     const inp=row.querySelector(".lbl");
-    inp.addEventListener("input",()=>{ c.label=inp.value; scheduleSave(); });
+    inp.addEventListener("input",()=>{ c.label=inp.value; if(inp.tagName==="TEXTAREA"){ inp.style.height="auto"; inp.style.height=inp.scrollHeight+"px"; } scheduleSave(); });
     inp.addEventListener("click",e=>e.stopPropagation());
     row.querySelector(".star").onclick=e=>{ e.stopPropagation(); c.freq=!c.freq; scheduleSave(); renderAll(); };
     if(selected) row.onclick=()=>{ const arr=st.cells[selected]||(st.cells[selected]=[]); const i=arr.indexOf(c.id); i>=0?arr.splice(i,1):arr.push(c.id); arr.sort((a,b)=>parseInt(a.replace(/\D/g,""))-parseInt(b.replace(/\D/g,""))); scheduleSave(); renderAll(); };
