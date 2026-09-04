@@ -84,7 +84,7 @@
   .panel .chars{border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px;line-height:1.5}
   .panel[data-dim=TA] .chars{background:var(--blue)} .panel[data-dim=TE] .chars{background:var(--green)} .panel[data-dim=OR] .chars{background:var(--yellow)}
   .panel .chars h3{margin:0 0 3px;font-size:16px;font-weight:600}
-  .panel .chars .def{margin:0 0 8px;font-style:italic;font-size:13.5px;color:var(--muted)}
+  .panel .chars .def{margin:0;font-style:italic;font-size:14px;color:var(--muted)}
   .panel .chars ul{margin:0;padding-left:18px}
   .panel .chars li{margin:2px 0}
   .panel .chars .ref{font-size:12px;opacity:.7}
@@ -542,7 +542,7 @@ function renderAll(){
 function renderPanel(d){
   const st=state.dims[d.id];
   const p=document.createElement("section"); p.className="panel"+(d.id===activeDim?" active":""); p.dataset.dim=d.id;
-  p.innerHTML=`<div class="chars"><h3>${d.charsTitle}</h3><p class="def">${d.charsDef}</p><ul>${d.chars.map(c=>`<li>${c}</li>`).join("")}</ul></div>
+  p.innerHTML=`<div class="chars"><h3>${d.charsTitle}</h3><p class="def">${d.charsDef}</p></div>
     <div class="layout"><div class="matrix-wrap"></div><aside></aside></div>`;
   const fullP=expandedPanels.has(d.id);
   const mh=document.createElement("div"); mh.className="matrix-head";
