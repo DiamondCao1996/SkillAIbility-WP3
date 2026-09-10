@@ -35,7 +35,8 @@ Choosing a version reveals its numbered steps (each with its instructions and es
 **Open** button) and asks for the group's **Company, Participants and Date once** — these are stored
 in the browser (`wp3_session`) and carried into every tool, so they are never re-entered; the tools
 hide their own company/participants/date fields and fill them from the session (a tool opened
-directly without a session still shows them). A company is required before a step can be launched.
+directly without a session still shows them). All three are optional — if the company is left blank
+the tool simply keeps its own company/participants/date fields visible so they can be filled there.
 
 Opening a step launches the tool with `?flow=<version>&step=<n>`; the tool then shows a guided flow
 bar (`Step X of Y`, progress dots, the company, **⌂ Start**, **Next →**). Pressing **Next** first
@@ -203,9 +204,9 @@ email problems never block a submission. (Google's quota is ~100 emails/day for 
 
 * Share the **start-page URL** (or a QR code) with each group; one device per group is enough. The
   group picks the **Industrial** or **Professional** pathway and is then guided step by step.
-* After picking a pathway the group enters **Company** (required), **Participants** and **Date**
-  once on the start page; these carry into every tool automatically. Participants from one company
-  count as one group, and re-submissions are told apart by `received_at`.
+* After picking a pathway the group enters **Company**, **Participants** and **Date** once on the
+  start page; these carry into every tool automatically. Participants from one company count as one
+  group, and re-submissions are told apart by `received_at`.
 * The pathway sets the order automatically: Industrial = canvas → solution canvas; Professional =
   use case matching → canvas → matrix → solution canvas. Each step opens with its instructions and an
   estimated time.

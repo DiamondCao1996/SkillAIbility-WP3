@@ -108,7 +108,7 @@
       <h3>Your group</h3>
       <p>Fill this in once — it carries across every step, so you won't be asked again on each tool.</p>
       <div class="sfields">
-        <label>Company / organisation <span class="req">*</span><input id="sCompany" placeholder="e.g. Volvo" autocomplete="off"></label>
+        <label>Company / organisation<input id="sCompany" placeholder="e.g. Volvo" autocomplete="off"></label>
         <label>Participants<input id="sPeople" placeholder="names or roles" autocomplete="off"></label>
         <label>Date<input id="sDate" type="date"></label>
       </div>
@@ -133,21 +133,8 @@
   /* ---- group details, asked once here and shared with every tool ---- */
   var SESSION_KEY = "wp3_session";
   function val(id){ var el=document.getElementById(id); return el ? el.value.trim() : ""; }
-  function companyOk(){ return !!val("sCompany"); }
   function saveSession(){
     try{ localStorage.setItem(SESSION_KEY, JSON.stringify({ company:val("sCompany"), participants:val("sPeople"), date:val("sDate") })); }catch(e){}
-    updateGate();
-  }
-  function updateGate(){
-    var ok = companyOk();
-    var start = document.getElementById("dStart"); if(start) start.classList.toggle("disabled", !ok);
-    document.querySelectorAll(".step-open").forEach(function(a){ a.classList.toggle("disabled", !ok); });
-  }
-  function needCompany(){
-    var c = document.getElementById("sCompany"); if(!c) return;
-    c.classList.add("need"); c.focus();
-    var s = document.querySelector(".session"); if(s) s.scrollIntoView({behavior:"smooth", block:"center"});
-    setTimeout(function(){ c.classList.remove("need"); }, 1600);
   }
 
   function renderCards(){
@@ -194,7 +181,6 @@
     start.textContent = "Start with step 1: " + f.steps[0].name + " →";
     document.getElementById("detail").classList.add("show");
     try{ localStorage.setItem("wp3_flow", id); }catch(e){}
-    updateGate();
     document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"start"});
   }
 
@@ -214,12 +200,6 @@
     saveSession(); // persist the default date
     ["sCompany","sPeople","sDate"].forEach(function(id){ document.getElementById(id).addEventListener("input", saveSession); });
   })();
-
-  // block launching a step until a company is given
-  document.addEventListener("click", function(e){
-    var a = e.target.closest ? e.target.closest("#dStart, .step-open") : null;
-    if(a && !companyOk()){ e.preventDefault(); needCompany(); }
-  });
 
   renderCards();
   // restore last choice (without auto-scrolling jarringly)
