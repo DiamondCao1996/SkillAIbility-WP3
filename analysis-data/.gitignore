@@ -1,0 +1,9 @@
+# Keep collected workshop workbooks local only — they contain participant/company
+# data and this repo is public. The folder stays tracked (via README + this file);
+# the data files do not get committed.
+*.xlsx
+*.xls
+*.csv
+*.json
+!.gitignore
+!README.md
