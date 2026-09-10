@@ -52,7 +52,6 @@
     grid-template-columns:1fr 1fr 1fr 2fr 1.2fr;
     grid-template-rows:auto auto auto;
     grid-template-areas:
-      "pathways pathways pathways pathways pathways"
       "challenge persona solution risks action"
       "pain pain solution kpis action"
       "goals goals uvp skills action";
@@ -75,23 +74,9 @@
   .box.filled{box-shadow:0 0 0 3px rgba(11,27,63,.08) inset}
   .box .count{position:absolute;right:14px;top:12px;font-size:11px;opacity:.55}
 
-  #pathways{grid-area:pathways;min-height:0}
   #challenge{grid-area:challenge}#persona{grid-area:persona}#pain{grid-area:pain}#goals{grid-area:goals}
   #solution{grid-area:solution}#uvp{grid-area:uvp}#risks{grid-area:risks}#kpis{grid-area:kpis}#skills{grid-area:skills}#action{grid-area:action}
 
-  /* learning pathways box */
-  .box.violet{background:#e9e4fb;border-color:#a99bea}
-  .pw-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1}
-  @media (max-width:1000px){.pw-cards{grid-template-columns:1fr 1fr}}
-  @media (max-width:600px){.pw-cards{grid-template-columns:1fr}}
-  .pwc{border:2px solid rgba(11,27,63,.25);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.65);font-size:13px;line-height:1.4;color:var(--ink);cursor:pointer;user-select:none;display:flex;flex-direction:column;gap:3px}
-  .pwc:hover{border-color:var(--navy);background:#fff}
-  .pwc.on{background:var(--navy);border-color:var(--navy);color:#fff}
-  .pwc b{font-size:14.5px;display:flex;align-items:center;gap:7px}
-  .pwc b .pc{font-size:15px}
-  .pwc small{font-size:12px;opacity:.75;font-style:italic}
-  .pwc.on small,.pwc.on .def{opacity:.9}
-  .pwc .def{font-size:12.5px;margin-top:2px}
   /* persona picker (linked to the assessment matrix) */
   .link-hint{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 6px}
   .persona-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
@@ -141,7 +126,6 @@
   @media (max-width:1250px){
     .canvas{grid-template-columns:1fr 1fr 1fr;
       grid-template-areas:
-        "pathways pathways pathways"
         "challenge persona solution"
         "pain pain solution"
         "goals goals uvp"
@@ -152,7 +136,7 @@
   }
   @media (max-width:760px){
     .canvas{grid-template-columns:1fr;
-      grid-template-areas:"pathways" "challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
+      grid-template-areas:"challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
     .kpi-grid{grid-template-columns:1fr}
     header h1{font-size:17px}
   }
@@ -196,14 +180,6 @@
     <a href="usecases.html"><b>3 · Use case matching</b>Match your institute's use cases against the requirement lists and mark the gaps.</a>
   </div>
   <div class="canvas" id="canvas">
-
-    <section class="box violet" id="pathways">
-      <span class="step">0</span>
-      <h2>Learning pathways</h2>
-      <p class="q">Which learning pathway(s) does your solution aim for? Click to select – one or more.</p>
-      <p class="eg">The four SkillAIbility pathways are also the columns of the assessment matrix (tool 2) and the pathways of the use case mapping (tool 3).</p>
-      <div class="pw-cards" id="pathwayPick"></div>
-    </section>
 
     <section class="box blue" id="challenge">
       <span class="step">1</span>
@@ -337,14 +313,6 @@ const PERSONA_GROUPS = [
   { id:"cognitive", name:"Workers with cognitive support needs" },
 ];
 let personas = [];
-let pathways = [];
-function renderPathways(){
-  const pick=$("#pathwayPick"); pick.innerHTML="";
-  PATHWAYS.forEach(p=>{ const on=pathways.includes(p.id); const c=document.createElement("div"); c.className="pwc"+(on?" on":"");
-    c.innerHTML=`<b><span class="pc">${on?"☑":"☐"}</span>${p.name}</b><small>${p.short}</small><span class="def">${p.def}</span>`;
-    c.onclick=()=>{ const i=pathways.indexOf(p.id); i>=0?pathways.splice(i,1):pathways.push(p.id); scheduleSave(); renderPathways(); }; pick.appendChild(c); });
-  const box=$("#pathways"); if(box) box.classList.toggle("filled", pathways.length>0);
-}
 /* live mirror: pull the shared fields back from the assessment matrix's step 2 when it changes */
 const SHARED_KEYS=["challenge","persona","pain_points","goals","uvp","risks","kpi_social","kpi_technical","kpi_operational","kpi_economic","skills","action_plan","solution_task","solution_technology","solution_organisation"];
 function pullFromMatrix(){
@@ -356,13 +324,12 @@ function pullFromMatrix(){
   Object.keys(map).forEach(k=>{ const v=(m.canvas.fields||{})[map[k]]; const el=$(`textarea[data-key=${k}]`); if(typeof v==="string"&&el&&el.value!==v){ el.value=v; changed=true; } });
   Object.keys(sol).forEach(k=>{ const v=((m.canvas.sol||{})[sol[k]]||{}).text; const el=$(`textarea[data-key=${k}]`); if(typeof v==="string"&&el&&el.value!==v){ el.value=v; changed=true; } });
   if(Array.isArray(m.canvas.personas)){ const np=m.canvas.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)); if(JSON.stringify(np)!==JSON.stringify(personas)){ personas=np; changed=true; } }
-  if(Array.isArray(m.canvas.pathways)){ const np=m.canvas.pathways.filter(p=>PATHWAYS.some(x=>x.id===p)); if(JSON.stringify(np)!==JSON.stringify(pathways)){ pathways=np; changed=true; } }
   if(m.company&&!$("#m_case").value){ $("#m_case").value=m.company; changed=true; }
   if(m.participants&&!$("#m_people").value){ $("#m_people").value=m.participants; changed=true; }
   return changed;
 }
 window.addEventListener("storage",e=>{
-  if(e.key===MATRIX_KEY && pullFromMatrix()){ renderPersonas(); renderPathways(); scheduleSave(); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); }
+  if(e.key===MATRIX_KEY && pullFromMatrix()){ renderPersonas(); scheduleSave(); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); }
   if(e.key===STORAGE_KEY && e.newValue){ try{ const d=JSON.parse(e.newValue); if(d.synced_from==="assessment"){ fill(d); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); } }catch(err){} }
 });
 function renderPersonas(){
@@ -400,7 +367,6 @@ function collect(){
   };
   fieldEls().forEach(t => d[t.dataset.key] = t.value.trim());
   d.personas = personas.slice();
-  d.pathways = pathways.slice();
   return d;
 }
 function getSubmissionId(){
@@ -415,8 +381,7 @@ function fill(d){
   // backwards compatibility with drafts that had a single solution box
   if(d.solution && !d.solution_technology) $("textarea[data-key=solution_technology]").value = d.solution;
   personas = Array.isArray(d.personas) ? d.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)) : [];
-  pathways = Array.isArray(d.pathways) ? d.pathways.filter(p=>PATHWAYS.some(x=>x.id===p)) : [];
-  renderPersonas(); renderPathways();
+  renderPersonas();
   refresh();
 }
 
@@ -426,7 +391,6 @@ function refresh(){
   let filled=0, total=fieldEls().length+1;
   fieldEls().forEach(t=>{ const box=t.closest(".box"); const has=t.value.trim().length>0; if(has) filled++; box.classList.toggle("filled", $$("textarea",box).some(x=>x.value.trim())); });
   if(personas.length){ filled++; $("#persona").classList.add("filled"); }
-  total++; if(pathways.length) filled++;
   $("#progress").textContent = `${filled} / ${total} fields filled`;
 }
 function scheduleSave(){
@@ -447,7 +411,7 @@ document.addEventListener("input", e=>{ if(e.target.matches("textarea,input")) s
   try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ fill(JSON.parse(raw)); restored=true; $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
   // interconnection: start from the assessment matrix draft on this device (personas + company) if this canvas is still empty
   if(!restored && pullFromMatrix()){ $("#status").textContent="Taken over from your assessment matrix"; setTimeout(scheduleSave,0); }
-  renderPersonas(); renderPathways();
+  renderPersonas();
   refresh();
   if(!SUBMIT_URL) $("#submitBtn").title="No backend configured – submit will download a JSON file instead";
 })();
