@@ -4,13 +4,39 @@ Three interconnected, browser-based workshop tools for SkillAIbility Work Packag
 work on any laptop or tablet; every submission lands in a Google Sheet owned by the facilitators and
 is emailed to the research team as an Excel file automatically.
 
+The toolkit opens on a **start page** where the group picks one of two guided pathways. Each pathway
+is an ordered sequence of the tools below, and **every step opens with short instructions and an
+estimated time** before the participant enters it (a "gate"), plus a flow bar inside each tool that
+carries the group to the next step.
+
+| Live page | |
+|---|---|
+| **Start page** (pathway chooser) | https://diamondcao1996.github.io/SkillAIbility-WP3/ |
+
 | # | Tool | Live page |
 |---|---|---|
-| 1 | **Human-centric workforce canvas** – open-ended discussion and brainstorming around a case | https://diamondcao1996.github.io/SkillAIbility-WP3/ |
+| 1 | **Human-centric workforce canvas** – open-ended discussion and brainstorming around a case | https://diamondcao1996.github.io/SkillAIbility-WP3/canvas.html |
 | 2 | **Assessment matrix** – organise the ideas into actionable requirement checklists (step 1), then design a linked solution (step 2) | https://diamondcao1996.github.io/SkillAIbility-WP3/inclusion.html |
 | 3 | **Use case matching toolkit** – match your institute's SkillAIbility use cases against the requirement lists and mark the gaps | https://diamondcao1996.github.io/SkillAIbility-WP3/usecases.html |
 
 Repository: https://github.com/DiamondCao1996/SkillAIbility-WP3
+
+## Two guided pathways
+
+The start page (`index.html`) offers two versions, defined in `flow.js`:
+
+* **Industrial version** *(for companies)* — **Workforce canvas → Solution canvas**. A light,
+  conversation-first path; the goal is to generate discussion and an action plan. ~40–60 min.
+* **Professional version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
+  matrix → Solution canvas**. The full analytical path from the project's real use cases through
+  formal requirement mapping to a grounded solution design. ~70–95 min.
+
+Choosing a version reveals its numbered steps, each with its instructions and estimated time and an
+**Open** button. Opening a step launches the tool with `?flow=<version>&step=<n>`; the tool then
+shows a guided flow bar (`Step X of Y`, progress dots, **⌂ Start**, **Next →**). Pressing **Next**
+first shows the next step's instructions + time, then continues. `inclusion.html` serves two steps —
+the matrix (step 1) and the solution canvas (step 2) — and the flow opens it on the right one.
+Opening any tool without flow parameters still works as a standalone page.
 
 ## How the tools fit together
 
@@ -64,7 +90,7 @@ dedicated **Learning pathways** box at the top of the assessment step-2 canvas (
 definitions as read-only cards, since the matrix columns already *are* the four pathways. The
 workforce canvas (tool 1) does not repeat them.
 
-## Tool 1 – Human-centric workforce canvas (`index.html`)
+## Tool 1 – Human-centric workforce canvas (`canvas.html`)
 
 The familiar canvas: Challenge → Persona → Pain points → Goals → Solution → Unique value
 proposition → Risks → KPIs (social / technical / operational / economic) → Skills → Action plan,
@@ -159,11 +185,13 @@ email problems never block a submission. (Google's quota is ~100 emails/day for 
 
 ## Running a workshop
 
-* Share the live URLs (or QR codes) with each group; one device per group is enough.
+* Share the **start-page URL** (or a QR code) with each group; one device per group is enough. The
+  group picks the **Industrial** or **Professional** pathway and is then guided step by step.
 * Ask each company's participants to fill in **Company** first – submit requires it; participants
   from one company count as one group, and re-submissions are told apart by `received_at`.
-* Suggested order: canvas (brainstorm) → matrix step 1 (checklists) → matrix step 2 (solution, opens
-  pre-filled from the canvas) → use case matching (institutes test the lists).
+* The pathway sets the order automatically: Industrial = canvas → solution canvas; Professional =
+  use case matching → canvas → matrix → solution canvas. Each step opens with its instructions and an
+  estimated time.
 * Groups can submit as often as they like. If Wi-Fi is unreliable, they can **Export** a JSON file
   and hand it in; you can **Import** it on your machine and submit from there.
 * Each browser keeps one draft per tool. **Clear** (canvas, toolkit) or **Reset** (matrix) starts
@@ -184,10 +212,13 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 
 ## Customising
 
-* **Canvas prompts / examples** – the text inside each `<section class="box">` in `index.html`.
+* **Pathways, step order, instructions & time estimates** – `FLOWS` in `flow.js` (each step has
+  `page`, optional `istep` for `inclusion.html`, `name`, `time`, `purpose` and `instr` bullets).
+* **Start-page text** – `index.html` (the welcome intro and the two version cards render from `flow.js`).
+* **Canvas prompts / examples** – the text inside each `<section class="box">` in `canvas.html`.
 * **Worker groups, outcomes, codes and the matrix baseline** – `GROUPS`, `OUTCOMES` and
   `DIMENSIONS` at the top of the script in `inclusion.html` (keep the group ids in sync with
-  `PERSONA_GROUPS` in `index.html`, `MATRIX_TO_UC_GROUP` in `usecases-data.js` and `GROUPS` in
+  `PERSONA_GROUPS` in `canvas.html`, `MATRIX_TO_UC_GROUP` in `usecases-data.js` and `GROUPS` in
   `Code.gs`).
 * **Use cases, partners, NACE codes, mapping** – `usecases-data.js`.
 * **Success-metrics framework** – the blocks, metrics and indicators in `metrics-data.js`
@@ -202,11 +233,13 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 
 | File | Purpose |
 |---|---|
-| `index.html` | Tool 1 – human-centric workforce canvas (single self-contained page, no build step) |
+| `index.html` | **Start page** – the pathway chooser (Industrial / Professional) with per-step instructions and times |
+| `flow.js` | The two guided pathways (`FLOWS`), the in-tool flow bar and the instruction/time gate; shared by the start page and every tool |
+| `canvas.html` | Tool 1 – human-centric workforce canvas (single self-contained page, no build step) |
 | `inclusion.html` | Tool 2 – assessment matrix, steps 1 and 2, with the research baseline embedded |
 | `usecases.html` | Tool 3 – use case matching toolkit |
 | `usecases-data.js` | The 19 use cases, partners, NACE codes, mapping placements and baseline code lists |
-| `metrics-data.js` | The *Success metrics to evaluate use cases* framework: blocks, metrics, indicators, how-to, appendix, references (used by the scoring sheet in `index.html`) |
+| `metrics-data.js` | The *Success metrics to evaluate use cases* framework: blocks, metrics, indicators, how-to, appendix, references (used by the scoring sheet in `canvas.html`) |
 | `config.js` | One setting: the Google Apps Script URL all tools submit to |
 | `apps-script/Code.gs` | Google Apps Script: writes submissions to the Sheet and emails the Excel workbook |
 | `canvas-original.png` | The original static canvas the workforce canvas is based on |

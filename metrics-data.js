@@ -6,7 +6,7 @@
  * (organisation / sector / policy). Participants rate each metric 1–5 for
  * relevance and star the 3–5 they will translate onto the workforce canvas.
  *
- * Shared by index.html (the scoring overlay opened from the KPIs box).
+ * Shared by canvas.html (the scoring overlay opened from the KPIs box).
  * Ids are stable – keep them if you re-order, they key the saved scores.
  */
 const METRICS_INTRO =
