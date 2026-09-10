@@ -59,9 +59,10 @@ pathways of the use case mapping, and the workforce canvas opens with their defi
 * **Empowerment** – technology helps the worker to grow and to decide: it builds skills, autonomy
   and confidence, and gives workers a say in how the technology and the work around it are shaped.
 
-The definitions live once in `usecases-data.js` (`PATHWAYS`). Groups tick which pathway(s) their
-solution aims for on the canvas; the choice is mirrored into the assessment step 2 and stored with
-both submissions.
+The definitions live once in `usecases-data.js` (`PATHWAYS`). Both canvases (tool 1 and the
+assessment step 2) open with a dedicated **Learning pathways** box: four selectable cards showing
+the definitions, where groups tick which pathway(s) their solution aims for. The choice is mirrored
+between the two canvases and stored with both submissions.
 
 ## Tool 1 – Human-centric workforce canvas (`index.html`)
 
@@ -71,8 +72,8 @@ with the original prompts and examples.
 
 * **Persona** is a picker over the five worker groups plus a free-text field for the specific
   persona's characteristics; the related use cases are listed underneath.
-* The canvas opens with the **four learning pathways** and a picker for the pathway(s) the
-  solution aims for.
+* A full-width **Learning pathways** box (step 0) at the top: the four pathway definitions as
+  selectable cards.
 * **Solution** has three free-text layers – task, technology, organisational conditions – the same
   template as the matrix's step 2, but deliberately without code lists: this tool is for open
   brainstorming.
@@ -95,8 +96,8 @@ Participants click a cell, tick / untick codes, add a note, rename codes, mark f
 add new codes. *Expand codes* shows the full text of every code inside the cells; *Expand list*
 shows the legend with full, editable descriptions.
 
-**Step 2 – linked solution canvas.** The canvas template, interconnected with step 1: the Persona
-picker is the matrix rows; the Solution box has three layers whose selectable codes come from the
+**Step 2 – linked solution canvas.** The canvas template, interconnected with step 1: the Learning
+pathways box selects the matrix columns; the Persona picker is the matrix rows; the Solution box has three layers whose selectable codes come from the
 step-1 lists, with the codes step 1 assigned to the selected personas ringed in yellow as
 suggestions (each list has an *Expand* toggle for full text). Free-text boxes for challenge, pain
 points, goals, UVP, risks, KPIs, skills and action plan complete the canvas. One **Submit** sends
