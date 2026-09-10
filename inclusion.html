@@ -152,18 +152,20 @@
   .freq-box b{display:block;margin-bottom:2px}
 
   /* ---------- step 2 canvas ---------- */
-  .canvas2{display:grid;gap:14px;
-    grid-template-columns:1fr 1fr 1.4fr 1.4fr 1fr;
-    grid-template-areas:
-      "pathways pathways pathways pathways pathways"
-      "challenge persona solution risks action"
-      "pain pain solution kpis action"
-      "goals goals solution kpis action"
-      "goals goals uvp skills action";
-  }
-  #c_pathways{grid-area:pathways;min-height:0}
-  #c_challenge{grid-area:challenge}#c_persona{grid-area:persona}#c_pain{grid-area:pain}#c_goals{grid-area:goals}
-  #c_solution{grid-area:solution}#c_uvp{grid-area:uvp}#c_risks{grid-area:risks}#c_kpis{grid-area:kpis}#c_skills{grid-area:skills}#c_action{grid-area:action}
+  /* boxes grouped by colour, one colour per row, worked top → down */
+  .canvas2{display:flex;flex-direction:column;gap:14px}
+  .crow{display:flex;gap:14px;flex-wrap:wrap;align-items:stretch}
+  .crow > .box{flex:1 1 230px}
+  #c_pathways{min-height:0}
+  #c_solution{flex:2.2 1 340px}
+  #c_kpis{flex:1.7 1 300px}
+  /* feedback row */
+  .box.feedback{background:#eae7f6;border-color:#b3a8e0}
+  .fb-rate{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 8px}
+  .fb-rate .fbb{border:1.5px solid rgba(11,27,63,.25);background:rgba(255,255,255,.7);border-radius:9px;padding:6px 13px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer}
+  .fb-rate .fbb:hover{border-color:var(--navy)}
+  .fb-rate .fbb.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .fb-scale{font-size:11.5px;color:var(--muted);font-style:italic;margin:-2px 0 8px}
   .box{border:2.5px solid;border-radius:var(--radius);padding:12px 16px 14px;display:flex;flex-direction:column;position:relative;min-height:150px}
   .box.blue{background:var(--blue);border-color:var(--blue-b)}
   .box.green{background:var(--green);border-color:var(--green-b)}
@@ -234,12 +236,8 @@
   .modal .btn-cancel{background:#e7e9ee;color:var(--ink)}
   .modal .btn-danger{background:#b3261e;color:#fff}
 
-  @media (max-width:1250px){
-    .canvas2{grid-template-columns:1fr 1fr;
-      grid-template-areas:"pathways pathways" "challenge persona" "pain pain" "goals goals" "solution solution" "uvp uvp" "risks kpis" "skills kpis" "action action"}
-  }
   @media (max-width:760px){
-    .canvas2{grid-template-columns:1fr;grid-template-areas:"pathways" "challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
+    .crow{flex-direction:column}          /* one box per line, still colour-grouped top → down */
     .kpi-grid{grid-template-columns:1fr}
     header h1{font-size:17px}
   }
@@ -309,12 +307,15 @@
     </div>
     <div class="canvas2">
 
+      <div class="crow" id="row-pathways">
       <section class="box violet" id="c_pathways">
         <span class="step">0</span><h2>Learning pathways</h2>
         <p class="q">The four SkillAIbility learning pathways – the columns of the step 1 matrix and the pathways of the use case mapping (tool 3). Aim your solution at one or more of them.</p>
         <div class="pw-cards ref" id="pathwayDefs"></div>
       </section>
+      </div>
 
+      <div class="crow" id="row-blue">
       <section class="box blue" id="c_challenge">
         <span class="step">1</span><h2>Challenge</h2>
         <p class="q">What is the main challenge in the process?</p>
@@ -341,7 +342,9 @@
         <p class="q">What stakeholder goals does the solution need to consider?</p>
         <textarea data-k2="goals" placeholder="List stakeholder goals…"></textarea>
       </section>
+      </div>
 
+      <div class="crow" id="row-green">
       <section class="box green" id="c_solution">
         <span class="step">2</span><h2>Solution</h2>
         <p class="q">Define your solution in three layers.</p>
@@ -355,7 +358,9 @@
         <p class="q">How does the solution address the goals and pain points?</p>
         <textarea data-k2="uvp" placeholder="What makes this solution valuable…"></textarea>
       </section>
+      </div>
 
+      <div class="crow" id="row-yellow">
       <section class="box yellow" id="c_risks">
         <span class="step">3</span><h2>Risks</h2>
         <p class="q">What risks could the proposed solution entail?</p>
@@ -378,12 +383,25 @@
         <p class="q">What skills will be needed?</p>
         <textarea data-k2="skills" placeholder="effective prompting, task allocation, leadership…"></textarea>
       </section>
+      </div>
 
+      <div class="crow" id="row-grey">
       <section class="box grey" id="c_action">
         <span class="step">4</span><h2>Action plan</h2>
         <p class="q">What actions are needed for successful implementation?</p>
         <textarea data-k2="action_plan" placeholder="time studies, workshops, training, pilot test…"></textarea>
       </section>
+      </div>
+
+      <div class="crow" id="row-feedback">
+      <section class="box feedback" id="c_feedback">
+        <span class="step">★</span><h2>Feedback on this canvas</h2>
+        <p class="q">How well did this solution canvas support your work? Help us improve its design.</p>
+        <div class="fb-rate" id="fbRate"></div>
+        <p class="fb-scale">1 = not useful · 5 = very useful</p>
+        <textarea data-k2="canvas_feedback" placeholder="What worked, what was confusing, and what would you change about the canvas layout or prompts?"></textarea>
+      </section>
+      </div>
 
     </div>
   </div>
@@ -500,7 +518,7 @@ const DIMENSIONS = [
   }
 ];
 
-const CANVAS_KEYS = ["challenge","persona_notes","pain_points","goals","uvp","risks","kpi_social","kpi_technical","kpi_operational","kpi_economic","skills","action_plan"];
+const CANVAS_KEYS = ["challenge","persona_notes","pain_points","goals","uvp","risks","kpi_social","kpi_technical","kpi_operational","kpi_economic","skills","action_plan","canvas_feedback"];
 
 /* state (step 1): { dims: { TA:{ codes, cells, notes } } }
    state2 (step 2): { personas:[ids], fields:{key:text}, sol:{ TA:{codes:[],text:""}, ... } } */
@@ -522,7 +540,7 @@ function freshState(){
 }
 function freshState2(){
   const fields={}; CANVAS_KEYS.forEach(k=>fields[k]="");
-  return { personas:[], fields, sol:{ TA:{codes:[],text:""}, TE:{codes:[],text:""}, OR:{codes:[],text:""} } };
+  return { personas:[], fields, fb_rating:0, sol:{ TA:{codes:[],text:""}, TE:{codes:[],text:""}, OR:{codes:[],text:""} } };
 }
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -698,8 +716,13 @@ function renderPathwayDefs(){
   PATHWAYS.forEach(p=>{ const c=document.createElement("div"); c.className="pwc";
     c.innerHTML=`<b>${p.name}</b><small>${p.short}</small><span class="def">${p.def}</span>`; h.appendChild(c); });
 }
+function renderFbRate(){
+  const h=$("#fbRate"); if(!h) return; h.innerHTML="";
+  for(let n=1;n<=5;n++){ const b=document.createElement("button"); b.type="button"; b.className="fbb"+(state2.fb_rating===n?" on":""); b.textContent=n;
+    b.onclick=()=>{ state2.fb_rating = state2.fb_rating===n?0:n; scheduleSave(); renderFbRate(); }; h.appendChild(b); }
+}
 function renderStep2(){
-  renderOutcomePills(); renderPathwayDefs();
+  renderOutcomePills(); renderPathwayDefs(); renderFbRate();
   const pl=$("#personaList"); pl.innerHTML="";
   GROUPS.forEach(g=>{
     const on=state2.personas.includes(g.id);
@@ -770,7 +793,7 @@ function collect(){
     company:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
     submitted_at:new Date().toISOString(), user_agent:navigator.userAgent,
     dims:state.dims,
-    canvas:{ personas:state2.personas, fields:state2.fields, sol:state2.sol }
+    canvas:{ personas:state2.personas, fields:state2.fields, sol:state2.sol, fb_rating:state2.fb_rating||0 }
   };
 }
 function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-ASM-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id);} return id; }
@@ -786,6 +809,7 @@ function load(d){
   const s2=freshState2();
   if(d.canvas){ if(Array.isArray(d.canvas.personas)) s2.personas=d.canvas.personas.filter(p=>GROUPS.some(g=>g.id===p));
     if(d.canvas.fields) CANVAS_KEYS.forEach(k=>{ if(typeof d.canvas.fields[k]==="string") s2.fields[k]=d.canvas.fields[k]; });
+    s2.fb_rating = Math.max(0, Math.min(5, +d.canvas.fb_rating || 0));
     if(d.canvas.sol) ["TA","TE","OR"].forEach(x=>{ const src=d.canvas.sol[x]; if(src){ if(Array.isArray(src.codes)) s2.sol[x].codes=src.codes; if(typeof src.text==="string") s2.sol[x].text=src.text; } }); }
   state2=s2;
 }

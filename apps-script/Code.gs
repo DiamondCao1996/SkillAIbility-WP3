@@ -23,7 +23,7 @@ var CANVAS_FIELDS = [
   "challenge", "personas", "pathways", "persona", "pain_points", "goals",
   "solution_task", "solution_technology", "solution_organisation", "uvp",
   "risks", "kpi_social", "kpi_technical", "kpi_operational", "kpi_economic", "skills",
-  "action_plan"
+  "action_plan", "canvas_rating", "canvas_feedback"
 ];
 
 // step-2 canvas of the assessment tool
@@ -115,6 +115,7 @@ function assessmentHeaders_() {
   var h = META.slice();
   h.push("personas", "pathways");
   STEP2_FIELDS.forEach(function (f) { h.push("canvas:" + f); });
+  h.push("canvas:feedback", "canvas:rating");
   DIMS.forEach(function (dim) { h.push("solution:" + dim + ":codes", "solution:" + dim + ":text"); });
   DIMS.forEach(function (dim) { GROUPS.forEach(function (g) { OUTCOMES.forEach(function (o) { h.push(dim + ":" + g + ":" + o); }); }); });
   DIMS.forEach(function (dim) { GROUPS.forEach(function (g) { OUTCOMES.forEach(function (o) { h.push("note:" + dim + ":" + g + ":" + o); }); }); });
@@ -131,6 +132,7 @@ function saveAssessment_(d) {
   row.push((canvas.personas || []).map(function (p) { return GROUP_NAMES[p] || p; }).join("; "));
   row.push((canvas.pathways || []).map(function (p) { return PATHWAY_NAMES[p] || p; }).join("; "));
   STEP2_FIELDS.forEach(function (f) { row.push(str_(fields[f])); });
+  row.push(str_(fields.canvas_feedback), (Number(canvas.fb_rating) || ""));
   DIMS.forEach(function (dim) {
     var s = sol[dim] || {};
     row.push((s.codes || []).join(", "), str_(s.text));
@@ -247,6 +249,8 @@ function summaryHtml_(d) {
       tr(label, [(s.codes || []).join(", "), s.text].filter(Boolean).join(" | "));
     });
     tr("UVP", f.uvp); tr("Risks", f.risks); tr("Skills", f.skills); tr("Action plan", f.action_plan);
+    if (c.fb_rating) tr("Canvas rating", c.fb_rating + " / 5");
+    tr("Canvas feedback", f.canvas_feedback);
     var counts = DIMS.map(function (dim) {
       var cells = (d.dims && d.dims[dim] && d.dims[dim].cells) || {};
       var n = 0; Object.keys(cells).forEach(function (k) { n += cells[k].length; });

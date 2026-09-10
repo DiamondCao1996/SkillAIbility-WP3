@@ -96,8 +96,15 @@ The familiar canvas: Challenge → Persona → Pain points → Goals → Solutio
 proposition → Risks → KPIs (social / technical / operational / economic) → Skills → Action plan,
 with the original prompts and examples.
 
+The boxes are laid out **one colour per row**, so a group works straight down the page: blue
+(challenge · persona · pain points · goals) → green (solution · UVP) → yellow (risks · KPIs · skills)
+→ grey (action plan) → a **Feedback** row.
+
 * **Persona** is a picker over the five worker groups plus a free-text field for the specific
   persona's characteristics; the related use cases are listed underneath.
+* **Feedback on this canvas** — a row at the very end where the group rates how well the canvas
+  supported them (1–5) and writes free-text feedback on its design. Stored with the submission
+  (`canvas_rating` / `canvas_feedback`).
 * **Solution** has three free-text layers – task, technology, organisational conditions – the same
   template as the matrix's step 2, but deliberately without code lists: this tool is for open
   brainstorming.
@@ -135,8 +142,10 @@ a read-only **Learning pathways** box recalling the four pathways (the matrix co
 picker is the matrix rows; the Solution box has three layers whose selectable codes come from the
 step-1 lists, with the codes step 1 assigned to the selected personas ringed in yellow as
 suggestions (each list has an *Expand* toggle for full text). Free-text boxes for challenge, pain
-points, goals, UVP, risks, KPIs, skills and action plan complete the canvas. One **Submit** sends
-both steps together. **Reset** returns to the baseline.
+points, goals, UVP, risks, KPIs, skills and action plan complete the canvas, laid out **one colour
+per row** like tool 1, ending in a **Feedback** row (rating + free text on the canvas design, stored
+as `canvas:rating` / `canvas:feedback`). One **Submit** sends both steps together. **Reset** returns
+to the baseline.
 
 ## Tool 3 – Use case matching toolkit (`usecases.html`)
 
@@ -201,8 +210,8 @@ email problems never block a submission. (Google's quota is ~100 emails/day for 
 
 | Tab | Content |
 |---|---|
-| `Canvas` | One row per workforce-canvas submission: metadata, personas, every canvas field, the three solution layers |
-| `Assessment` | One row per assessment submission: metadata, personas, all step-2 fields, the three solution layers (codes + text), one column per matrix cell (`TE:aging:inclusion` = "TE8", …), one note column per cell, and the code definitions as JSON |
+| `Canvas` | One row per workforce-canvas submission: metadata, personas, every canvas field, the three solution layers, and the canvas-design feedback (`canvas_rating` 1–5, `canvas_feedback`) |
+| `Assessment` | One row per assessment submission: metadata, personas, all step-2 fields, the three solution layers (codes + text), the canvas feedback (`canvas:rating` / `canvas:feedback`), one column per matrix cell (`TE:aging:inclusion` = "TE8", …), one note column per cell, and the code definitions as JSON |
 | `Assessment_cells` | Long format, one row per code entry – `source` says whether it came from the step-1 matrix (with worker group × outcome) or the step-2 solution layers. Pivot this for frequency analysis |
 | `Assessment_codes` | Code definitions as each group left them – shows renamed / newly added codes |
 | `UseCases` | One row per (submission, use case): institute, linked TA/TE/OR codes, sufficiency verdict (`yes` / `partly` / `no`) and the missing-items note |
