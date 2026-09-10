@@ -31,14 +31,18 @@ The start page (`index.html`) offers two versions, defined in `flow.js`:
   matrix → Solution canvas**. The full analytical path from the project's real use cases through
   formal requirement mapping to a grounded solution design. ~70–95 min.
 
-Choosing a version reveals its numbered steps, each with its instructions and estimated time and an
-**Open** button. Opening a step launches the tool with `?flow=<version>&step=<n>`; the tool then
-shows a guided flow bar (`Step X of Y`, progress dots, **⌂ Start**, **Next →**). Pressing **Next**
-first shows the next step's instructions + time, then continues. `inclusion.html` serves two steps —
-the matrix (step 1) and the solution canvas (step 2) — and the flow opens it on the right one
-straight away (no flash of the other step). While a flow is active the free-jump navigation is
-hidden — the cross-tool cards, the header tool switcher and the in-tool matrix/solution step
-buttons — so people follow the sequence via the flow bar instead of jumping to another canvas.
+Choosing a version reveals its numbered steps (each with its instructions and estimated time and an
+**Open** button) and asks for the group's **Company, Participants and Date once** — these are stored
+in the browser (`wp3_session`) and carried into every tool, so they are never re-entered; the tools
+hide their own company/participants/date fields and fill them from the session (a tool opened
+directly without a session still shows them). A company is required before a step can be launched.
+
+Opening a step launches the tool with `?flow=<version>&step=<n>`; the tool then shows a guided flow
+bar (`Step X of Y`, progress dots, the company, **⌂ Start**, **Next →**). Pressing **Next** first
+shows the next step's instructions + time, then continues. `inclusion.html` serves two steps — the
+matrix (step 1) and the solution canvas (step 2) — and the flow opens it on the right one straight
+away (no flash of the other step). There is **no cross-tool "1·2·3" navigation** any more: the flow
+bar (Start + Next) is the only way through a run, so nobody jumps to another canvas by accident.
 Opening any tool without flow parameters still works as a standalone page with all navigation shown.
 
 ## How the tools fit together
@@ -199,8 +203,9 @@ email problems never block a submission. (Google's quota is ~100 emails/day for 
 
 * Share the **start-page URL** (or a QR code) with each group; one device per group is enough. The
   group picks the **Industrial** or **Professional** pathway and is then guided step by step.
-* Ask each company's participants to fill in **Company** first – submit requires it; participants
-  from one company count as one group, and re-submissions are told apart by `received_at`.
+* After picking a pathway the group enters **Company** (required), **Participants** and **Date**
+  once on the start page; these carry into every tool automatically. Participants from one company
+  count as one group, and re-submissions are told apart by `received_at`.
 * The pathway sets the order automatically: Industrial = canvas → solution canvas; Professional =
   use case matching → canvas → matrix → solution canvas. Each step opens with its instructions and an
   estimated time.

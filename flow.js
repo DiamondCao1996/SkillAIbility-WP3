@@ -117,6 +117,19 @@ const WPFLOW = {
   }
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 
+  function readSession() { try { return JSON.parse(localStorage.getItem("wp3_session") || "{}") || {}; } catch (e) { return {}; } }
+
+  // The company / participants / date are asked once on the start page. Fill the
+  // tool's (hidden) meta inputs from that shared session so nobody re-enters them.
+  function applySession() {
+    var s = readSession();
+    var c = document.getElementById("m_case"), p = document.getElementById("m_people"), d = document.getElementById("m_date");
+    if (c && s.company) c.value = s.company;
+    if (p && typeof s.participants === "string" && s.participants) p.value = s.participants;
+    if (d && s.date) d.value = s.date;
+    if (s.company) { var meta = document.querySelector(".meta"); if (meta) meta.style.display = "none"; }
+  }
+
   function injectCss() {
     var css = ""
       + ".wpf-bar{position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:14px;flex-wrap:wrap;"
@@ -190,9 +203,11 @@ const WPFLOW = {
     var dots = f.steps.map(function (_, i) {
       return '<span class="d ' + (i === idx ? "on" : (i < idx ? "done" : "")) + '"></span>';
     }).join("");
+    var comp = readSession().company;
+    var compHtml = comp ? ' · 🏢 ' + esc(comp) : '';
     bar.innerHTML =
       '<a class="wpf-home" href="index.html" title="Back to the start page">⌂ Start</a>'
-      + '<div class="wpf-mid"><b>' + esc(f.name) + '</b> <span class="wpf-sub">· ' + esc(f.who) + ' · Step ' + stepNo + ' of ' + f.steps.length + ' — ' + esc(s.name) + '</span></div>'
+      + '<div class="wpf-mid"><b>' + esc(f.name) + '</b> <span class="wpf-sub">· ' + esc(f.who) + ' · Step ' + stepNo + ' of ' + f.steps.length + ' — ' + esc(s.name) + compHtml + '</span></div>'
       + '<div class="wpf-dots">' + dots + '</div>'
       + (idx > 0 ? '<button class="wpf-prev" type="button">‹ Prev</button>' : '')
       + (idx < f.steps.length - 1 ? '<button class="wpf-next" type="button">Next: ' + esc(f.steps[idx + 1].name) + ' →</button>'
@@ -209,6 +224,7 @@ const WPFLOW = {
   // own DOM and setStep() already exist). Setting the sub-step and hiding the
   // free-jump navigation before first paint avoids a confusing flash / stray jump.
   function boot() {
+    applySession();   // fill + hide the per-tool meta from the start-page session
     var q = qs();
     if (!(q.flow && FLOWS[q.flow] && q.step >= 1)) return;
     var f = FLOWS[q.flow], s = f.steps[q.step - 1];

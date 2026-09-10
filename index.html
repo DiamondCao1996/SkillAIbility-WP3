@@ -61,8 +61,19 @@
   .step .step-open{align-self:center}
   .start-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .start-row .btn-primary{font-size:15.5px;padding:13px 22px}
+  .btn.disabled{opacity:.5;cursor:not-allowed}
   .facil{margin-top:34px;font-size:12.5px;color:var(--muted);text-align:center}
   .facil a{color:#1a6fb0}
+  /* group details asked once, at the start */
+  .session{background:#fff;border:1px solid #dfe3ea;border-radius:16px;padding:16px 18px;margin:0 0 20px}
+  .session h3{margin:0 0 3px;font-size:16px}
+  .session p{margin:0 0 12px;font-size:13px;color:var(--muted)}
+  .sfields{display:flex;gap:14px;flex-wrap:wrap}
+  .sfields label{display:flex;flex-direction:column;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;flex:1 1 200px}
+  .sfields input{margin-top:5px;border:1.5px solid #cfd5e0;border-radius:9px;padding:9px 11px;font-size:14.5px;color:var(--ink);outline:none;font-weight:400;text-transform:none;letter-spacing:normal}
+  .sfields input:focus{border-color:var(--navy)}
+  .sfields input.need{border-color:#d9534f;background:#fff6f5}
+  .sfields .req{color:#d9534f}
 </style>
 </head>
 <body>
@@ -92,6 +103,17 @@
       <button class="btn btn-ghost" type="button" onclick="clearChoice()" style="margin-left:auto">↺ Choose a different pathway</button>
     </div>
     <p class="goal" id="dGoal"></p>
+
+    <div class="session">
+      <h3>Your group</h3>
+      <p>Fill this in once — it carries across every step, so you won't be asked again on each tool.</p>
+      <div class="sfields">
+        <label>Company / organisation <span class="req">*</span><input id="sCompany" placeholder="e.g. Volvo" autocomplete="off"></label>
+        <label>Participants<input id="sPeople" placeholder="names or roles" autocomplete="off"></label>
+        <label>Date<input id="sDate" type="date"></label>
+      </div>
+    </div>
+
     <div class="steps" id="dSteps"></div>
     <div class="start-row">
       <a class="btn btn-primary" id="dStart" href="#">Start with step 1 →</a>
@@ -107,6 +129,26 @@
 <script>
   var order = ["industrial", "professional"];
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+  /* ---- group details, asked once here and shared with every tool ---- */
+  var SESSION_KEY = "wp3_session";
+  function val(id){ var el=document.getElementById(id); return el ? el.value.trim() : ""; }
+  function companyOk(){ return !!val("sCompany"); }
+  function saveSession(){
+    try{ localStorage.setItem(SESSION_KEY, JSON.stringify({ company:val("sCompany"), participants:val("sPeople"), date:val("sDate") })); }catch(e){}
+    updateGate();
+  }
+  function updateGate(){
+    var ok = companyOk();
+    var start = document.getElementById("dStart"); if(start) start.classList.toggle("disabled", !ok);
+    document.querySelectorAll(".step-open").forEach(function(a){ a.classList.toggle("disabled", !ok); });
+  }
+  function needCompany(){
+    var c = document.getElementById("sCompany"); if(!c) return;
+    c.classList.add("need"); c.focus();
+    var s = document.querySelector(".session"); if(s) s.scrollIntoView({behavior:"smooth", block:"center"});
+    setTimeout(function(){ c.classList.remove("need"); }, 1600);
+  }
 
   function renderCards(){
     var host = document.getElementById("cards"); host.innerHTML = "";
@@ -152,6 +194,7 @@
     start.textContent = "Start with step 1: " + f.steps[0].name + " →";
     document.getElementById("detail").classList.add("show");
     try{ localStorage.setItem("wp3_flow", id); }catch(e){}
+    updateGate();
     document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"start"});
   }
 
@@ -161,6 +204,22 @@
     try{ localStorage.removeItem("wp3_flow"); }catch(e){}
     window.scrollTo({top:0, behavior:"smooth"});
   }
+
+  // prefill the group details from a previous visit; default the date to today
+  (function initSession(){
+    var s = {}; try{ s = JSON.parse(localStorage.getItem(SESSION_KEY)||"{}")||{}; }catch(e){}
+    document.getElementById("sCompany").value = s.company || "";
+    document.getElementById("sPeople").value = s.participants || "";
+    document.getElementById("sDate").value = s.date || new Date().toISOString().slice(0,10);
+    saveSession(); // persist the default date
+    ["sCompany","sPeople","sDate"].forEach(function(id){ document.getElementById(id).addEventListener("input", saveSession); });
+  })();
+
+  // block launching a step until a company is given
+  document.addEventListener("click", function(e){
+    var a = e.target.closest ? e.target.closest("#dStart, .step-open") : null;
+    if(a && !companyOk()){ e.preventDefault(); needCompany(); }
+  });
 
   renderCards();
   // restore last choice (without auto-scrolling jarringly)
