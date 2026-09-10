@@ -143,7 +143,11 @@ const WPFLOW = {
       + ".wpf-card .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}"
       + ".wpf-card .row button{border:0;border-radius:9px;padding:9px 15px;font:600 14px/1 'Segoe UI',system-ui,sans-serif;cursor:pointer}"
       + ".wpf-card .wpf-cancel{background:#e7e9ee;color:#0b1b3f}.wpf-card .wpf-go{background:#41c3ec;color:#0b1b3f}.wpf-card .wpf-go:hover{background:#6ad3f2}"
-      + "@media print{.wpf-bar,.wpf-ov{display:none !important}}";
+      + "@media print{.wpf-bar,.wpf-ov{display:none !important}}"
+      // during a guided flow the flow bar is the only navigation – hide the
+      // cross-tool jump links (toolstrip + header nav) and the in-tool step
+      // switcher so people follow the sequence instead of jumping away
+      + "body.wpf-flow .toolstrip,body.wpf-flow nav.pages,body.wpf-flow .steps{display:none !important}";
     var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
   }
 
@@ -180,11 +184,8 @@ const WPFLOW = {
     var f = FLOWS[flowId]; if (!f) return;
     var idx = stepNo - 1; if (idx < 0 || idx >= f.steps.length) return;
     var s = f.steps[idx];
+    if (document.querySelector(".wpf-bar")) return;   // already rendered
 
-    // if this tool page serves a sub-step (inclusion matrix vs solution), select it
-    if (s.istep && typeof window.setStep === "function") { try { window.setStep(s.istep); } catch (e) {} }
-
-    injectCss();
     var bar = document.createElement("div"); bar.className = "wpf-bar";
     var dots = f.steps.map(function (_, i) {
       return '<span class="d ' + (i === idx ? "on" : (i < idx ? "done" : "")) + '"></span>';
@@ -204,8 +205,20 @@ const WPFLOW = {
     if (next) next.onclick = function () { gate(flowId, idx + 1); };
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  // Run as early as possible (this script is at the end of <body>, so the tool's
+  // own DOM and setStep() already exist). Setting the sub-step and hiding the
+  // free-jump navigation before first paint avoids a confusing flash / stray jump.
+  function boot() {
     var q = qs();
-    if (q.flow && FLOWS[q.flow] && q.step >= 1) renderBar(q.flow, q.step);
-  });
+    if (!(q.flow && FLOWS[q.flow] && q.step >= 1)) return;
+    var f = FLOWS[q.flow], s = f.steps[q.step - 1];
+    if (!s) return;
+    injectCss();
+    document.body.classList.add("wpf-flow");   // hides .toolstrip / nav.pages / .steps (see injectCss)
+    // inclusion.html serves two sub-steps (matrix / solution) – open the right one straight away
+    if (s.istep && typeof window.setStep === "function") { try { window.setStep(s.istep); } catch (e) {} }
+    renderBar(q.flow, q.step);
+  }
+  if (document.body) boot();
+  else document.addEventListener("DOMContentLoaded", boot);
 })();

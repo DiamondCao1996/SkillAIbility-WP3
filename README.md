@@ -35,8 +35,11 @@ Choosing a version reveals its numbered steps, each with its instructions and es
 **Open** button. Opening a step launches the tool with `?flow=<version>&step=<n>`; the tool then
 shows a guided flow bar (`Step X of Y`, progress dots, **⌂ Start**, **Next →**). Pressing **Next**
 first shows the next step's instructions + time, then continues. `inclusion.html` serves two steps —
-the matrix (step 1) and the solution canvas (step 2) — and the flow opens it on the right one.
-Opening any tool without flow parameters still works as a standalone page.
+the matrix (step 1) and the solution canvas (step 2) — and the flow opens it on the right one
+straight away (no flash of the other step). While a flow is active the free-jump navigation is
+hidden — the cross-tool cards, the header tool switcher and the in-tool matrix/solution step
+buttons — so people follow the sequence via the flow bar instead of jumping to another canvas.
+Opening any tool without flow parameters still works as a standalone page with all navigation shown.
 
 ## How the tools fit together
 
