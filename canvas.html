@@ -194,9 +194,9 @@
   }
 
   /* ---------- responsive ---------- */
-  @media (max-width:1000px){ .box h2{font-size:21px} }
+  /* stack the colour rows into one clean column on phones & tablets (all widths ≤1000) */
+  @media (max-width:1000px){ .box h2{font-size:21px} .crow{flex-direction:column} }
   @media (max-width:760px){
-    .crow{flex-direction:column}          /* one box per line, still colour-grouped top → down */
     .kpi-grid{grid-template-columns:1fr}
     header h1{font-size:17px}
   }
