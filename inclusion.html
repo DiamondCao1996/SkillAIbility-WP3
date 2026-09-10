@@ -298,7 +298,7 @@
   <!-- ================= STEP 2 ================= -->
   <div class="stepview" id="step2">
     <div class="framing">
-      <h2>Step 2 · Solution canvas <button class="expand-btn" style="margin-left:10px;vertical-align:middle" onclick="importFromCanvas(false)" title="Copy the texts and personas from the workforce canvas (tool 1) into this step">↻ Import from workforce canvas</button></h2>
+      <h2>Step 2 · Solution canvas <button class="expand-btn" style="margin-left:10px;vertical-align:middle" onclick="importFromCanvas(false)" title="The personas, texts and solution layers are mirrored live with the workforce canvas (tool 1) – click to re-sync">↻ Sync with workforce canvas</button></h2>
       <p>Design the solution for your case. The <b>Persona</b> box links to the worker groups of step 1, and the three <b>Solution layers</b> (task · technology · organisation) draw on the requirement codes you mapped in the matrix – codes ringed in yellow are the ones step 1 assigned to your selected personas. Click codes to include them, and add free text for anything beyond the codes.</p>
     </div>
     <div class="canvas2">
@@ -515,23 +515,45 @@ function freshState2(){
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
-/* ---------- interconnection with the workforce canvas (tool 1) ---------- */
+/* ---------- live interconnection with the workforce canvas (tool 1) ----------
+   The shared fields (personas, texts, three solution layers) are ONE dataset:
+   canvas → step 2 and step 2 → canvas, mirrored on every change. */
+const SHARED_MAP={challenge:"challenge",persona:"persona_notes",pain_points:"pain_points",goals:"goals",uvp:"uvp",risks:"risks",kpi_social:"kpi_social",kpi_technical:"kpi_technical",kpi_operational:"kpi_operational",kpi_economic:"kpi_economic",skills:"skills",action_plan:"action_plan"};
+const SOL_MAP=[["solution_task","TA"],["solution_technology","TE"],["solution_organisation","OR"]];
 function canvasDraft(){ try{ return JSON.parse(localStorage.getItem(CANVAS_KEY)||"null"); }catch(e){ return null; } }
+function sharedSnapshot(){ const o={personas:state2.personas.slice()}; Object.keys(SHARED_MAP).forEach(k=>o[k]=state2.fields[SHARED_MAP[k]]||""); SOL_MAP.forEach(([k,d])=>o[k]=state2.sol[d].text||""); return o; }
 function step2IsEmpty(){ return !state2.personas.length && !CANVAS_KEYS.some(k=>(state2.fields[k]||"").trim()) && !["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim()); }
-function importFromCanvas(silent){
-  const c=canvasDraft(); if(!c){ if(!silent) toast("No workforce canvas draft found on this device","err"); return false; }
-  const map={challenge:"challenge",persona:"persona_notes",pain_points:"pain_points",goals:"goals",uvp:"uvp",risks:"risks",kpi_social:"kpi_social",kpi_technical:"kpi_technical",kpi_operational:"kpi_operational",kpi_economic:"kpi_economic",skills:"skills",action_plan:"action_plan"};
-  let n=0;
-  Object.keys(map).forEach(k=>{ if((c[k]||"").trim()){ state2.fields[map[k]]=c[k]; n++; } });
-  if(Array.isArray(c.personas)&&c.personas.length){ state2.personas=c.personas.filter(p=>GROUPS.some(g=>g.id===p)); n++; }
-  [["solution_task","TA"],["solution_technology","TE"],["solution_organisation","OR"]].forEach(([k,d])=>{ if((c[k]||"").trim()){ state2.sol[d].text=c[k]; n++; } });
-  if(c.solution&&!c.solution_technology){ state2.sol.TE.text=c.solution; n++; }
+/* canvas → step 2 (mirror; returns true if anything changed) */
+function syncFromCanvas(){
+  const c=canvasDraft(); if(!c) return false;
+  const before=JSON.stringify(sharedSnapshot());
+  Object.keys(SHARED_MAP).forEach(k=>{ if(typeof c[k]==="string") state2.fields[SHARED_MAP[k]]=c[k]; });
+  if(Array.isArray(c.personas)) state2.personas=c.personas.filter(p=>GROUPS.some(g=>g.id===p));
+  SOL_MAP.forEach(([k,d])=>{ if(typeof c[k]==="string") state2.sol[d].text=c[k]; });
+  if(c.solution&&!c.solution_technology) state2.sol.TE.text=c.solution;
   if(!$("#m_case").value&&c.company) $("#m_case").value=c.company;
   if(!$("#m_people").value&&c.participants) $("#m_people").value=c.participants;
-  if(n){ renderStep2(); scheduleSave(); if(!silent) toast(`Imported ${n} items from the workforce canvas`,"ok"); }
-  else if(!silent) toast("The workforce canvas draft is empty");
-  return n>0;
+  return JSON.stringify(sharedSnapshot())!==before;
 }
+/* step 2 → canvas (only writes when something differs, so open tabs never ping-pong) */
+function pushToCanvas(){
+  let c=canvasDraft();
+  if(!c){ if(step2IsEmpty()) return; c={form:"canvas",workshop:WORKSHOP_ID}; }
+  const snap=sharedSnapshot(); let changed=false;
+  Object.keys(snap).forEach(k=>{ const v=snap[k]; if(JSON.stringify(c[k]===undefined?(k==="personas"?[]:""):c[k])!==JSON.stringify(v)){ c[k]=v; changed=true; } });
+  const comp=$("#m_case").value.trim(), ppl=$("#m_people").value.trim();
+  if(comp&&c.company!==comp){ c.company=comp; changed=true; }
+  if(ppl&&c.participants!==ppl){ c.participants=ppl; changed=true; }
+  if(!c.date){ c.date=$("#m_date").value; changed=true; }
+  if(changed){ c.synced_from="assessment"; c.synced_at=new Date().toISOString(); try{ localStorage.setItem(CANVAS_KEY, JSON.stringify(c)); }catch(e){} }
+}
+function importFromCanvas(silent){
+  const c=canvasDraft(); if(!c){ if(!silent) toast("No workforce canvas draft found on this device","err"); return false; }
+  const changed=syncFromCanvas(); renderStep2(); if(changed) scheduleSave();
+  if(!silent) toast(changed?"Synced with the workforce canvas":"Already in sync with the workforce canvas","ok");
+  return true;
+}
+window.addEventListener("storage",e=>{ if(e.key===CANVAS_KEY && syncFromCanvas()){ renderStep2(); scheduleSave(); $("#status").textContent="Updated live from the workforce canvas · "+new Date().toLocaleTimeString(); } });
 
 /* =====================================================================
    STEP SWITCH
@@ -736,7 +758,7 @@ function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!
 function scheduleSave(){
   $("#dot").className="dot dirty"; $("#status").textContent="Unsaved changes…";
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(collect())); }catch(e){} $("#dot").className="dot saved"; $("#status").textContent="Draft saved locally · "+new Date().toLocaleTimeString(); },400);
+  saveTimer=setTimeout(()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(collect())); }catch(e){} pushToCanvas(); $("#dot").className="dot saved"; $("#status").textContent="Draft saved locally · synced with the workforce canvas · "+new Date().toLocaleTimeString(); },400);
   updateCounts();
 }
 function load(d){
@@ -752,7 +774,7 @@ function load(d){
 (function init(){
   state=freshState(); state2=freshState2(); $("#m_date").value=new Date().toISOString().slice(0,10);
   try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ load(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
-  if(step2IsEmpty() && importFromCanvas(true)) $("#status").textContent="Step 2 pre-filled from your workforce canvas";
+  if(canvasDraft() && syncFromCanvas()){ $("#status").textContent="Step 2 synced with your workforce canvas"; setTimeout(scheduleSave,0); }
   renderAll(); renderStep2();
 })();
 

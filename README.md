@@ -29,9 +29,11 @@ All three stay interconnected in the browser (same device, no login):
   the matrix, the persona picker in step 2, and the target groups of the use case mapping.
 * The **requirement code lists** (TA / TE / OR) live in the matrix. Codes a group renames or adds
   there appear immediately in the step-2 solution layers and in the use case toolkit.
-* The **assessment step 2 pre-fills itself from the workforce canvas** the first time it is opened
-  (personas and all texts), and has an *Import from workforce canvas* button. The canvas in turn
-  takes over personas and company from an existing matrix draft.
+* The **workforce canvas and the assessment step 2 are mirrored live, both ways**: personas, all
+  texts and the three solution layers are one shared dataset. Type on the canvas and it appears in
+  step 2 (instantly, even with both tabs open); edit in step 2 and it flows back to the canvas.
+  Step 2 keeps its own extras (the selected codes) on top. A *Sync with workforce canvas* button
+  re-syncs on demand.
 * Selecting personas on the canvas or in step 2 shows the **related SkillAIbility use cases**,
   colour-coded by partner.
 * **Company** and **Participants** carry across all three tools.
