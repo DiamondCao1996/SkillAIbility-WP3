@@ -77,6 +77,25 @@
   #challenge{grid-area:challenge}#persona{grid-area:persona}#pain{grid-area:pain}#goals{grid-area:goals}
   #solution{grid-area:solution}#uvp{grid-area:uvp}#risks{grid-area:risks}#kpis{grid-area:kpis}#skills{grid-area:skills}#action{grid-area:action}
 
+  /* persona picker (linked to the assessment matrix) */
+  .link-hint{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 6px}
+  .persona-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+  .pchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.6);border:1.5px solid rgba(11,27,63,.25);border-radius:10px;padding:7px 10px;cursor:pointer;font-size:13.5px;line-height:1.25;user-select:none}
+  .pchip:hover{border-color:var(--navy);background:#fff}
+  .pchip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .pchip .pc{font-size:15px;width:18px;text-align:center}
+  #persona textarea{flex:0 0 auto;min-height:56px}
+  .uc-strip{margin:0 0 8px}
+  .uc-strip h6{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .uc-strip .ucs{display:flex;flex-wrap:wrap;gap:4px}
+  .uc-strip .uctag{font-size:11px;font-weight:600;border-radius:999px;padding:2px 8px;color:var(--ink);cursor:help}
+  /* solution layers (free text, same template as the assessment step 2) */
+  .layer{border:1.5px solid rgba(11,27,63,.2);border-radius:12px;background:rgba(255,255,255,.6);padding:9px 11px;margin-bottom:9px;display:flex;flex-direction:column}
+  .layer h5{margin:0 0 2px;font-size:14px;display:flex;align-items:center;gap:7px}
+  .layer h5 .dotc{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .layer[data-dim=TA] .dotc{background:#1a8fb8} .layer[data-dim=TE] .dotc{background:#4f8f1c} .layer[data-dim=OR] .dotc{background:#a8860b}
+  .layer .lh{font-size:11.5px;color:var(--muted);margin:0 0 7px;font-style:italic}
+  .layer textarea{min-height:80px;font-size:13.5px}
   .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;flex:1}
   .kpi-grid label{display:flex;flex-direction:column;font-size:14px}
   .kpi-grid label b{text-decoration:underline;font-weight:600;margin-bottom:2px}
@@ -174,8 +193,10 @@
       <span class="step">1</span>
       <h2>Persona</h2>
       <p class="q">Who is working in this process? What characteristics do they have?</p>
-      <p class="eg">E.g. Low experience, Elderly, Deaf</p>
-      <textarea data-key="persona" placeholder="Describe the persona…"></textarea>
+      <p class="link-hint">↳ linked to the worker groups of the assessment matrix</p>
+      <div class="persona-list" id="personaList"></div>
+      <div class="uc-strip" id="ucStrip"></div>
+      <textarea data-key="persona" placeholder="Characteristics of your specific persona(s)… e.g. low experience, elderly, deaf"></textarea>
     </section>
 
     <section class="box blue" id="pain">
@@ -197,9 +218,14 @@
     <section class="box green" id="solution">
       <span class="step">2</span>
       <h2>Solution</h2>
-      <p class="q">What is your proposed solution to address the goals and pain points? Define the key elements making it the top tool</p>
+      <p class="q">What is your proposed solution to address the goals and pain points? Define the key elements making it the top tool – in three layers.</p>
       <p class="eg">E.g. AI assistant, Cobot, Virtual safety area</p>
-      <textarea data-key="solution" placeholder="Describe the proposed solution and its key elements…"></textarea>
+      <div class="layer" data-dim="TA"><h5><span class="dotc"></span>Task layer</h5><p class="lh">How does the task itself change?</p>
+        <textarea data-key="solution_task" placeholder="e.g. fewer complex motions, one motion at a time…"></textarea></div>
+      <div class="layer" data-dim="TE"><h5><span class="dotc"></span>Technology layer</h5><p class="lh">Which technology, equipment and tools?</p>
+        <textarea data-key="solution_technology" placeholder="e.g. AI assistant, cobot, AR instructions…"></textarea></div>
+      <div class="layer" data-dim="OR"><h5><span class="dotc"></span>Organisational conditions layer</h5><p class="lh">How is the work structured, coordinated and supported?</p>
+        <textarea data-key="solution_organisation" placeholder="e.g. continuous training, job rotation, expert contact…"></textarea></div>
     </section>
 
     <section class="box green" id="uvp">
@@ -266,6 +292,7 @@
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
 <script src="config.js"></script>
+<script src="usecases-data.js"></script>
 <script>
 /* SUBMIT_URL is defined in config.js */
 const WORKSHOP_ID = "WP3";         // tag stored with every submission
@@ -276,6 +303,37 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const metaIds = ["m_case","m_people","m_date"];
 const fieldEls = () => $$("textarea[data-key]");
+const MATRIX_KEY = "skillaibility_wp3_assessment_v2";
+/* worker groups – identical ids to the assessment matrix so the persona choice carries across tools */
+const PERSONA_GROUPS = [
+  { id:"novice",    name:"Novice and learning-vulnerable workers" },
+  { id:"deaf",      name:"Deaf and hard-of-hearing workers" },
+  { id:"aging",     name:"Aging workers" },
+  { id:"physical",  name:"Workers with physical support needs" },
+  { id:"cognitive", name:"Workers with cognitive support needs" },
+];
+let personas = [];
+function renderPersonas(){
+  const pl=$("#personaList"); pl.innerHTML="";
+  PERSONA_GROUPS.forEach(g=>{
+    const on=personas.includes(g.id);
+    const div=document.createElement("div"); div.className="pchip"+(on?" on":"");
+    div.innerHTML=`<span class="pc">${on?"☑":"☐"}</span>${g.name}`;
+    div.onclick=()=>{ const i=personas.indexOf(g.id); i>=0?personas.splice(i,1):personas.push(g.id); scheduleSave(); renderPersonas(); };
+    pl.appendChild(div);
+  });
+  renderUcStrip();
+}
+function renderUcStrip(){
+  const host=$("#ucStrip"); host.innerHTML=""; if(typeof USE_CASES==="undefined"||!personas.length) return;
+  const rows=new Set(personas.map(p=>MATRIX_TO_UC_GROUP[p]||p));
+  const matches=USE_CASES.filter(u=>u.map.some(m=>rows.has(m.split(":")[0])));
+  if(!matches.length) return;
+  host.innerHTML="<h6>Related SkillAIbility use cases (see tool 3)</h6>";
+  const box=document.createElement("div"); box.className="ucs";
+  matches.forEach(u=>{ const p=PARTNERS.find(x=>x.id===u.partner); const sp=document.createElement("span"); sp.className="uctag"; sp.style.background=p?p.color:"#eee"; sp.textContent=u.id; sp.title=u.name+" ("+(p?p.name:"")+")"; box.appendChild(sp); });
+  host.appendChild(box);
+}
 
 function collect(){
   const d = {
@@ -289,6 +347,7 @@ function collect(){
     user_agent: navigator.userAgent
   };
   fieldEls().forEach(t => d[t.dataset.key] = t.value.trim());
+  d.personas = personas.slice();
   return d;
 }
 function getSubmissionId(){
@@ -300,14 +359,19 @@ function fill(d){
   $("#m_case").value = d.company||d.use_case||"";
   $("#m_people").value = d.participants||""; $("#m_date").value = d.date||"";
   fieldEls().forEach(t => t.value = d[t.dataset.key]||"");
+  // backwards compatibility with drafts that had a single solution box
+  if(d.solution && !d.solution_technology) $("textarea[data-key=solution_technology]").value = d.solution;
+  personas = Array.isArray(d.personas) ? d.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)) : [];
+  renderPersonas();
   refresh();
 }
 
 /* ---------- autosave ---------- */
 let saveTimer;
 function refresh(){
-  let filled=0, total=fieldEls().length;
+  let filled=0, total=fieldEls().length+1;
   fieldEls().forEach(t=>{ const box=t.closest(".box"); const has=t.value.trim().length>0; if(has) filled++; box.classList.toggle("filled", $$("textarea",box).some(x=>x.value.trim())); });
+  if(personas.length){ filled++; $("#persona").classList.add("filled"); }
   $("#progress").textContent = `${filled} / ${total} fields filled`;
 }
 function scheduleSave(){
@@ -324,7 +388,14 @@ document.addEventListener("input", e=>{ if(e.target.matches("textarea,input")) s
 /* ---------- restore ---------- */
 (function init(){
   if(!$("#m_date").value) $("#m_date").value = new Date().toISOString().slice(0,10);
-  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ fill(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
+  let restored=false;
+  try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ fill(JSON.parse(raw)); restored=true; $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
+  // interconnection: start from the assessment matrix draft on this device (personas + company) if this canvas is still empty
+  if(!restored){ try{ const m=JSON.parse(localStorage.getItem(MATRIX_KEY)||"{}");
+    if(m.company&&!$("#m_case").value) $("#m_case").value=m.company; if(m.participants&&!$("#m_people").value) $("#m_people").value=m.participants;
+    if(m.canvas&&Array.isArray(m.canvas.personas)&&m.canvas.personas.length){ personas=m.canvas.personas.slice(); $("#status").textContent="Personas taken over from your assessment matrix"; }
+  }catch(e){} }
+  renderPersonas();
   refresh();
   if(!SUBMIT_URL) $("#submitBtn").title="No backend configured – submit will download a JSON file instead";
 })();

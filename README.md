@@ -19,8 +19,10 @@ the step-2 persona picker shows the SkillAIbility use cases mapped to the select
 
 ## The human-centric workforce canvas
 
-* The familiar canvas layout (Challenge → Persona → Pain points → Goals → Solution → UVP → Risks → KPIs → Skills → Action plan), with the original prompts and examples.
-* Header fields for *Group / team*, *Company / use case*, *Participants* and *Date*.
+* The familiar canvas layout (Challenge → Persona → Pain points → Goals → Solution → UVP → Risks → KPIs → Skills → Action plan), with the original prompts and examples, in the same template as the assessment matrix's step-2 canvas.
+* **Persona** is a picker over the five worker groups of the assessment matrix (plus free text) and shows the related SkillAIbility use cases; **Solution** has three free-text layers (task · technology · organisational conditions) – no code lists here, this tool is for open brainstorming.
+* **Interconnected:** the assessment matrix's step 2 pre-fills itself from this canvas (personas and all texts) the first time it is opened on the same device, and has an *Import from workforce canvas* button; the canvas in turn takes over personas and company from an existing matrix draft.
+* Header fields for *Company*, *Participants* and *Date*.
 * **Autosave** in the browser – closing the tab and coming back restores the draft.
 * **Submit canvas** – sends the canvas to the facilitator's Google Sheet. Groups can re-submit; every submission is stored as its own row (latest `received_at` wins).
 * **Export / Import** – download the canvas as JSON (also `Ctrl/Cmd + S`) and load it again later.

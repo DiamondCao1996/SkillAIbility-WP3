@@ -20,8 +20,8 @@ var SEND_EMAIL = true;   // set false to switch off the automatic emails
 var META = ["received_at", "submission_id", "workshop", "company", "participants", "date", "submitted_at", "user_agent"];
 
 var CANVAS_FIELDS = [
-  "challenge", "persona", "pain_points", "goals",
-  "solution", "uvp",
+  "challenge", "personas", "persona", "pain_points", "goals",
+  "solution_task", "solution_technology", "solution_organisation", "uvp",
   "risks", "kpi_social", "kpi_technical", "kpi_operational", "kpi_economic", "skills",
   "action_plan"
 ];
@@ -61,6 +61,8 @@ function str_(v) { return v === undefined || v === null ? "" : String(v); }
 /* ---------- Workforce canvas ---------- */
 function canvasHeaders_() { return META.concat(CANVAS_FIELDS); }
 function saveCanvas_(d) {
+  if (Array.isArray(d.personas)) d.personas = d.personas.map(function (p) { return GROUP_NAMES[p] || p; }).join("; ");
+  if (d.solution && !d.solution_technology) d.solution_technology = d.solution;   // older drafts
   var row = metaRow_(d).concat(CANVAS_FIELDS.map(function (c) { return str_(d[c]); }));
   sheet_("Canvas", canvasHeaders_()).appendRow(row);
 }
@@ -219,6 +221,7 @@ function summaryHtml_(d) {
       if (bits.length) tr(id + " – " + (UC_NAMES[id] || ""), bits.join(" | "));
     });
   } else {
+    if (Array.isArray(d.personas)) d.personas = d.personas.map(function (p) { return GROUP_NAMES[p] || p; }).join("; ");
     CANVAS_FIELDS.forEach(function (k) { tr(k.replace(/_/g, " "), d[k]); });
   }
   h += "</table><p style='font-family:sans-serif;font-size:12px;color:#666'>The attached Excel file contains all submissions so far (all tabs). Sent automatically by the WP3 collector.</p>";
