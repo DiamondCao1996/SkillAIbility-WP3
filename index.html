@@ -52,6 +52,7 @@
     grid-template-columns:1fr 1fr 1fr 2fr 1.2fr;
     grid-template-rows:auto auto auto;
     grid-template-areas:
+      "pathways pathways pathways pathways pathways"
       "challenge persona solution risks action"
       "pain pain solution kpis action"
       "goals goals uvp skills action";
@@ -74,25 +75,23 @@
   .box.filled{box-shadow:0 0 0 3px rgba(11,27,63,.08) inset}
   .box .count{position:absolute;right:14px;top:12px;font-size:11px;opacity:.55}
 
+  #pathways{grid-area:pathways;min-height:0}
   #challenge{grid-area:challenge}#persona{grid-area:persona}#pain{grid-area:pain}#goals{grid-area:goals}
   #solution{grid-area:solution}#uvp{grid-area:uvp}#risks{grid-area:risks}#kpis{grid-area:kpis}#skills{grid-area:skills}#action{grid-area:action}
 
-  /* learning pathways intro + picker */
-  .framing{background:#fff;border-radius:18px;padding:14px 20px;margin-bottom:16px;border-left:6px solid var(--navy)}
-  .framing h2{margin:0 0 4px;font-size:18px;font-weight:600;text-align:left}
-  .framing p{margin:0 0 10px;font-size:14px;color:var(--muted);line-height:1.45}
-  .pathways{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
-  @media (max-width:1000px){.pathways{grid-template-columns:1fr 1fr}}
-  @media (max-width:600px){.pathways{grid-template-columns:1fr}}
-  .pw{border:2px solid #d8dce4;border-radius:12px;padding:10px 12px;background:#f7f8fa;font-size:13px;line-height:1.4;color:var(--ink)}
-  .pw b{display:block;font-size:14.5px;margin-bottom:2px}
-  .pw b small{font-weight:400;color:var(--muted);font-size:12px;margin-left:5px}
-  .pw-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-  .pw-pick .lbl{font-size:13.5px;font-weight:600}
-  .pw-pick .link-hint{margin:0;width:100%}
-  .pwchip{border:2px solid var(--navy);border-radius:999px;padding:6px 14px;font-size:13.5px;font-weight:600;cursor:pointer;background:#fff;user-select:none;color:var(--navy)}
-  .pwchip:hover{background:#eef3ff}
-  .pwchip.on{background:var(--navy);color:#fff}
+  /* learning pathways box */
+  .box.violet{background:#e9e4fb;border-color:#a99bea}
+  .pw-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1}
+  @media (max-width:1000px){.pw-cards{grid-template-columns:1fr 1fr}}
+  @media (max-width:600px){.pw-cards{grid-template-columns:1fr}}
+  .pwc{border:2px solid rgba(11,27,63,.25);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.65);font-size:13px;line-height:1.4;color:var(--ink);cursor:pointer;user-select:none;display:flex;flex-direction:column;gap:3px}
+  .pwc:hover{border-color:var(--navy);background:#fff}
+  .pwc.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .pwc b{font-size:14.5px;display:flex;align-items:center;gap:7px}
+  .pwc b .pc{font-size:15px}
+  .pwc small{font-size:12px;opacity:.75;font-style:italic}
+  .pwc.on small,.pwc.on .def{opacity:.9}
+  .pwc .def{font-size:12.5px;margin-top:2px}
   /* persona picker (linked to the assessment matrix) */
   .link-hint{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 6px}
   .persona-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
@@ -142,6 +141,7 @@
   @media (max-width:1250px){
     .canvas{grid-template-columns:1fr 1fr 1fr;
       grid-template-areas:
+        "pathways pathways pathways"
         "challenge persona solution"
         "pain pain solution"
         "goals goals uvp"
@@ -152,7 +152,7 @@
   }
   @media (max-width:760px){
     .canvas{grid-template-columns:1fr;
-      grid-template-areas:"challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
+      grid-template-areas:"pathways" "challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
     .kpi-grid{grid-template-columns:1fr}
     header h1{font-size:17px}
   }
@@ -195,13 +195,15 @@
     <a href="inclusion.html"><b>2 · Assessment matrix</b>Organise the ideas into actionable requirement checklists, then design a linked solution.</a>
     <a href="usecases.html"><b>3 · Use case matching</b>Match your institute's use cases against the requirement lists and mark the gaps.</a>
   </div>
-  <div class="framing">
-    <h2>The four learning pathways</h2>
-    <p>Every SkillAIbility solution aims at one or more of these pathways – they are also the columns of the assessment matrix (tool 2) and the pathways of the use case mapping (tool 3). Keep them in mind while brainstorming, and tick below which ones your solution aims for.</p>
-    <div class="pathways" id="pathwayDefs"></div>
-    <div class="pw-pick"><span class="lbl">Which pathway(s) does your solution aim for?</span><span id="pathwayPick"></span><p class="link-hint">↳ mirrored to the assessment matrix's solution canvas</p></div>
-  </div>
   <div class="canvas" id="canvas">
+
+    <section class="box violet" id="pathways">
+      <span class="step">0</span>
+      <h2>Learning pathways</h2>
+      <p class="q">Which learning pathway(s) does your solution aim for? Click to select – one or more.</p>
+      <p class="eg">The four SkillAIbility pathways are also the columns of the assessment matrix (tool 2) and the pathways of the use case mapping (tool 3).</p>
+      <div class="pw-cards" id="pathwayPick"></div>
+    </section>
 
     <section class="box blue" id="challenge">
       <span class="step">1</span>
@@ -337,10 +339,11 @@ const PERSONA_GROUPS = [
 let personas = [];
 let pathways = [];
 function renderPathways(){
-  const defs=$("#pathwayDefs"); if(defs&&!defs.children.length) PATHWAYS.forEach(p=>{ const d=document.createElement("div"); d.className="pw"; d.innerHTML=`<b>${p.name}<small>${p.short}</small></b>${p.def}`; defs.appendChild(d); });
   const pick=$("#pathwayPick"); pick.innerHTML="";
-  PATHWAYS.forEach(p=>{ const on=pathways.includes(p.id); const c=document.createElement("span"); c.className="pwchip"+(on?" on":""); c.textContent=(on?"☑ ":"☐ ")+p.name; c.title=p.def;
+  PATHWAYS.forEach(p=>{ const on=pathways.includes(p.id); const c=document.createElement("div"); c.className="pwc"+(on?" on":"");
+    c.innerHTML=`<b><span class="pc">${on?"☑":"☐"}</span>${p.name}</b><small>${p.short}</small><span class="def">${p.def}</span>`;
     c.onclick=()=>{ const i=pathways.indexOf(p.id); i>=0?pathways.splice(i,1):pathways.push(p.id); scheduleSave(); renderPathways(); }; pick.appendChild(c); });
+  const box=$("#pathways"); if(box) box.classList.toggle("filled", pathways.length>0);
 }
 /* live mirror: pull the shared fields back from the assessment matrix's step 2 when it changes */
 const SHARED_KEYS=["challenge","persona","pain_points","goals","uvp","risks","kpi_social","kpi_technical","kpi_operational","kpi_economic","skills","action_plan","solution_task","solution_technology","solution_organisation"];

@@ -155,11 +155,13 @@
   .canvas2{display:grid;gap:14px;
     grid-template-columns:1fr 1fr 1.4fr 1.4fr 1fr;
     grid-template-areas:
+      "pathways pathways pathways pathways pathways"
       "challenge persona solution risks action"
       "pain pain solution kpis action"
       "goals goals solution kpis action"
       "goals goals uvp skills action";
   }
+  #c_pathways{grid-area:pathways;min-height:0}
   #c_challenge{grid-area:challenge}#c_persona{grid-area:persona}#c_pain{grid-area:pain}#c_goals{grid-area:goals}
   #c_solution{grid-area:solution}#c_uvp{grid-area:uvp}#c_risks{grid-area:risks}#c_kpis{grid-area:kpis}#c_skills{grid-area:skills}#c_action{grid-area:action}
   .box{border:2.5px solid;border-radius:var(--radius);padding:12px 16px 14px;display:flex;flex-direction:column;position:relative;min-height:150px}
@@ -186,11 +188,19 @@
   .pchip .pc{font-size:15px;width:18px;text-align:center}
   .link-hint{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 6px}
 
-  /* pathway picker (mirrored with the workforce canvas) */
-  .pw-pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}
-  .pw-pick .lbl{font-size:12.5px;font-weight:600;width:100%}
-  .pwchip{border:1.5px solid var(--navy);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;user-select:none;color:var(--navy)}
-  .pwchip.on{background:var(--navy);color:#fff}
+  /* learning pathways box */
+  .box.violet{background:#e9e4fb;border-color:#a99bea}
+  .pw-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1}
+  @media (max-width:1000px){.pw-cards{grid-template-columns:1fr 1fr}}
+  @media (max-width:600px){.pw-cards{grid-template-columns:1fr}}
+  .pwc{border:2px solid rgba(11,27,63,.25);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.65);font-size:13px;line-height:1.4;color:var(--ink);cursor:pointer;user-select:none;display:flex;flex-direction:column;gap:3px}
+  .pwc:hover{border-color:var(--navy);background:#fff}
+  .pwc.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .pwc b{font-size:14.5px;display:flex;align-items:center;gap:7px}
+  .pwc b .pc{font-size:15px}
+  .pwc small{font-size:12px;opacity:.75;font-style:italic}
+  .pwc.on small,.pwc.on .def{opacity:.9}
+  .pwc .def{font-size:12.5px;margin-top:2px}
   /* solution layers */
   .layer{border:1.5px solid rgba(11,27,63,.2);border-radius:12px;background:rgba(255,255,255,.6);padding:9px 11px;margin-bottom:9px}
   .layer h5{margin:0 0 2px;font-size:14px;display:flex;align-items:center;gap:7px}
@@ -230,10 +240,10 @@
 
   @media (max-width:1250px){
     .canvas2{grid-template-columns:1fr 1fr;
-      grid-template-areas:"challenge persona" "pain pain" "goals goals" "solution solution" "uvp uvp" "risks kpis" "skills kpis" "action action"}
+      grid-template-areas:"pathways pathways" "challenge persona" "pain pain" "goals goals" "solution solution" "uvp uvp" "risks kpis" "skills kpis" "action action"}
   }
   @media (max-width:760px){
-    .canvas2{grid-template-columns:1fr;grid-template-areas:"challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
+    .canvas2{grid-template-columns:1fr;grid-template-areas:"pathways" "challenge" "persona" "pain" "goals" "solution" "uvp" "risks" "kpis" "skills" "action"}
     .kpi-grid{grid-template-columns:1fr}
     header h1{font-size:17px}
   }
@@ -303,6 +313,13 @@
     </div>
     <div class="canvas2">
 
+      <section class="box violet" id="c_pathways">
+        <span class="step">0</span><h2>Learning pathways</h2>
+        <p class="q">Which learning pathway(s) does your solution aim for? Click to select – one or more.</p>
+        <p class="link-hint">↳ the columns of the step 1 matrix · mirrored with the workforce canvas</p>
+        <div class="pw-cards" id="pathwayPick2"></div>
+      </section>
+
       <section class="box blue" id="c_challenge">
         <span class="step">1</span><h2>Challenge</h2>
         <p class="q">What is the main challenge in the process?</p>
@@ -334,7 +351,6 @@
         <span class="step">2</span><h2>Solution</h2>
         <p class="q">Define your solution in three layers.</p>
         <p class="link-hint">↳ linked to the requirement lists of the step 1 matrix</p>
-        <div class="pw-pick" id="pathwayPick2"></div>
         <p class="sug-legend"><span class="sw"></span>= assigned to your selected personas in step 1</p>
         <div id="layers"></div>
       </section>
@@ -684,8 +700,9 @@ function suggestedCodes(dim){
 }
 function renderOutcomePills(){ const h=$("#outcomePills"); if(!h||h.children.length) return; PATHWAYS.forEach(p=>{ const sp=document.createElement("span"); sp.innerHTML=`<b>${p.name}</b><i>${p.short}</i>`; sp.title=p.def; sp.style.cursor="help"; h.appendChild(sp); }); }
 function renderPathwayPick(){
-  const h=$("#pathwayPick2"); if(!h) return; h.innerHTML=`<span class="lbl">Pathway(s) this solution aims for <i style="font-weight:400;color:var(--muted)">– mirrored with the workforce canvas</i></span>`;
-  PATHWAYS.forEach(p=>{ const on=state2.pathways.includes(p.id); const c=document.createElement("span"); c.className="pwchip"+(on?" on":""); c.textContent=(on?"☑ ":"☐ ")+p.name; c.title=p.def;
+  const h=$("#pathwayPick2"); if(!h) return; h.innerHTML="";
+  PATHWAYS.forEach(p=>{ const on=state2.pathways.includes(p.id); const c=document.createElement("div"); c.className="pwc"+(on?" on":"");
+    c.innerHTML=`<b><span class="pc">${on?"☑":"☐"}</span>${p.name}</b><small>${p.short}</small><span class="def">${p.def}</span>`;
     c.onclick=()=>{ const i=state2.pathways.indexOf(p.id); i>=0?state2.pathways.splice(i,1):state2.pathways.push(p.id); scheduleSave(); renderPathwayPick(); }; h.appendChild(c); });
 }
 function renderStep2(){
