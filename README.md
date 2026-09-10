@@ -42,6 +42,27 @@ Common to every tool: autosave in the browser (closing the tab and coming back r
 Export / Import as JSON (`Ctrl/Cmd + S` exports), A3 landscape print / save as PDF, one **Submit**
 button, and layouts that reflow for tablets and phones.
 
+## The four learning pathways
+
+Every solution aims at one or more pathways; they are the columns of the assessment matrix and the
+pathways of the use case mapping, and the workforce canvas opens with their definitions:
+
+* **Augmentation** – technology extends what a worker can do: it strengthens human capabilities
+  (physical, cognitive or sensory) so the worker performs the task better, faster or more safely,
+  while the human stays in charge of the task.
+* **Inclusion** – technology removes barriers so that workers who would otherwise be excluded
+  (novice or learning-vulnerable, ageing, deaf and hard-of-hearing, physical or cognitive support
+  needs) can perform the task and take part in work on equal terms.
+* **Symbiosis** – human and technology work as one system: tasks are shared and adapted
+  dynamically, each side compensating for the other's limits, with continuous two-way
+  communication, transparency and trust.
+* **Empowerment** – technology helps the worker to grow and to decide: it builds skills, autonomy
+  and confidence, and gives workers a say in how the technology and the work around it are shaped.
+
+The definitions live once in `usecases-data.js` (`PATHWAYS`). Groups tick which pathway(s) their
+solution aims for on the canvas; the choice is mirrored into the assessment step 2 and stored with
+both submissions.
+
 ## Tool 1 – Human-centric workforce canvas (`index.html`)
 
 The familiar canvas: Challenge → Persona → Pain points → Goals → Solution → Unique value
@@ -50,6 +71,8 @@ with the original prompts and examples.
 
 * **Persona** is a picker over the five worker groups plus a free-text field for the specific
   persona's characteristics; the related use cases are listed underneath.
+* The canvas opens with the **four learning pathways** and a picker for the pathway(s) the
+  solution aims for.
 * **Solution** has three free-text layers – task, technology, organisational conditions – the same
   template as the matrix's step 2, but deliberately without code lists: this tool is for open
   brainstorming.

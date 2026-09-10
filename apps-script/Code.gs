@@ -20,7 +20,7 @@ var SEND_EMAIL = true;   // set false to switch off the automatic emails
 var META = ["received_at", "submission_id", "workshop", "company", "participants", "date", "submitted_at", "user_agent"];
 
 var CANVAS_FIELDS = [
-  "challenge", "personas", "persona", "pain_points", "goals",
+  "challenge", "personas", "pathways", "persona", "pain_points", "goals",
   "solution_task", "solution_technology", "solution_organisation", "uvp",
   "risks", "kpi_social", "kpi_technical", "kpi_operational", "kpi_economic", "skills",
   "action_plan"
@@ -42,6 +42,7 @@ var GROUP_NAMES = {
   cognitive: "Workers with cognitive support needs"
 };
 var OUTCOMES = ["augmentation", "inclusion", "symbiosis", "empowerment"];
+var PATHWAY_NAMES = { augmentation: "Augmentation", inclusion: "Inclusion", symbiosis: "Symbiosis", empowerment: "Empowerment" };
 
 function sheet_(name, headers) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -62,6 +63,7 @@ function str_(v) { return v === undefined || v === null ? "" : String(v); }
 function canvasHeaders_() { return META.concat(CANVAS_FIELDS); }
 function saveCanvas_(d) {
   if (Array.isArray(d.personas)) d.personas = d.personas.map(function (p) { return GROUP_NAMES[p] || p; }).join("; ");
+  if (Array.isArray(d.pathways)) d.pathways = d.pathways.map(function (p) { return PATHWAY_NAMES[p] || p; }).join("; ");
   if (d.solution && !d.solution_technology) d.solution_technology = d.solution;   // older drafts
   var row = metaRow_(d).concat(CANVAS_FIELDS.map(function (c) { return str_(d[c]); }));
   sheet_("Canvas", canvasHeaders_()).appendRow(row);
@@ -70,7 +72,7 @@ function saveCanvas_(d) {
 /* ---------- Assessment (matrix + linked canvas) ---------- */
 function assessmentHeaders_() {
   var h = META.slice();
-  h.push("personas");
+  h.push("personas", "pathways");
   STEP2_FIELDS.forEach(function (f) { h.push("canvas:" + f); });
   DIMS.forEach(function (dim) { h.push("solution:" + dim + ":codes", "solution:" + dim + ":text"); });
   DIMS.forEach(function (dim) { GROUPS.forEach(function (g) { OUTCOMES.forEach(function (o) { h.push(dim + ":" + g + ":" + o); }); }); });
@@ -86,6 +88,7 @@ function saveAssessment_(d) {
   var row = metaRow_(d);
 
   row.push((canvas.personas || []).map(function (p) { return GROUP_NAMES[p] || p; }).join("; "));
+  row.push((canvas.pathways || []).map(function (p) { return PATHWAY_NAMES[p] || p; }).join("; "));
   STEP2_FIELDS.forEach(function (f) { row.push(str_(fields[f])); });
   DIMS.forEach(function (dim) {
     var s = sol[dim] || {};
@@ -195,6 +198,7 @@ function summaryHtml_(d) {
   if (d.form === "assessment") {
     var c = d.canvas || {}, f = c.fields || {}, sol = c.sol || {};
     tr("Personas", (c.personas || []).map(function (p) { return GROUP_NAMES[p] || p; }).join("; "));
+    tr("Pathways", (c.pathways || []).map(function (p) { return PATHWAY_NAMES[p] || p; }).join("; "));
     tr("Challenge", f.challenge); tr("Pain points", f.pain_points); tr("Goals", f.goals);
     DIMS.forEach(function (dim) {
       var s = sol[dim] || {};
@@ -222,6 +226,7 @@ function summaryHtml_(d) {
     });
   } else {
     if (Array.isArray(d.personas)) d.personas = d.personas.map(function (p) { return GROUP_NAMES[p] || p; }).join("; ");
+    if (Array.isArray(d.pathways)) d.pathways = d.pathways.map(function (p) { return PATHWAY_NAMES[p] || p; }).join("; ");
     CANVAS_FIELDS.forEach(function (k) { tr(k.replace(/_/g, " "), d[k]); });
   }
   h += "</table><p style='font-family:sans-serif;font-size:12px;color:#666'>The attached Excel file contains all submissions so far (all tabs). Sent automatically by the WP3 collector.</p>";

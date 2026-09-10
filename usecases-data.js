@@ -3,6 +3,18 @@
  * Shared by usecases.html and inclusion.html (step 2 interconnection).
  */
 
+/* The four SkillAIbility learning pathways – shared by all tools (same ids as the matrix columns) */
+const PATHWAYS = [
+  { id:"augmentation", name:"Augmentation", short:"enhance what workers can do",
+    def:"Technology extends what a worker can do. It strengthens human capabilities – physical, cognitive or sensory – so the worker performs the task better, faster or more safely, while the human stays in charge of the task." },
+  { id:"inclusion", name:"Inclusion", short:"make the job accessible",
+    def:"Technology removes barriers so that workers who would otherwise be excluded – novice or learning-vulnerable, ageing, deaf and hard-of-hearing, or with physical or cognitive support needs – can perform the task and take part in work on equal terms." },
+  { id:"symbiosis", name:"Symbiosis", short:"human and AI work as one system",
+    def:"Human and technology work as one system. Tasks are shared and adapted dynamically, each side compensating for the other's limits, with continuous two-way communication, transparency and trust." },
+  { id:"empowerment", name:"Empowerment", short:"workers grow and decide",
+    def:"Technology helps the worker to grow and to decide. It builds skills, autonomy and confidence, and gives workers a say in how the technology and the work around it are shaped." },
+];
+
 const PARTNERS = [
   { id:"chalmers", name:"CHALMERS", color:"#f9f871" },
   { id:"ntnu",     name:"NTNU",     color:"#7fd4f5" },

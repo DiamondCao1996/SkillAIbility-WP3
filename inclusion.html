@@ -186,6 +186,11 @@
   .pchip .pc{font-size:15px;width:18px;text-align:center}
   .link-hint{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 6px}
 
+  /* pathway picker (mirrored with the workforce canvas) */
+  .pw-pick{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}
+  .pw-pick .lbl{font-size:12.5px;font-weight:600;width:100%}
+  .pwchip{border:1.5px solid var(--navy);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;user-select:none;color:var(--navy)}
+  .pwchip.on{background:var(--navy);color:#fff}
   /* solution layers */
   .layer{border:1.5px solid rgba(11,27,63,.2);border-radius:12px;background:rgba(255,255,255,.6);padding:9px 11px;margin-bottom:9px}
   .layer h5{margin:0 0 2px;font-size:14px;display:flex;align-items:center;gap:7px}
@@ -284,12 +289,7 @@
     <div class="framing">
       <h2>Step 1 · Organisation → Inclusion</h2>
       <p>For each <b>worker group</b> (rows) and each <b>outcome</b> the technology should deliver (columns), select which <b>requirements</b> apply. Cells are pre-filled with the WP3 research baseline – confirm, remove or add codes based on your own case. Click a cell to edit it; define new codes in the legend on the right (★ marks a frequent requirement). Your choices here feed the solution canvas in step 2.</p>
-      <div class="outcomes">
-        <span><b>Augmentation</b><i>enhance what workers can do</i></span>
-        <span><b>Inclusion</b><i>make the job accessible</i></span>
-        <span><b>Symbiosis</b><i>human–AI work as one system</i></span>
-        <span><b>Empowerment</b><i>workers grow and decide</i></span>
-      </div>
+      <div class="outcomes" id="outcomePills"></div>
     </div>
     <div class="tabs" id="tabs"></div>
     <div id="panels"></div>
@@ -334,6 +334,7 @@
         <span class="step">2</span><h2>Solution</h2>
         <p class="q">Define your solution in three layers.</p>
         <p class="link-hint">↳ linked to the requirement lists of the step 1 matrix</p>
+        <div class="pw-pick" id="pathwayPick2"></div>
         <p class="sug-legend"><span class="sw"></span>= assigned to your selected personas in step 1</p>
         <div id="layers"></div>
       </section>
@@ -510,7 +511,7 @@ function freshState(){
 }
 function freshState2(){
   const fields={}; CANVAS_KEYS.forEach(k=>fields[k]="");
-  return { personas:[], fields, sol:{ TA:{codes:[],text:""}, TE:{codes:[],text:""}, OR:{codes:[],text:""} } };
+  return { personas:[], pathways:[], fields, sol:{ TA:{codes:[],text:""}, TE:{codes:[],text:""}, OR:{codes:[],text:""} } };
 }
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -521,7 +522,7 @@ const $$ = s => [...document.querySelectorAll(s)];
 const SHARED_MAP={challenge:"challenge",persona:"persona_notes",pain_points:"pain_points",goals:"goals",uvp:"uvp",risks:"risks",kpi_social:"kpi_social",kpi_technical:"kpi_technical",kpi_operational:"kpi_operational",kpi_economic:"kpi_economic",skills:"skills",action_plan:"action_plan"};
 const SOL_MAP=[["solution_task","TA"],["solution_technology","TE"],["solution_organisation","OR"]];
 function canvasDraft(){ try{ return JSON.parse(localStorage.getItem(CANVAS_KEY)||"null"); }catch(e){ return null; } }
-function sharedSnapshot(){ const o={personas:state2.personas.slice()}; Object.keys(SHARED_MAP).forEach(k=>o[k]=state2.fields[SHARED_MAP[k]]||""); SOL_MAP.forEach(([k,d])=>o[k]=state2.sol[d].text||""); return o; }
+function sharedSnapshot(){ const o={personas:state2.personas.slice(), pathways:state2.pathways.slice()}; Object.keys(SHARED_MAP).forEach(k=>o[k]=state2.fields[SHARED_MAP[k]]||""); SOL_MAP.forEach(([k,d])=>o[k]=state2.sol[d].text||""); return o; }
 function step2IsEmpty(){ return !state2.personas.length && !CANVAS_KEYS.some(k=>(state2.fields[k]||"").trim()) && !["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim()); }
 /* canvas → step 2 (mirror; returns true if anything changed) */
 function syncFromCanvas(){
@@ -529,6 +530,7 @@ function syncFromCanvas(){
   const before=JSON.stringify(sharedSnapshot());
   Object.keys(SHARED_MAP).forEach(k=>{ if(typeof c[k]==="string") state2.fields[SHARED_MAP[k]]=c[k]; });
   if(Array.isArray(c.personas)) state2.personas=c.personas.filter(p=>GROUPS.some(g=>g.id===p));
+  if(Array.isArray(c.pathways)) state2.pathways=c.pathways.filter(p=>PATHWAYS.some(x=>x.id===p));
   SOL_MAP.forEach(([k,d])=>{ if(typeof c[k]==="string") state2.sol[d].text=c[k]; });
   if(c.solution&&!c.solution_technology) state2.sol.TE.text=c.solution;
   if(!$("#m_case").value&&c.company) $("#m_case").value=c.company;
@@ -540,7 +542,7 @@ function pushToCanvas(){
   let c=canvasDraft();
   if(!c){ if(step2IsEmpty()) return; c={form:"canvas",workshop:WORKSHOP_ID}; }
   const snap=sharedSnapshot(); let changed=false;
-  Object.keys(snap).forEach(k=>{ const v=snap[k]; if(JSON.stringify(c[k]===undefined?(k==="personas"?[]:""):c[k])!==JSON.stringify(v)){ c[k]=v; changed=true; } });
+  Object.keys(snap).forEach(k=>{ const v=snap[k]; if(JSON.stringify(c[k]===undefined?((k==="personas"||k==="pathways")?[]:""):c[k])!==JSON.stringify(v)){ c[k]=v; changed=true; } });
   const comp=$("#m_case").value.trim(), ppl=$("#m_people").value.trim();
   if(comp&&c.company!==comp){ c.company=comp; changed=true; }
   if(ppl&&c.participants!==ppl){ c.participants=ppl; changed=true; }
@@ -680,7 +682,14 @@ function suggestedCodes(dim){
   state2.personas.forEach(pid=>{ OUTCOMES.forEach(o=>{ (st.cells[pid+":"+o.id]||[]).forEach(c=>out.add(c)); }); });
   return out;
 }
+function renderOutcomePills(){ const h=$("#outcomePills"); if(!h||h.children.length) return; PATHWAYS.forEach(p=>{ const sp=document.createElement("span"); sp.innerHTML=`<b>${p.name}</b><i>${p.short}</i>`; sp.title=p.def; sp.style.cursor="help"; h.appendChild(sp); }); }
+function renderPathwayPick(){
+  const h=$("#pathwayPick2"); if(!h) return; h.innerHTML=`<span class="lbl">Pathway(s) this solution aims for <i style="font-weight:400;color:var(--muted)">– mirrored with the workforce canvas</i></span>`;
+  PATHWAYS.forEach(p=>{ const on=state2.pathways.includes(p.id); const c=document.createElement("span"); c.className="pwchip"+(on?" on":""); c.textContent=(on?"☑ ":"☐ ")+p.name; c.title=p.def;
+    c.onclick=()=>{ const i=state2.pathways.indexOf(p.id); i>=0?state2.pathways.splice(i,1):state2.pathways.push(p.id); scheduleSave(); renderPathwayPick(); }; h.appendChild(c); });
+}
 function renderStep2(){
+  renderOutcomePills(); renderPathwayPick();
   const pl=$("#personaList"); pl.innerHTML="";
   GROUPS.forEach(g=>{
     const on=state2.personas.includes(g.id);
@@ -751,7 +760,7 @@ function collect(){
     company:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
     submitted_at:new Date().toISOString(), user_agent:navigator.userAgent,
     dims:state.dims,
-    canvas:{ personas:state2.personas, fields:state2.fields, sol:state2.sol }
+    canvas:{ personas:state2.personas, pathways:state2.pathways, fields:state2.fields, sol:state2.sol }
   };
 }
 function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-ASM-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id);} return id; }
@@ -766,6 +775,7 @@ function load(d){
   if(d.dims){ const s=freshState(); DIMENSIONS.forEach(dim=>{ const src=d.dims[dim.id]; if(!src) return; if(Array.isArray(src.codes)&&src.codes.length) s.dims[dim.id].codes=src.codes; if(src.cells) s.dims[dim.id].cells={...s.dims[dim.id].cells,...src.cells}; if(src.notes) s.dims[dim.id].notes=src.notes; }); state=s; }
   const s2=freshState2();
   if(d.canvas){ if(Array.isArray(d.canvas.personas)) s2.personas=d.canvas.personas.filter(p=>GROUPS.some(g=>g.id===p));
+    if(Array.isArray(d.canvas.pathways)) s2.pathways=d.canvas.pathways.filter(p=>PATHWAYS.some(x=>x.id===p));
     if(d.canvas.fields) CANVAS_KEYS.forEach(k=>{ if(typeof d.canvas.fields[k]==="string") s2.fields[k]=d.canvas.fields[k]; });
     if(d.canvas.sol) ["TA","TE","OR"].forEach(x=>{ const src=d.canvas.sol[x]; if(src){ if(Array.isArray(src.codes)) s2.sol[x].codes=src.codes; if(typeof src.text==="string") s2.sol[x].text=src.text; } }); }
   state2=s2;
@@ -775,7 +785,7 @@ function load(d){
   state=freshState(); state2=freshState2(); $("#m_date").value=new Date().toISOString().slice(0,10);
   try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ load(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
   if(canvasDraft() && syncFromCanvas()){ $("#status").textContent="Step 2 synced with your workforce canvas"; setTimeout(scheduleSave,0); }
-  renderAll(); renderStep2();
+  renderOutcomePills(); renderAll(); renderStep2();
 })();
 
 /* =====================================================================

@@ -77,6 +77,22 @@
   #challenge{grid-area:challenge}#persona{grid-area:persona}#pain{grid-area:pain}#goals{grid-area:goals}
   #solution{grid-area:solution}#uvp{grid-area:uvp}#risks{grid-area:risks}#kpis{grid-area:kpis}#skills{grid-area:skills}#action{grid-area:action}
 
+  /* learning pathways intro + picker */
+  .framing{background:#fff;border-radius:18px;padding:14px 20px;margin-bottom:16px;border-left:6px solid var(--navy)}
+  .framing h2{margin:0 0 4px;font-size:18px;font-weight:600;text-align:left}
+  .framing p{margin:0 0 10px;font-size:14px;color:var(--muted);line-height:1.45}
+  .pathways{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+  @media (max-width:1000px){.pathways{grid-template-columns:1fr 1fr}}
+  @media (max-width:600px){.pathways{grid-template-columns:1fr}}
+  .pw{border:2px solid #d8dce4;border-radius:12px;padding:10px 12px;background:#f7f8fa;font-size:13px;line-height:1.4;color:var(--ink)}
+  .pw b{display:block;font-size:14.5px;margin-bottom:2px}
+  .pw b small{font-weight:400;color:var(--muted);font-size:12px;margin-left:5px}
+  .pw-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .pw-pick .lbl{font-size:13.5px;font-weight:600}
+  .pw-pick .link-hint{margin:0;width:100%}
+  .pwchip{border:2px solid var(--navy);border-radius:999px;padding:6px 14px;font-size:13.5px;font-weight:600;cursor:pointer;background:#fff;user-select:none;color:var(--navy)}
+  .pwchip:hover{background:#eef3ff}
+  .pwchip.on{background:var(--navy);color:#fff}
   /* persona picker (linked to the assessment matrix) */
   .link-hint{font-size:12px;color:var(--muted);font-style:italic;margin:0 0 6px}
   .persona-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
@@ -178,6 +194,12 @@
     <a href="index.html" class="current"><b>1 · Workforce canvas</b>Open-ended discussion and brainstorming around your own case.</a>
     <a href="inclusion.html"><b>2 · Assessment matrix</b>Organise the ideas into actionable requirement checklists, then design a linked solution.</a>
     <a href="usecases.html"><b>3 · Use case matching</b>Match your institute's use cases against the requirement lists and mark the gaps.</a>
+  </div>
+  <div class="framing">
+    <h2>The four learning pathways</h2>
+    <p>Every SkillAIbility solution aims at one or more of these pathways – they are also the columns of the assessment matrix (tool 2) and the pathways of the use case mapping (tool 3). Keep them in mind while brainstorming, and tick below which ones your solution aims for.</p>
+    <div class="pathways" id="pathwayDefs"></div>
+    <div class="pw-pick"><span class="lbl">Which pathway(s) does your solution aim for?</span><span id="pathwayPick"></span><p class="link-hint">↳ mirrored to the assessment matrix's solution canvas</p></div>
   </div>
   <div class="canvas" id="canvas">
 
@@ -313,6 +335,13 @@ const PERSONA_GROUPS = [
   { id:"cognitive", name:"Workers with cognitive support needs" },
 ];
 let personas = [];
+let pathways = [];
+function renderPathways(){
+  const defs=$("#pathwayDefs"); if(defs&&!defs.children.length) PATHWAYS.forEach(p=>{ const d=document.createElement("div"); d.className="pw"; d.innerHTML=`<b>${p.name}<small>${p.short}</small></b>${p.def}`; defs.appendChild(d); });
+  const pick=$("#pathwayPick"); pick.innerHTML="";
+  PATHWAYS.forEach(p=>{ const on=pathways.includes(p.id); const c=document.createElement("span"); c.className="pwchip"+(on?" on":""); c.textContent=(on?"☑ ":"☐ ")+p.name; c.title=p.def;
+    c.onclick=()=>{ const i=pathways.indexOf(p.id); i>=0?pathways.splice(i,1):pathways.push(p.id); scheduleSave(); renderPathways(); }; pick.appendChild(c); });
+}
 /* live mirror: pull the shared fields back from the assessment matrix's step 2 when it changes */
 const SHARED_KEYS=["challenge","persona","pain_points","goals","uvp","risks","kpi_social","kpi_technical","kpi_operational","kpi_economic","skills","action_plan","solution_task","solution_technology","solution_organisation"];
 function pullFromMatrix(){
@@ -324,12 +353,13 @@ function pullFromMatrix(){
   Object.keys(map).forEach(k=>{ const v=(m.canvas.fields||{})[map[k]]; const el=$(`textarea[data-key=${k}]`); if(typeof v==="string"&&el&&el.value!==v){ el.value=v; changed=true; } });
   Object.keys(sol).forEach(k=>{ const v=((m.canvas.sol||{})[sol[k]]||{}).text; const el=$(`textarea[data-key=${k}]`); if(typeof v==="string"&&el&&el.value!==v){ el.value=v; changed=true; } });
   if(Array.isArray(m.canvas.personas)){ const np=m.canvas.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)); if(JSON.stringify(np)!==JSON.stringify(personas)){ personas=np; changed=true; } }
+  if(Array.isArray(m.canvas.pathways)){ const np=m.canvas.pathways.filter(p=>PATHWAYS.some(x=>x.id===p)); if(JSON.stringify(np)!==JSON.stringify(pathways)){ pathways=np; changed=true; } }
   if(m.company&&!$("#m_case").value){ $("#m_case").value=m.company; changed=true; }
   if(m.participants&&!$("#m_people").value){ $("#m_people").value=m.participants; changed=true; }
   return changed;
 }
 window.addEventListener("storage",e=>{
-  if(e.key===MATRIX_KEY && pullFromMatrix()){ renderPersonas(); scheduleSave(); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); }
+  if(e.key===MATRIX_KEY && pullFromMatrix()){ renderPersonas(); renderPathways(); scheduleSave(); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); }
   if(e.key===STORAGE_KEY && e.newValue){ try{ const d=JSON.parse(e.newValue); if(d.synced_from==="assessment"){ fill(d); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); } }catch(err){} }
 });
 function renderPersonas(){
@@ -367,6 +397,7 @@ function collect(){
   };
   fieldEls().forEach(t => d[t.dataset.key] = t.value.trim());
   d.personas = personas.slice();
+  d.pathways = pathways.slice();
   return d;
 }
 function getSubmissionId(){
@@ -381,7 +412,8 @@ function fill(d){
   // backwards compatibility with drafts that had a single solution box
   if(d.solution && !d.solution_technology) $("textarea[data-key=solution_technology]").value = d.solution;
   personas = Array.isArray(d.personas) ? d.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)) : [];
-  renderPersonas();
+  pathways = Array.isArray(d.pathways) ? d.pathways.filter(p=>PATHWAYS.some(x=>x.id===p)) : [];
+  renderPersonas(); renderPathways();
   refresh();
 }
 
@@ -391,6 +423,7 @@ function refresh(){
   let filled=0, total=fieldEls().length+1;
   fieldEls().forEach(t=>{ const box=t.closest(".box"); const has=t.value.trim().length>0; if(has) filled++; box.classList.toggle("filled", $$("textarea",box).some(x=>x.value.trim())); });
   if(personas.length){ filled++; $("#persona").classList.add("filled"); }
+  total++; if(pathways.length) filled++;
   $("#progress").textContent = `${filled} / ${total} fields filled`;
 }
 function scheduleSave(){
@@ -411,7 +444,7 @@ document.addEventListener("input", e=>{ if(e.target.matches("textarea,input")) s
   try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ fill(JSON.parse(raw)); restored=true; $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
   // interconnection: start from the assessment matrix draft on this device (personas + company) if this canvas is still empty
   if(!restored && pullFromMatrix()){ $("#status").textContent="Taken over from your assessment matrix"; setTimeout(scheduleSave,0); }
-  renderPersonas();
+  renderPersonas(); renderPathways();
   refresh();
   if(!SUBMIT_URL) $("#submitBtn").title="No backend configured – submit will download a JSON file instead";
 })();
