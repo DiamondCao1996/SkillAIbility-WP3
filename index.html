@@ -122,6 +122,74 @@
   .modal ul{font-size:14px;margin:6px 0;padding-left:20px}
   .modal code{background:#f1f3f7;padding:1px 5px;border-radius:4px;font-size:13px}
 
+  /* ---------- KPIs → success-metrics entry ---------- */
+  .metrics-open{display:flex;align-items:center;gap:8px;width:100%;justify-content:center;margin:2px 0 10px;
+    background:var(--navy);color:#fff;border-radius:10px;padding:9px 12px;font-size:13.5px;font-weight:600}
+  .metrics-open:hover{background:#16295a}
+  .metrics-open .mo-arrow{margin-left:2px;transition:transform .15s}
+  .metrics-open:hover .mo-arrow{transform:translateX(3px)}
+  .metrics-open .mo-badge{background:#41c3ec;color:var(--navy);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;display:none}
+  .metrics-open .mo-badge.show{display:inline-block}
+
+  /* ---------- success-metrics overlay ("turning page") ---------- */
+  .mp{position:fixed;inset:0;z-index:40;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
+  .mp.open{display:flex;animation:mp-in .28s ease}
+  @keyframes mp-in{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+  .mp-head{background:var(--navy);color:#fff;padding:12px 22px;display:flex;align-items:center;gap:16px;flex:0 0 auto}
+  .mp-head .mp-title{flex:1;text-align:center;min-width:0}
+  .mp-head h1{margin:0;font-size:19px;font-weight:600}
+  .mp-head .mp-title p{margin:2px 0 0;font-size:12.5px;opacity:.8}
+  .mp-body{flex:1;overflow-y:auto;padding:20px 22px 60px;max-width:1500px;margin:0 auto;width:100%}
+  .mp-intro{font-size:13.5px;line-height:1.5;color:var(--muted);background:#fff;border:1px solid #dfe3ea;border-radius:12px;padding:12px 16px;margin:0 0 18px}
+  .mp-context{background:#fff;border:1px solid #dfe3ea;border-radius:14px;padding:14px 16px;margin:0 0 18px}
+  .mp-context h3,.mp-legend{font-size:15px;margin:0 0 6px;color:var(--navy)}
+  .mp-q{font-style:italic;font-size:13px;color:var(--muted);margin:0 0 10px;line-height:1.4}
+  .mp-legend{font-weight:400;font-size:13.5px;line-height:1.5;margin:0 0 12px}
+  .mp-ctx-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+  .mp-tasktype{display:flex;gap:6px;flex-wrap:wrap}
+  .mp-tasktype .tt{border:1.5px solid rgba(11,27,63,.25);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer;user-select:none;background:#fff}
+  .mp-tasktype .tt:hover{border-color:var(--navy)}
+  .mp-tasktype .tt.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  #metricsContext{flex:1;min-width:240px;border:1px dashed rgba(11,27,63,.35);border-radius:10px;background:#fbfcfe;padding:9px 11px;font:inherit;font-size:13.5px;line-height:1.4;color:var(--ink);outline:none;resize:vertical}
+  #metricsContext:focus{background:#fff;border-style:solid;border-color:var(--navy)}
+
+  .mp-block{background:#fff;border:1px solid #dfe3ea;border-radius:14px;padding:0;margin:0 0 14px;overflow:hidden}
+  .mp-block-head{background:#eef1f7;padding:11px 16px;border-bottom:1px solid #dfe3ea}
+  .mp-block-head h3{margin:0;font-size:16px;color:var(--navy);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .mp-block-head .bq{display:block;font-weight:400;font-style:italic;font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+  .mp-block-head .btot{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+  .mp-block-head .btot b{color:var(--navy)}
+  .mp-metric{display:grid;grid-template-columns:1.3fr 2fr auto;gap:14px;align-items:start;padding:12px 16px;border-top:1px solid #eef0f4}
+  .mp-metric:first-child{border-top:0}
+  .mp-metric.pri{background:#fffdf2}
+  .mp-mlabel b{font-size:14px}
+  .mp-ind{font-size:12.5px;line-height:1.45;color:#333}
+  .mp-ind .lens{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#fff;border-radius:5px;padding:1px 6px;margin-right:6px;vertical-align:middle}
+  .mp-ind .lens.micro{background:#1a8fb8}.mp-ind .lens.macro{background:#a8860b}
+  .mp-ind p{margin:0 0 6px}.mp-ind p:last-child{margin:0}
+  .mp-score{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+  .mp-rate{display:flex;gap:4px}
+  .mp-rate .rb{width:30px;height:30px;border-radius:8px;border:1.5px solid rgba(11,27,63,.25);background:#fff;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:0}
+  .mp-rate .rb:hover{border-color:var(--navy)}
+  .mp-rate .rb.on{background:#41c3ec;border-color:#2ba7d4;color:var(--navy)}
+  .mp-star{border:1.5px solid rgba(11,27,63,.25);background:#fff;border-radius:8px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .mp-star:hover{border-color:var(--navy)}
+  .mp-star.on{background:#f0b429;border-color:#d99a10;color:#3a2c00}
+  .mp-more{background:#fff;border:1px solid #dfe3ea;border-radius:14px;padding:6px 16px;margin-top:8px}
+  .mp-more summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--navy);padding:8px 0}
+  .mp-more-body{font-size:13px;line-height:1.5;color:#333;padding-bottom:10px}
+  .mp-more-body h4{margin:14px 0 4px;font-size:13.5px;color:var(--navy)}
+  .mp-more-body ol{padding-left:22px;margin:4px 0}
+  .mp-more-body li{margin:3px 0}
+  .mp-more-body .apx b{display:block;margin-top:8px}
+  .mp-refs{font-size:12px;word-break:break-all}
+  .mp-refs a{color:#1a6fb0}
+  @media (max-width:820px){
+    .mp-metric{grid-template-columns:1fr}
+    .mp-score{align-items:flex-start}
+    .mp-head h1{font-size:16px}.mp-head .mp-title p{display:none}
+  }
+
   /* ---------- responsive ---------- */
   @media (max-width:1250px){
     .canvas{grid-template-columns:1fr 1fr 1fr;
@@ -145,7 +213,7 @@
   @media print{
     @page{size:A3 landscape;margin:10mm}
     header{background:var(--navy) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .actions,.statusbar,.toast,.modal,nav.pages,.toolstrip{display:none !important}
+    .actions,.statusbar,.toast,.modal,nav.pages,.toolstrip,.mp,.metrics-open{display:none !important}
     body{background:#fff}
     main{padding:8mm 0}
     .box{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid}
@@ -248,6 +316,9 @@
       <span class="step">3</span>
       <h2>KPIs</h2>
       <p class="q">What will be measured to track the success of the proposed solution?</p>
+      <button type="button" class="metrics-open" id="metricsOpen" onclick="openMetrics()">
+        📊 Score success metrics<span class="mo-badge" id="metricsBadge"></span><span class="mo-arrow">→</span>
+      </button>
       <div class="kpi-grid">
         <label><b>Social</b><i>E.g. well-being, stress level, technology acceptance</i><textarea data-key="kpi_social" placeholder="Social KPIs…"></textarea></label>
         <label><b>Technical</b><i>E.g. accuracy, reliability</i><textarea data-key="kpi_technical" placeholder="Technical KPIs…"></textarea></label>
@@ -281,6 +352,49 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- ===== Success-metrics scoring overlay (opened from the KPIs box) ===== -->
+<div class="mp" id="metricsPage" aria-hidden="true">
+  <header class="mp-head">
+    <button type="button" class="btn-ghost" onclick="closeMetrics()">← Back to canvas</button>
+    <div class="mp-title">
+      <h1>Success metrics to evaluate use cases</h1>
+      <p>Success-metric blocks for vulnerable-worker technology adoption use cases</p>
+    </div>
+    <button type="button" class="btn-primary" onclick="closeMetrics()">Done</button>
+  </header>
+  <div class="mp-body">
+    <p class="mp-intro" id="metricsIntro"></p>
+
+    <section class="mp-context">
+      <h3>1 · Persona &amp; task</h3>
+      <p class="mp-q">For a given vulnerable persona and task (e.g. a low-literacy maintenance worker doing fault diagnosis), define who the critical user is and what task the technology supports.</p>
+      <div class="mp-ctx-row">
+        <div class="mp-tasktype" id="metricsTaskType"></div>
+        <textarea id="metricsContext" rows="2" placeholder="Critical user + vulnerability + task, e.g. older worker with limited language skills doing breakdown maintenance on line 3…"></textarea>
+      </div>
+    </section>
+
+    <p class="mp-legend">2 · Score the metrics — rate each one <b>1–5</b> for how relevant it is to your use case
+      (1 = not relevant, 5 = essential) and <b>★ star</b> the 3–5 you will translate onto the canvas.
+      Each block gives the key evaluation question; every metric lists example <b>micro</b> (worker / cell / line)
+      and <b>macro</b> (organisation / sector / policy) indicators.</p>
+
+    <div id="metricsBlocks"></div>
+
+    <details class="mp-more">
+      <summary>Background &amp; sources</summary>
+      <div class="mp-more-body">
+        <h4>How to integrate the metrics into the canvas</h4>
+        <ol id="metricsHowto"></ol>
+        <h4>Appendix — task types &amp; measurement notes</h4>
+        <div id="metricsAppendix"></div>
+        <h4>References</h4>
+        <ol id="metricsRefs" class="mp-refs"></ol>
+      </div>
+    </details>
+  </div>
+</div>
+
 <div class="modal" id="modal">
   <div class="card">
     <h3 id="modalTitle"></h3>
@@ -293,6 +407,7 @@
 
 <script src="config.js"></script>
 <script src="usecases-data.js"></script>
+<script src="metrics-data.js"></script>
 <script>
 /* SUBMIT_URL is defined in config.js */
 const WORKSHOP_ID = "WP3";         // tag stored with every submission
@@ -313,6 +428,7 @@ const PERSONA_GROUPS = [
   { id:"cognitive", name:"Workers with cognitive support needs" },
 ];
 let personas = [];
+let metrics = { task_type:"", context:"", scores:{} };   // success-metrics scoring (opened from the KPIs box)
 /* live mirror: pull the shared fields back from the assessment matrix's step 2 when it changes */
 const SHARED_KEYS=["challenge","persona","pain_points","goals","uvp","risks","kpi_social","kpi_technical","kpi_operational","kpi_economic","skills","action_plan","solution_task","solution_technology","solution_organisation"];
 function pullFromMatrix(){
@@ -354,6 +470,85 @@ function renderUcStrip(){
   host.appendChild(box);
 }
 
+/* ---------- success metrics scoring ("turning page") ---------- */
+function metricById(id){ for(const b of SUCCESS_METRICS){ const m=b.metrics.find(x=>x.id===id); if(m) return {block:b, metric:m}; } return null; }
+function metricScore(id){ return metrics.scores[id] || (metrics.scores[id]={r:0,p:false}); }
+function metricsPriorityCount(){ return Object.values(metrics.scores).filter(s=>s&&s.p).length; }
+function metricsRatedCount(){ return Object.values(metrics.scores).filter(s=>s&&s.r>0).length; }
+function updateMetricsBadge(){
+  const n=metricsPriorityCount(), b=$("#metricsBadge"); if(!b) return;
+  const rated=metricsRatedCount();
+  b.textContent = n ? n+" ★" : (rated ? rated+" rated" : ""); b.classList.toggle("show", n>0||rated>0);
+}
+/* one-time build of the static overlay scaffold (intro, blocks, background) */
+let metricsBuilt=false;
+function buildMetricsPage(){
+  if(metricsBuilt) return; metricsBuilt=true;
+  $("#metricsIntro").textContent = METRICS_INTRO;
+  // task-type chips
+  const tt=$("#metricsTaskType"); tt.innerHTML="";
+  METRICS_TASK_TYPES.forEach(t=>{ const c=document.createElement("div"); c.className="tt"; c.textContent=t; c.dataset.tt=t;
+    c.onclick=()=>{ metrics.task_type = metrics.task_type===t ? "" : t; scheduleSave(); renderMetrics(); }; tt.appendChild(c); });
+  // blocks + metric rows
+  const host=$("#metricsBlocks"); host.innerHTML="";
+  SUCCESS_METRICS.forEach(b=>{
+    const sec=document.createElement("section"); sec.className="mp-block";
+    const head=document.createElement("div"); head.className="mp-block-head";
+    head.innerHTML=`<h3>${b.name}<span class="btot" id="btot-${b.id}"></span></h3><span class="bq">${b.question}</span>`;
+    sec.appendChild(head);
+    b.metrics.forEach(m=>{
+      const row=document.createElement("div"); row.className="mp-metric"; row.id="row-"+cssId(m.id);
+      const ind = (m.micro?`<p><span class="lens micro">micro</span>${m.micro}</p>`:"")
+                + (m.macro?`<p><span class="lens macro">macro</span>${m.macro}</p>`:"");
+      row.innerHTML =
+        `<div class="mp-mlabel"><b>${m.label}</b></div>`+
+        `<div class="mp-ind">${ind||'<p style="color:#999">—</p>'}</div>`+
+        `<div class="mp-score"><div class="mp-rate">`+
+          [1,2,3,4,5].map(n=>`<button type="button" class="rb" data-m="${m.id}" data-r="${n}">${n}</button>`).join("")+
+        `</div><button type="button" class="mp-star" data-m="${m.id}">★ Priority</button></div>`;
+      sec.appendChild(row);
+    });
+    host.appendChild(sec);
+  });
+  host.addEventListener("click", e=>{
+    const rb=e.target.closest(".rb"); const st=e.target.closest(".mp-star");
+    if(rb){ const s=metricScore(rb.dataset.m); const v=+rb.dataset.r; s.r = (s.r===v?0:v); scheduleSave(); renderMetrics(); }
+    else if(st){ const s=metricScore(st.dataset.m); s.p=!s.p; if(s.p&&!s.r) s.r=3; scheduleSave(); renderMetrics(); }
+  });
+  $("#metricsContext").addEventListener("input", e=>{ metrics.context=e.target.value; scheduleSave(); });
+  // background: how-to, appendix, references
+  $("#metricsHowto").innerHTML = METRICS_HOWTO.map(s=>`<li>${s}</li>`).join("");
+  $("#metricsAppendix").innerHTML = '<div class="apx">'+METRICS_APPENDIX.map(a=>`<b>${a.h}</b>${a.t}`).join("")+'</div>';
+  $("#metricsRefs").innerHTML = METRICS_REFS.map(u=>`<li><a href="${u}" target="_blank" rel="noopener">${u}</a></li>`).join("");
+}
+function cssId(id){ return id.replace(/\./g,"_"); }
+/* reflect current state into the (already built) overlay */
+function renderMetrics(){
+  buildMetricsPage();
+  $$("#metricsTaskType .tt").forEach(c=>c.classList.toggle("on", c.dataset.tt===metrics.task_type));
+  if($("#metricsContext").value!==metrics.context) $("#metricsContext").value=metrics.context||"";
+  SUCCESS_METRICS.forEach(b=>{
+    let pri=0, sum=0, rated=0;
+    b.metrics.forEach(m=>{
+      const s=metrics.scores[m.id]||{r:0,p:false};
+      const row=$("#row-"+cssId(m.id)); if(row) row.classList.toggle("pri", !!s.p);
+      $$(`.rb[data-m="${m.id}"]`).forEach(btn=>btn.classList.toggle("on", +btn.dataset.r===s.r));
+      const star=$(`.mp-star[data-m="${m.id}"]`); if(star) star.classList.toggle("on", !!s.p);
+      if(s.p) pri++; if(s.r>0){ sum+=s.r; rated++; }
+    });
+    const tot=$("#btot-"+b.id);
+    if(tot) tot.innerHTML = `<b>${pri}</b> priority · avg <b>${rated?(sum/rated).toFixed(1):"–"}</b>`;
+  });
+  updateMetricsBadge();
+}
+function openMetrics(){ renderMetrics(); const p=$("#metricsPage"); p.classList.add("open"); p.setAttribute("aria-hidden","false"); document.body.style.overflow="hidden"; }
+function closeMetrics(){ const p=$("#metricsPage"); p.classList.remove("open"); p.setAttribute("aria-hidden","true"); document.body.style.overflow=""; }
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && $("#metricsPage").classList.contains("open")) closeMetrics(); });
+function metricsCollect(){
+  const scores={}; Object.keys(metrics.scores).forEach(id=>{ const s=metrics.scores[id]; if(s&&(s.r>0||s.p)) scores[id]={r:s.r||0,p:!!s.p}; });
+  return { task_type:metrics.task_type||"", context:(metrics.context||"").trim(), scores };
+}
+
 function collect(){
   const d = {
     form: "canvas",
@@ -367,6 +562,7 @@ function collect(){
   };
   fieldEls().forEach(t => d[t.dataset.key] = t.value.trim());
   d.personas = personas.slice();
+  d.metrics = metricsCollect();
   return d;
 }
 function getSubmissionId(){
@@ -381,7 +577,15 @@ function fill(d){
   // backwards compatibility with drafts that had a single solution box
   if(d.solution && !d.solution_technology) $("textarea[data-key=solution_technology]").value = d.solution;
   personas = Array.isArray(d.personas) ? d.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)) : [];
+  metrics = { task_type:"", context:"", scores:{} };
+  if(d.metrics && typeof d.metrics==="object"){
+    metrics.task_type = typeof d.metrics.task_type==="string" ? d.metrics.task_type : "";
+    metrics.context   = typeof d.metrics.context==="string" ? d.metrics.context : "";
+    const sc=d.metrics.scores||{};
+    Object.keys(sc).forEach(id=>{ if(metricById(id)){ const s=sc[id]||{}; metrics.scores[id]={r:+s.r||0, p:!!s.p}; } });
+  }
   renderPersonas();
+  if($("#metricsPage").classList.contains("open")) renderMetrics(); else updateMetricsBadge();
   refresh();
 }
 
@@ -412,6 +616,7 @@ document.addEventListener("input", e=>{ if(e.target.matches("textarea,input")) s
   // interconnection: start from the assessment matrix draft on this device (personas + company) if this canvas is still empty
   if(!restored && pullFromMatrix()){ $("#status").textContent="Taken over from your assessment matrix"; setTimeout(scheduleSave,0); }
   renderPersonas();
+  updateMetricsBadge();
   refresh();
   if(!SUBMIT_URL) $("#submitBtn").title="No backend configured – submit will download a JSON file instead";
 })();

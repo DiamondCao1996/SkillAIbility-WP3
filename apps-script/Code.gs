@@ -67,6 +67,47 @@ function saveCanvas_(d) {
   if (d.solution && !d.solution_technology) d.solution_technology = d.solution;   // older drafts
   var row = metaRow_(d).concat(CANVAS_FIELDS.map(function (c) { return str_(d[c]); }));
   sheet_("Canvas", canvasHeaders_()).appendRow(row);
+  saveMetrics_(d);
+}
+
+/* ---------- Success metrics (scored from the workforce-canvas KPIs box) ----------
+ * One row per scored metric. Labels mirror metrics-data.js (SUCCESS_METRICS);
+ * keep the ids in sync if you edit that file. */
+var METRIC_LABELS = {
+  "taskuser.1": ["Task & user", "Task type & scenario"],
+  "taskuser.2": ["Task & user", "Vulnerable persona fit"],
+  "taskuser.3": ["Task & user", "Safety & strain at task level"],
+  "technical.1": ["Technical", "Technical accuracy / performance"],
+  "technical.2": ["Technical", "Reliability & latency"],
+  "technical.3": ["Technical", "Fit with existing systems"],
+  "operational.1": ["Operational", "Time & throughput"],
+  "operational.2": ["Operational", "Quality & reliability of output"],
+  "operational.3": ["Operational", "Learning outcome & process stability"],
+  "social.1": ["Social & experience", "Usability & accessibility"],
+  "social.2": ["Social & experience", "Trust, acceptance & perceived fairness"],
+  "social.3": ["Social & experience", "Social usability"],
+  "workload.1": ["Cognitive workload", "Subjective workload"],
+  "workload.2": ["Cognitive workload", "Objective indicators"],
+  "economic.1": ["Economic", "Cost–effort (micro)"],
+  "economic.2": ["Economic", "Cost & performance (macro)"],
+  "impact.1": ["Impact / upskilling", "Upskilling & job security"],
+  "impact.2": ["Impact / upskilling", "Inclusion & retention"]
+};
+var METRICS_HEADERS = ["received_at", "submission_id", "company", "participants", "date", "task_type", "context", "block", "metric_id", "metric", "rating", "priority"];
+function saveMetrics_(d) {
+  var m = d.metrics;
+  if (!m || !m.scores || typeof m.scores !== "object") return;
+  var sh = sheet_("Metrics", METRICS_HEADERS);
+  var rows = [];
+  Object.keys(m.scores).forEach(function (id) {
+    var s = m.scores[id] || {};
+    var r = Number(s.r) || 0;
+    if (!(r > 0 || s.p)) return;
+    var lab = METRIC_LABELS[id] || ["", id];
+    rows.push([new Date(), str_(d.submission_id), str_(d.company), str_(d.participants), str_(d.date),
+      str_(m.task_type), str_(m.context), lab[0], id, lab[1], r, s.p ? "yes" : "no"]);
+  });
+  if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
 }
 
 /* ---------- Assessment (matrix + linked canvas) ---------- */
@@ -228,6 +269,18 @@ function summaryHtml_(d) {
     if (Array.isArray(d.personas)) d.personas = d.personas.map(function (p) { return GROUP_NAMES[p] || p; }).join("; ");
     if (Array.isArray(d.pathways)) d.pathways = d.pathways.map(function (p) { return PATHWAY_NAMES[p] || p; }).join("; ");
     CANVAS_FIELDS.forEach(function (k) { tr(k.replace(/_/g, " "), d[k]); });
+    if (d.metrics && d.metrics.scores) {
+      var ms = d.metrics.scores, pri = [], rated = 0;
+      Object.keys(ms).forEach(function (id) {
+        var s = ms[id] || {};
+        if (Number(s.r) > 0) rated++;
+        if (s.p) { var lab = METRIC_LABELS[id] || ["", id]; pri.push(lab[1] + (s.r ? " (" + s.r + ")" : "")); }
+      });
+      if (d.metrics.task_type) tr("Task type", d.metrics.task_type);
+      if (d.metrics.context) tr("Persona & task", d.metrics.context);
+      if (rated || pri.length) tr("Success metrics", rated + " rated · " + pri.length + " priority");
+      if (pri.length) tr("Priority metrics", pri.join("; "));
+    }
   }
   h += "</table><p style='font-family:sans-serif;font-size:12px;color:#666'>The attached Excel file contains all submissions so far (all tabs). Sent automatically by the WP3 collector.</p>";
   return h;
@@ -269,7 +322,8 @@ function doGet() {
   var c = sheet_("Canvas", canvasHeaders_()).getLastRow() - 1;
   var a = sheet_("Assessment", assessmentHeaders_()).getLastRow() - 1;
   var u = sheet_("UseCases", UC_HEADERS).getLastRow() - 1;
-  return ContentService.createTextOutput("SkillAIbility WP3 collector is running. Canvas rows: " + c + " · Assessment rows: " + a + " · UseCase rows: " + u)
+  var mt = sheet_("Metrics", METRICS_HEADERS).getLastRow() - 1;
+  return ContentService.createTextOutput("SkillAIbility WP3 collector is running. Canvas rows: " + c + " · Assessment rows: " + a + " · UseCase rows: " + u + " · Metrics rows: " + mt)
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
@@ -281,6 +335,7 @@ function setup() {
   sheet_("Assessment_cells", ["received_at", "submission_id", "company", "source", "dimension", "worker_group", "outcome", "code", "code_label", "frequent", "note"]);
   sheet_("Assessment_codes", ["received_at", "submission_id", "company", "dimension", "code", "label", "frequent"]);
   sheet_("UseCases", UC_HEADERS);
+  sheet_("Metrics", METRICS_HEADERS);
   var s0 = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
   if (s0 && s0.getLastRow() === 0) SpreadsheetApp.getActiveSpreadsheet().deleteSheet(s0);
   if (SEND_EMAIL) {

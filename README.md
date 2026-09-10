@@ -75,6 +75,16 @@ with the original prompts and examples.
 * **Solution** has three free-text layers – task, technology, organisational conditions – the same
   template as the matrix's step 2, but deliberately without code lists: this tool is for open
   brainstorming.
+* **KPIs → Success metrics.** The KPIs box has a **📊 Score success metrics** button that flips open
+  a full-screen scoring sheet – the *Success metrics to evaluate use cases* framework for
+  vulnerable-worker technology adoption. Seven blocks (Task &amp; user, Technical, Operational,
+  Social &amp; experience, Cognitive workload, Economic, Impact / upskilling), each with a key
+  evaluation question and example **micro** (worker / cell / line) and **macro** (organisation /
+  sector / policy) indicators. Participants set the task type and critical persona, rate each metric
+  **1–5** for relevance and **★ star** the 3–5 they will translate onto the canvas; per-block totals
+  and a badge on the KPIs box track progress. A collapsible *Background &amp; sources* holds the
+  how-to steps, appendix and references. The scores autosave with the canvas draft, and travel with
+  the submission into the **`Metrics`** sheet. The framework lives in `metrics-data.js`.
 
 ## Tool 2 – Assessment matrix (`inclusion.html`), two steps
 
@@ -168,6 +178,7 @@ email problems never block a submission. (Google's quota is ~100 emails/day for 
 | `Assessment_cells` | Long format, one row per code entry – `source` says whether it came from the step-1 matrix (with worker group × outcome) or the step-2 solution layers. Pivot this for frequency analysis |
 | `Assessment_codes` | Code definitions as each group left them – shows renamed / newly added codes |
 | `UseCases` | One row per (submission, use case): institute, linked TA/TE/OR codes, sufficiency verdict (`yes` / `partly` / `no`) and the missing-items note |
+| `Metrics` | One row per scored success metric on a workforce-canvas submission: `task_type`, `context` (persona &amp; task), `block`, `metric_id`, `metric`, `rating` (1–5) and `priority` (`yes` / `no`). Pivot on `metric`/`block` for which metrics groups prioritise |
 
 Metadata on every row: `submission_id`, `company`, `participants`, `date`, `received_at`.
 
@@ -179,6 +190,9 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
   `PERSONA_GROUPS` in `index.html`, `MATRIX_TO_UC_GROUP` in `usecases-data.js` and `GROUPS` in
   `Code.gs`).
 * **Use cases, partners, NACE codes, mapping** – `usecases-data.js`.
+* **Success-metrics framework** – the blocks, metrics and indicators in `metrics-data.js`
+  (`SUCCESS_METRICS`); keep the metric ids in sync with `METRIC_LABELS` in `Code.gs` so the
+  `Metrics` sheet stays readable.
 * **Dimension definitions** – `charsDef` in `DIMENSIONS` (`inclusion.html`).
 * **Email recipients** – `EMAIL_TO` in `Code.gs`.
 * **Workshop tag** – `WORKSHOP_ID` in each page; stored with every row.
@@ -192,6 +206,7 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 | `inclusion.html` | Tool 2 – assessment matrix, steps 1 and 2, with the research baseline embedded |
 | `usecases.html` | Tool 3 – use case matching toolkit |
 | `usecases-data.js` | The 19 use cases, partners, NACE codes, mapping placements and baseline code lists |
+| `metrics-data.js` | The *Success metrics to evaluate use cases* framework: blocks, metrics, indicators, how-to, appendix, references (used by the scoring sheet in `index.html`) |
 | `config.js` | One setting: the Google Apps Script URL all tools submit to |
 | `apps-script/Code.gs` | Google Apps Script: writes submissions to the Sheet and emails the Excel workbook |
 | `canvas-original.png` | The original static canvas the workforce canvas is based on |
