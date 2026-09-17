@@ -156,7 +156,6 @@ const WPFLOW = {
       + ".wpf-card .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}"
       + ".wpf-card .row button{border:0;border-radius:9px;padding:9px 15px;font:600 14px/1 'Segoe UI',system-ui,sans-serif;cursor:pointer}"
       + ".wpf-card .wpf-cancel{background:#e7e9ee;color:#0b1b3f}.wpf-card .wpf-go{background:#41c3ec;color:#0b1b3f}.wpf-card .wpf-go:hover{background:#6ad3f2}"
-      + ".wpf-wait{opacity:.55 !important;cursor:not-allowed !important}"
       + "@media print{.wpf-bar,.wpf-ov{display:none !important}}"
       // during a guided flow the flow bar is the only navigation – hide the
       // cross-tool jump links (toolstrip + header nav) and the in-tool step
@@ -295,10 +294,8 @@ const WPFLOW = {
       btn.title = "Sends every step of this flow together";
       btn.onclick = function () { submitFlow(flowId); };
     } else {
-      btn.textContent = "Submit when all steps are finished";
-      btn.classList.add("wpf-wait");
-      btn.title = "You submit once, at the last step – everything from all steps is sent together. Your work autosaves meanwhile.";
-      btn.onclick = function () { say("Keep going – you submit once at the last step (" + f.steps[f.steps.length - 1].name + "); everything autosaves meanwhile."); };
+      // intermediate steps: no submit button at all – submission happens once, at the last step
+      btn.style.display = "none";
     }
   }
 

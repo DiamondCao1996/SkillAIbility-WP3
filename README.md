@@ -76,11 +76,10 @@ Common to every tool: autosave in the browser (closing the tab and coming back r
 Export / Import as JSON (`Ctrl/Cmd + S` exports), A3 landscape print / save as PDF, and layouts that
 reflow for tablets and phones.
 
-**Submitting in a guided flow:** groups submit once, at the end. On intermediate steps the button
-reads *Submit when all steps are finished* (disabled – everything autosaves meanwhile); on the last
-step it becomes *Submit all steps* and sends the drafts of every step of the flow together, so the
-research team receives one email with the complete workbook. Opened outside a flow, each tool still
-has its own Submit.
+**Submitting in a guided flow:** groups submit once, at the end. Intermediate steps show no submit
+button at all (everything autosaves meanwhile); the last step has a single *Submit all steps* button
+that sends the drafts of every step of the flow together, so the research team receives one email
+with the complete workbook. Opened outside a flow, each tool still has its own Submit.
 
 ## The four learning pathways
 
