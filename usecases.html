@@ -148,7 +148,7 @@
 
   <div class="framing">
     <h2>Match the SkillAIbility use cases to the requirement lists</h2>
-    <p>Choose your <b>institute</b> to see its use cases from the high-level mapping. For each use case, tick the <b>task characteristics (TA)</b> it impacts, and the <b>technology requirements (TE)</b> and <b>organisational conditions (OR)</b> from the assessment matrix that are needed to implement it, then judge whether the lists are <b>sufficient</b> to implement this use case – and note what is missing. The code lists stay in sync with your assessment matrix on this device, including codes you renamed or added there.</p>
+    <p>Choose your <b>institute</b> to see its use cases from the high-level mapping. For each use case, tick the <b>task characteristics (TA)</b> it impacts or requires, and the <b>technology requirements (TE)</b> and <b>organisational conditions (OR)</b> from the assessment matrix that are needed to implement it, then judge whether the lists are <b>sufficient</b> to implement this use case – and note what is missing. The code lists stay in sync with your assessment matrix on this device, including codes you renamed or added there.</p>
   </div>
 
   <p class="sync-note" id="syncNote"></p>
@@ -224,7 +224,7 @@ function renderCards(){
       const key=u.id+":"+dim, full=expandedLists.has(key);
       const row=document.createElement("div"); row.className="linkrow"; row.dataset.dim=dim;
       const head=document.createElement("div"); head.className="lr-head";
-      head.innerHTML=`<span class="dotc"></span>${dim==="TA"?"Task characteristics this use case impacts":dim==="TE"?"Technology requirements to implement the use case":"Organisational conditions to implement the use case"}`;
+      head.innerHTML=`<span class="dotc"></span>${dim==="TA"?"Task characteristics this use case impacts / task requirements of this use case":dim==="TE"?"Technology requirements to implement the use case":"Organisational conditions to implement the use case"}`;
       const eb=document.createElement("button"); eb.className="expand-btn"; eb.textContent=full?"▲ Compact":"▼ Expand";
       eb.title=full?"Back to the compact view":"Show the full text of every requirement";
       eb.onclick=()=>{ full?expandedLists.delete(key):expandedLists.add(key); render(); };
