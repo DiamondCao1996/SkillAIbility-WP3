@@ -199,6 +199,11 @@ before setup. Opening the web-app URL in a browser shows a health check with the
 
 ### Automatic results email
 
+Submitting is fast (a second or two): the request only writes the rows. The email – which exports
+the whole workbook to Excel – is queued in a hidden `_Outbox` tab and sent by a background run about
+a minute later, so it typically lands in the inbox 1–2 minutes after Submit. A guided-flow
+submission sends its parts in parallel and produces **one** email listing all steps.
+
 On every submission the script emails **huizhong@chalmers.se** and **sandra.jaksic@chalmers.se**
 (the `EMAIL_TO` constant at the top of `Code.gs`) a formatted summary of what the group submitted
 plus the **complete workbook as an .xlsx attachment** – all tabs, all submissions so far – so the

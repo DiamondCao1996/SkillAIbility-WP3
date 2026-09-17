@@ -289,28 +289,69 @@ function summaryHtml_(d) {
   h += "</table><p style='font-family:sans-serif;font-size:12px;color:#666'>The attached Excel file contains all submissions so far (all tabs). Sent automatically by the WP3 collector.</p>";
   return h;
 }
-function notify_(d) {
+/* ---------- email queue: the request returns at once, a background run sends the mail ----------
+   Sending the email (which exports the whole workbook to Excel) takes 10–30 s. Doing it inside
+   the request made every Submit hang. Now doPost only queues a row in the hidden "_Outbox" tab
+   and schedules a one-off trigger; sendQueued_() runs ~1 minute later and emails everything
+   queued since, one email per submission, with the current workbook attached. */
+var OUTBOX = "_Outbox";
+var OUTBOX_HEADERS = ["queued_at", "status", "subject", "html", "sent_at"];
+function queueEmail_(subject, html) {
   if (!SEND_EMAIL) return;
   try {
-    var kind = d.form === "assessment" ? "Assessment" : d.form === "usecases" ? "Use case matching" : "Canvas";
-    var subject = "[SkillAIbility WP3] " + kind + " submission – " + (d.company || "unknown company");
-    MailApp.sendEmail({ to: EMAIL_TO, subject: subject, htmlBody: summaryHtml_(d), attachments: [exportXlsx_()] });
-  } catch (err) {
-    // Never fail the submission because of email problems; log instead.
-    console.error("Email failed: " + err);
-  }
+    var sh = sheet_(OUTBOX, OUTBOX_HEADERS);
+    sh.appendRow([new Date(), "queued", subject, html, ""]);
+    try { sh.hideSheet(); } catch (e) {}
+    var pending = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === "sendQueued_"; });
+    if (!pending) ScriptApp.newTrigger("sendQueued_").timeBased().after(15 * 1000).create();
+  } catch (err) { console.error("Queue failed: " + err); }
 }
-
-/* ---------- entry points ---------- */
+function sendQueued_() {
+  // remove the one-off trigger(s) that fired us
+  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === "sendQueued_") ScriptApp.deleteTrigger(t); });
+  var lock = LockService.getScriptLock(); lock.waitLock(30000);
+  try {
+    var sh = sheet_(OUTBOX, OUTBOX_HEADERS);
+    var last = sh.getLastRow(); if (last < 2) return;
+    var rows = sh.getRange(2, 1, last - 1, OUTBOX_HEADERS.length).getValues();
+    var todo = []; rows.forEach(function (r, i) { if (r[1] === "queued") todo.push({ row: i + 2, subject: r[2], html: r[3] }); });
+    if (!todo.length) return;
+    var xlsx = exportXlsx_();   // one export, attached to every mail of this run
+    todo.forEach(function (t) {
+      try {
+        MailApp.sendEmail({ to: EMAIL_TO, subject: t.subject, htmlBody: t.html, attachments: [xlsx] });
+        sh.getRange(t.row, 2, 1, 4).setValues([["sent", t.subject, t.html, new Date()]]);
+      } catch (err) { sh.getRange(t.row, 2).setValue("failed: " + err); }
+    });
+  } finally { lock.releaseLock(); }
+}
+function notify_(d) {
+  var kind = d.form === "assessment" ? "Assessment" : d.form === "usecases" ? "Use case matching" : "Canvas";
+  queueEmail_("[SkillAIbility WP3] " + kind + " submission – " + (d.company || "unknown company"), summaryHtml_(d));
+}
+/* one email for a whole guided flow (sent by the page after all parts were posted) */
+function notifyFlow_(d) {
+  var parts = (d.parts || []).map(function (p) { return "<li>" + String(p).replace(/</g, "&lt;") + "</li>"; }).join("");
+  var html = "<h2 style='font-family:sans-serif'>SkillAIbility WP3 – " + String(d.flow_name || d.flow || "workshop").replace(/</g, "&lt;") + " submitted</h2>"
+    + "<table style='font-family:sans-serif;font-size:13px'><tr><td><b>Company</b></td><td>" + String(d.company || "").replace(/</g, "&lt;") + "</td></tr>"
+    + "<tr><td><b>Participants</b></td><td>" + String(d.participants || "").replace(/</g, "&lt;") + "</td></tr>"
+    + "<tr><td><b>Date</b></td><td>" + String(d.date || "").replace(/</g, "&lt;") + "</td></tr></table>"
+    + "<p style='font-family:sans-serif;font-size:13px'>Steps submitted together:</p><ul style='font-family:sans-serif;font-size:13px'>" + parts + "</ul>"
+    + "<p style='font-family:sans-serif;font-size:12px;color:#666'>Each step is a row in its tab of the attached workbook (all submissions so far, all tabs). Sent automatically by the WP3 collector.</p>";
+  queueEmail_("[SkillAIbility WP3] " + (d.flow_name || "Workshop") + " – all steps submitted – " + (d.company || "unknown company"), html);
+}
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     var data = JSON.parse(e.postData.contents || "{}");
-    if (data.form === "assessment" || data.form === "inclusion") saveAssessment_(data);
-    else if (data.form === "usecases") saveUseCases_(data);
-    else saveCanvas_(data);
-    if (!data.no_email) notify_(data);   // a multi-step flow submission emails once, after its last part
+    if (data.form === "notify") { notifyFlow_(data); }
+    else {
+      if (data.form === "assessment" || data.form === "inclusion") saveAssessment_(data);
+      else if (data.form === "usecases") saveUseCases_(data);
+      else saveCanvas_(data);
+      if (!data.no_email) notify_(data);   // parts of a multi-step flow set no_email and send one "notify" at the end
+    }
     return ContentService.createTextOutput(JSON.stringify({ ok: true, id: data.submission_id, form: data.form || "canvas" }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
@@ -342,8 +383,10 @@ function setup() {
   sheet_("Metrics", METRICS_HEADERS);
   var s0 = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
   if (s0 && s0.getLastRow() === 0) SpreadsheetApp.getActiveSpreadsheet().deleteSheet(s0);
+  sheet_(OUTBOX, OUTBOX_HEADERS);
+  ScriptApp.getProjectTriggers();   // asks for the trigger permission needed by the email queue
   if (SEND_EMAIL) {
-    MailApp.sendEmail({ to: EMAIL_TO, subject: "[SkillAIbility WP3] Collector test", htmlBody: "<p>The WP3 workshop collector is set up correctly. Future submissions will arrive like this, with the full workbook attached.</p>", attachments: [exportXlsx_()] });
+    queueEmail_("[SkillAIbility WP3] Collector test", "<p>The WP3 workshop collector is set up correctly. Submissions will arrive like this – about a minute after each Submit – with the full workbook attached.</p>");
   }
   Logger.log("Ready: " + SpreadsheetApp.getActiveSpreadsheet().getUrl());
 }

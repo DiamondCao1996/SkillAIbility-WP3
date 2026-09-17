@@ -272,13 +272,15 @@ const WPFLOW = {
       say("All steps exported as one JSON file", "ok"); return;
     }
     if (btn) { btn.disabled = true; btn.textContent = "Submitting all steps…"; }
+    var post = function (d) { return fetch(SUBMIT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(d) }); };
     try {
-      for (var i = 0; i < payloads.length; i++) {
-        var d = payloads[i].data;
-        d.no_email = (i < payloads.length - 1);   // the backend emails once, after the last part
-        await fetch(SUBMIT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(d) });
-      }
-      say("✓ All " + payloads.length + " steps submitted – thank you!", "ok");
+      // all parts in parallel (each only writes its rows – fast), then one "notify" that queues the single email
+      await Promise.all(payloads.map(function (p) { p.data.no_email = true; return post(p.data); }));
+      var first = payloads[0] ? payloads[0].data : {};
+      await post({ form: "notify", flow: flowId, flow_name: (FLOWS[flowId] || {}).name, company: company,
+                   participants: first.participants || "", date: first.date || "",
+                   parts: payloads.map(function (p) { return stepLabel(p.page); }) });
+      say("✓ All " + payloads.length + " steps submitted – thank you! The facilitators receive the email within a minute or two.", "ok");
       var st = document.getElementById("status"); if (st) st.textContent = "All steps submitted " + new Date().toLocaleTimeString() + " · you can keep editing and re-submit";
     } catch (err) {
       say("Submission failed (offline?) – please try again or Export a JSON backup.", "err");
