@@ -160,9 +160,10 @@ to the baseline.
 Built from the *SkillAIbility high-level mapping of use cases across target groups and pathways*:
 all 19 use cases with technology, NACE sector and target-group × pathway placements are embedded in
 `usecases-data.js`. Participants choose their **institute** (CHALMERS, NTNU, LMS, MADE, TKNIKA) and
-see only that institute's use cases. For each one they tick which TA / TE / OR requirements the use
-case addresses (lists loaded live from the matrix, each expandable to full text), judge whether the
-lists are **sufficient** for the use case (yes / partly / no) and note what is missing.
+see only that institute's use cases. For each one they tick the task requirements (TA), technology requirements (TE) and organisational
+conditions (OR) needed to implement it (lists loaded live from the matrix, each expandable to full
+text), judge whether the lists are **sufficient to implement** the use case (yes / partly / no) and
+note what is missing.
 
 ## Facilitator setup (≈3 minutes, one time)
 

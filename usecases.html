@@ -148,7 +148,7 @@
 
   <div class="framing">
     <h2>Match the SkillAIbility use cases to the requirement lists</h2>
-    <p>Choose your <b>institute</b> to see its use cases from the high-level mapping. For each use case, tick which <b>task (TA)</b>, <b>technology (TE)</b> and <b>organisation (OR)</b> requirements from the assessment matrix it addresses, then judge whether the lists are <b>sufficient</b> for this use case – and note what is missing. The code lists stay in sync with your assessment matrix on this device, including codes you renamed or added there.</p>
+    <p>Choose your <b>institute</b> to see its use cases from the high-level mapping. For each use case, tick the <b>task requirements (TA)</b>, <b>technology requirements (TE)</b> and <b>organisational conditions (OR)</b> from the assessment matrix that are needed to implement it, then judge whether the lists are <b>sufficient</b> to implement this use case – and note what is missing. The code lists stay in sync with your assessment matrix on this device, including codes you renamed or added there.</p>
   </div>
 
   <p class="sync-note" id="syncNote"></p>
@@ -224,7 +224,7 @@ function renderCards(){
       const key=u.id+":"+dim, full=expandedLists.has(key);
       const row=document.createElement("div"); row.className="linkrow"; row.dataset.dim=dim;
       const head=document.createElement("div"); head.className="lr-head";
-      head.innerHTML=`<span class="dotc"></span>${dim==="TA"?"Task requirements":dim==="TE"?"Technology requirements":"Organisation conditions"} this use case addresses`;
+      head.innerHTML=`<span class="dotc"></span>${dim==="TA"?"Task requirements":dim==="TE"?"Technology requirements":"Organisational conditions"} to implement the use case`;
       const eb=document.createElement("button"); eb.className="expand-btn"; eb.textContent=full?"▲ Compact":"▼ Expand";
       eb.title=full?"Back to the compact view":"Show the full text of every requirement";
       eb.onclick=()=>{ full?expandedLists.delete(key):expandedLists.add(key); render(); };
@@ -241,7 +241,7 @@ function renderCards(){
       row.appendChild(chips); card.appendChild(row);
     });
     const cov=document.createElement("div"); cov.className="coverage";
-    cov.innerHTML=`<p class="cq">Are the requirement lists sufficient for this use case?</p>`;
+    cov.innerHTML=`<p class="cq">Are the requirement lists sufficient to implement this use case?</p>`;
     const opts=document.createElement("div"); opts.className="covopts";
     [["yes","✓ Yes, they cover it"],["partly","◐ Partly – some gaps"],["no","✗ No – lists are missing key items"]].forEach(([v,l])=>{
       const o=document.createElement("div"); o.className="cov "+v+(cs.coverage===v?" on "+v:""); o.textContent=l;
@@ -249,7 +249,7 @@ function renderCards(){
       opts.appendChild(o);
     });
     cov.appendChild(opts);
-    const ta=document.createElement("textarea"); ta.placeholder="What is missing from the lists for this use case? New requirements to add…"; ta.value=cs.missing;
+    const ta=document.createElement("textarea"); ta.placeholder="What is missing to implement this use case? New requirements or conditions to add…"; ta.value=cs.missing;
     ta.addEventListener("input",()=>{ cs.missing=ta.value; scheduleSave(); });
     cov.appendChild(ta); card.appendChild(cov);
     wrap.appendChild(card);
