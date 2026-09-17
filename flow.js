@@ -51,7 +51,7 @@ const FLOWS = {
     id: "professional",
     name: "Professional version",
     who: "for scholars",
-    total: "70–95 min",
+    total: "65–90 min",
     tagline: "From evidence to solution: map requirements and evaluate use cases systematically.",
     blurb: "The full analytical path: start from the project's real use cases, brainstorm the case, formalise requirements in the assessment matrix, and design a solution grounded in that mapping.",
     steps: [
@@ -67,7 +67,7 @@ const FLOWS = {
         ]
       },
       {
-        key: "canvas", page: "canvas.html", name: "Workforce canvas", time: "15–20 min",
+        key: "canvas", page: "canvas.html", name: "Workforce canvas", time: "25–30 min",
         purpose: "Brainstorm the human-centred case that frames the requirements.",
         instr: [
           "Pick the <b>worker groups (personas)</b> your use case is for, and describe your specific persona.",
@@ -86,7 +86,7 @@ const FLOWS = {
         ]
       },
       {
-        key: "solution", page: "inclusion.html", istep: 2, name: "Solution canvas", time: "20–25 min",
+        key: "solution", page: "inclusion.html", istep: 2, name: "Solution canvas", time: "5–10 min",
         purpose: "Design the solution, linked to the requirements you mapped.",
         instr: [
           "Your texts from step 2 are <b>already here</b> – this canvas mirrors the workforce canvas.",

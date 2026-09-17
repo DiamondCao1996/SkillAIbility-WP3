@@ -29,7 +29,7 @@ The start page (`index.html`) offers two versions, defined in `flow.js`:
   conversation-first path; the goal is to generate discussion and an action plan. ~40–60 min.
 * **Professional version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
   matrix → Solution canvas**. The full analytical path from the project's real use cases through
-  formal requirement mapping to a grounded solution design. ~70–95 min.
+  formal requirement mapping to a grounded solution design. ~65–90 min.
 
 Choosing a version reveals its numbered steps (each with its instructions and estimated time and an
 **Open** button) and asks for the group's **Company, Participants and Date once** — these are stored
