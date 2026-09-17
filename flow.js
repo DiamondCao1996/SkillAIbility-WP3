@@ -26,7 +26,8 @@ const FLOWS = {
         key: "canvas", page: "canvas.html", name: "Workforce canvas", time: "20–30 min",
         purpose: "Open discussion and brainstorming around your own case.",
         instr: [
-          "Fill in <b>Company</b> first (required to submit).",
+          "<b>Form your group:</b> people working on the same case fill in the tools together on <b>one computer</b>; otherwise each person uses their own computer.",
+          "Make sure <b>Company / organisation</b> is filled in (start page) – it identifies your group's submission.",
           "Pick the <b>worker groups (personas)</b> involved, and describe your specific persona.",
           "Work through the boxes: Challenge → Pain points → Goals → Solution (task / technology / organisation) → Unique value → Risks → KPIs → Skills → Action plan.",
           "In the <b>KPIs</b> box, use <b>📊 Score success metrics</b> to rate and prioritise how you will measure success.",
@@ -38,7 +39,8 @@ const FLOWS = {
         purpose: "Turn the discussion into a concrete, agreed solution design and action plan.",
         instr: [
           "This canvas opens <b>pre-filled from your workforce canvas</b> – personas and texts are mirrored automatically.",
-          "Refine the three <b>solution layers</b>: task, technology and organisational conditions.",
+          "<b>Click the three solution layers</b> – Task characteristics (TA), Technology requirements (TE), Organisational conditions (OR) – select the codes your solution builds on and add free text where needed.",
+          "Then <b>reflect on the free-text boxes</b> (challenge, pain points, goals, UVP, risks, KPIs, skills, action plan) that came over from the workforce canvas: refine where needed.",
           "Sharpen the <b>action plan</b>: concrete actions, owners and timing.",
           "Click <b>Submit all steps</b> when the group agrees – both steps are sent to the facilitators together and emailed as Excel."
         ]
@@ -57,26 +59,27 @@ const FLOWS = {
         key: "usecases", page: "usecases.html", name: "Use case matching", time: "10–15 min",
         purpose: "Ground the workshop in the project's real SkillAIbility use cases.",
         instr: [
+          "<b>Form your group:</b> everyone working on the same use case sits together and fills in the tools on <b>one computer</b>. If you work on different use cases – even from the same institute – each of you uses your own computer.",
+          "Make sure <b>Company / organisation</b> is filled in (start page) – it identifies your group's submission.",
           "Choose your <b>institute</b> (CHALMERS, NTNU, LMS, MADE, TKNIKA) – you see only its use cases.",
-          "For each use case, tick which <b>TA / TE / OR</b> requirements it addresses (lists are expandable to full text).",
-          "Judge whether the requirement lists are <b>sufficient</b> for the use case (yes / partly / no).",
-          "Note <b>what is missing</b> – these gaps feed the discussion that follows."
+          "For each use case, tick the <b>Task characteristics (TA)</b> it impacts, and the <b>Technology requirements (TE)</b> and <b>Organisational conditions (OR)</b> needed to implement it. Use <b>Expand</b> to read the full text of every item.",
+          "Judge whether the lists are <b>sufficient to implement</b> the use case (yes / partly / no) and note <b>what is missing</b> – these gaps feed the discussion that follows."
         ]
       },
       {
         key: "canvas", page: "canvas.html", name: "Workforce canvas", time: "15–20 min",
         purpose: "Brainstorm the human-centred case that frames the requirements.",
         instr: [
-          "Fill in <b>Company</b> first, and pick the <b>worker groups (personas)</b>.",
-          "Sketch Challenge → Pain points → Goals → an initial Solution → KPIs.",
-          "Keep it open and exploratory – you will formalise the requirements in the next step."
+          "Pick the <b>worker groups (personas)</b> your use case is for, and describe your specific persona.",
+          "Work through the boxes: Challenge → Pain points → Goals → an initial Solution (task / technology / organisation) → Unique value → Risks → KPIs → Skills → Action plan.",
+          "Keep it open and exploratory – you will formalise the requirements in the next step. Everything autosaves and is mirrored into the solution canvas of step 4."
         ]
       },
       {
         key: "matrix", page: "inclusion.html", istep: 1, name: "Assessment matrix", time: "25–35 min",
         purpose: "Formalise requirements per worker group × learning pathway – the analytical core.",
         instr: [
-          "Three dimensions – <b>Task (TA)</b>, <b>Technology (TE)</b>, <b>Work organisation (OR)</b> – each a grid of worker groups × learning pathways.",
+          "Three dimensions – <b>Task characteristics (TA)</b>, <b>Technology requirements (TE)</b>, <b>Organisational conditions (OR)</b> – each a grid of worker groups × learning pathways.",
           "Click a cell to tick / untick requirement codes, add a note, rename codes, add new ones or mark the <b>frequent (★)</b> ones.",
           "Use <b>Expand codes</b> / <b>Expand list</b> to see full descriptions.",
           "The lists you build here flow into the solution canvas and back to the use case toolkit."
@@ -86,9 +89,9 @@ const FLOWS = {
         key: "solution", page: "inclusion.html", istep: 2, name: "Solution canvas", time: "20–25 min",
         purpose: "Design the solution, linked to the requirements you mapped.",
         instr: [
-          "The three <b>solution layers</b> draw on the codes from step 1 – the codes assigned to your selected personas are <b>ringed in yellow</b> as suggestions.",
-          "Click codes to include them and add free text for anything beyond the codes.",
-          "Complete the free-text boxes (challenge, pain points, goals, UVP, risks, KPIs, skills, action plan).",
+          "Your texts from step 2 are <b>already here</b> – this canvas mirrors the workforce canvas.",
+          "<b>Click the three solution layers</b> – Task characteristics (TA), Technology requirements (TE), Organisational conditions (OR) – and select the codes your solution builds on. Codes assigned to your personas in step 3 are <b>ringed in yellow</b> as suggestions; add free text for anything beyond the codes.",
+          "Then <b>reflect on the free-text boxes</b> (challenge, pain points, goals, UVP, risks, KPIs, skills, action plan): does the solution still answer them? Refine where needed.",
           "<b>Submit all steps</b> sends everything – use case matching, workforce canvas, matrix and this canvas – together."
         ]
       }
