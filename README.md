@@ -73,8 +73,14 @@ All three stay interconnected in the browser (same device, no login):
 * **Company** and **Participants** carry across all three tools.
 
 Common to every tool: autosave in the browser (closing the tab and coming back restores the draft),
-Export / Import as JSON (`Ctrl/Cmd + S` exports), A3 landscape print / save as PDF, one **Submit**
-button, and layouts that reflow for tablets and phones.
+Export / Import as JSON (`Ctrl/Cmd + S` exports), A3 landscape print / save as PDF, and layouts that
+reflow for tablets and phones.
+
+**Submitting in a guided flow:** groups submit once, at the end. On intermediate steps the button
+reads *Submit when all steps are finished* (disabled – everything autosaves meanwhile); on the last
+step it becomes *Submit all steps* and sends the drafts of every step of the flow together, so the
+research team receives one email with the complete workbook. Opened outside a flow, each tool still
+has its own Submit.
 
 ## The four learning pathways
 

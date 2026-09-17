@@ -30,7 +30,7 @@ const FLOWS = {
           "Pick the <b>worker groups (personas)</b> involved, and describe your specific persona.",
           "Work through the boxes: Challenge → Pain points → Goals → Solution (task / technology / organisation) → Unique value → Risks → KPIs → Skills → Action plan.",
           "In the <b>KPIs</b> box, use <b>📊 Score success metrics</b> to rate and prioritise how you will measure success.",
-          "Everything autosaves in this browser; you can Export a JSON backup any time."
+          "Everything autosaves in this browser; you submit once, at the last step."
         ]
       },
       {
@@ -40,7 +40,7 @@ const FLOWS = {
           "This canvas opens <b>pre-filled from your workforce canvas</b> – personas and texts are mirrored automatically.",
           "Refine the three <b>solution layers</b>: task, technology and organisational conditions.",
           "Sharpen the <b>action plan</b>: concrete actions, owners and timing.",
-          "Click <b>Submit</b> when the group agrees – it is sent to the facilitators and emailed as Excel."
+          "Click <b>Submit all steps</b> when the group agrees – both steps are sent to the facilitators together and emailed as Excel."
         ]
       }
     ]
@@ -89,7 +89,7 @@ const FLOWS = {
           "The three <b>solution layers</b> draw on the codes from step 1 – the codes assigned to your selected personas are <b>ringed in yellow</b> as suggestions.",
           "Click codes to include them and add free text for anything beyond the codes.",
           "Complete the free-text boxes (challenge, pain points, goals, UVP, risks, KPIs, skills, action plan).",
-          "One <b>Submit</b> sends both the matrix and this canvas together."
+          "<b>Submit all steps</b> sends everything – use case matching, workforce canvas, matrix and this canvas – together."
         ]
       }
     ]
@@ -156,6 +156,7 @@ const WPFLOW = {
       + ".wpf-card .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}"
       + ".wpf-card .row button{border:0;border-radius:9px;padding:9px 15px;font:600 14px/1 'Segoe UI',system-ui,sans-serif;cursor:pointer}"
       + ".wpf-card .wpf-cancel{background:#e7e9ee;color:#0b1b3f}.wpf-card .wpf-go{background:#41c3ec;color:#0b1b3f}.wpf-card .wpf-go:hover{background:#6ad3f2}"
+      + ".wpf-wait{opacity:.55 !important;cursor:not-allowed !important}"
       + "@media print{.wpf-bar,.wpf-ov{display:none !important}}"
       // during a guided flow the flow bar is the only navigation – hide the
       // cross-tool jump links (toolstrip + header nav) and the in-tool step
@@ -220,6 +221,87 @@ const WPFLOW = {
     if (next) next.onclick = function () { gate(flowId, idx + 1); };
   }
 
+  /* ---- one submission for the whole flow ----
+     Intermediate steps: the tool's Submit button waits. Last step: it sends the
+     drafts of every step of the flow (from this browser) together; the backend
+     emails once, with the complete workbook attached. */
+  var DRAFT_PREFIX = { "canvas.html": "skillaibility_wp3_canvas_", "inclusion.html": "skillaibility_wp3_assessment_", "usecases.html": "skillaibility_wp3_usecases_" };
+  function draftFor(page) {
+    var pre = DRAFT_PREFIX[page]; if (!pre) return null;
+    var best = null;
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(pre) === 0 && !/_id$/.test(k)) { try { var v = JSON.parse(localStorage.getItem(k)); if (v && typeof v === "object" && (!best || k > best.key)) best = { key: k, data: v }; } catch (e) {} }
+    }
+    return best ? best.data : null;
+  }
+  function stepLabel(page) { return page === "canvas.html" ? "Workforce canvas" : page === "inclusion.html" ? "Assessment matrix + solution canvas" : "Use case matching"; }
+  function currentPage() { return (location.pathname.split("/").pop() || "index.html"); }
+  function say(msg, cls) { if (typeof window.toast === "function") window.toast(msg, cls || "", 6000); else alert(msg); }
+
+  function submitFlow(flowId) {
+    var f = FLOWS[flowId]; if (!f) return;
+    var sess = readSession();
+    var pages = []; f.steps.forEach(function (st) { if (pages.indexOf(st.page) < 0) pages.push(st.page); });
+    var here = currentPage();
+    var payloads = [], missing = [];
+    pages.forEach(function (pg) {
+      var d = (pg === here && typeof window.collect === "function") ? window.collect() : draftFor(pg);
+      if (!d) { missing.push(stepLabel(pg)); return; }
+      if (!d.company && sess.company) d.company = sess.company;
+      if (!d.participants && sess.participants) d.participants = sess.participants;
+      if (!d.date && sess.date) d.date = sess.date;
+      d.flow = flowId; d.flow_name = f.name;
+      payloads.push({ page: pg, data: d });
+    });
+    var company = (payloads[0] && payloads[0].data.company) || sess.company || "";
+    if (!company) { if (typeof window.modal === "function") window.modal("Almost there", "<p><b>Please fill in the Company field</b> – it identifies your group's submission.</p>", [{ label: "OK" }]); else say("Please fill in the Company field first."); return; }
+    var body = "<p>This sends <b>all steps of the " + esc(f.name) + "</b> to the facilitators in one go:</p><ul>"
+      + payloads.map(function (p) { return "<li>" + esc(stepLabel(p.page)) + "</li>"; }).join("") + "</ul>"
+      + (missing.length ? "<p>No draft found on this device for: <b>" + esc(missing.join(", ")) + "</b> – those steps are skipped.</p>" : "")
+      + (typeof SUBMIT_URL !== "undefined" && SUBMIT_URL ? "<p>The research team receives one email with the complete Excel workbook.</p>" : "<p><i>No collection backend is configured, so a JSON file with all steps will be downloaded instead – please send it to the facilitator.</i></p>");
+    var go = function () { doSubmitFlow(payloads, company, flowId); };
+    if (typeof window.modal === "function") window.modal("Submit all steps?", body, [{ label: "Cancel" }, { label: "Submit all steps", cls: "btn-primary", onClick: go }]);
+    else go();
+  }
+  async function doSubmitFlow(payloads, company, flowId) {
+    var btn = document.getElementById("submitBtn");
+    if (typeof SUBMIT_URL === "undefined" || !SUBMIT_URL) {
+      var blob = new Blob([JSON.stringify({ flow: flowId, company: company, steps: payloads.map(function (p) { return p.data; }) }, null, 2)], { type: "application/json" });
+      var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+      a.download = ("WP3_" + flowId + "_" + company + "_all-steps").replace(/[^\w\-]+/g, "-") + ".json"; a.click();
+      say("All steps exported as one JSON file", "ok"); return;
+    }
+    if (btn) { btn.disabled = true; btn.textContent = "Submitting all steps…"; }
+    try {
+      for (var i = 0; i < payloads.length; i++) {
+        var d = payloads[i].data;
+        d.no_email = (i < payloads.length - 1);   // the backend emails once, after the last part
+        await fetch(SUBMIT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(d) });
+      }
+      say("✓ All " + payloads.length + " steps submitted – thank you!", "ok");
+      var st = document.getElementById("status"); if (st) st.textContent = "All steps submitted " + new Date().toLocaleTimeString() + " · you can keep editing and re-submit";
+    } catch (err) {
+      say("Submission failed (offline?) – please try again or Export a JSON backup.", "err");
+    } finally { if (btn) { btn.disabled = false; btn.textContent = "Submit all steps"; } }
+  }
+
+  function configureSubmit(flowId, idx) {
+    var f = FLOWS[flowId]; var btn = document.getElementById("submitBtn"); if (!f || !btn) return;
+    var last = idx === f.steps.length - 1;
+    var fresh = btn.cloneNode(true); fresh.removeAttribute("onclick"); btn.parentNode.replaceChild(fresh, btn); btn = fresh;
+    if (last) {
+      btn.textContent = "Submit all steps";
+      btn.title = "Sends every step of this flow together";
+      btn.onclick = function () { submitFlow(flowId); };
+    } else {
+      btn.textContent = "Submit when all steps are finished";
+      btn.classList.add("wpf-wait");
+      btn.title = "You submit once, at the last step – everything from all steps is sent together. Your work autosaves meanwhile.";
+      btn.onclick = function () { say("Keep going – you submit once at the last step (" + f.steps[f.steps.length - 1].name + "); everything autosaves meanwhile."); };
+    }
+  }
+
   // Run as early as possible (this script is at the end of <body>, so the tool's
   // own DOM and setStep() already exist). Setting the sub-step and hiding the
   // free-jump navigation before first paint avoids a confusing flash / stray jump.
@@ -234,6 +316,7 @@ const WPFLOW = {
     // inclusion.html serves two sub-steps (matrix / solution) – open the right one straight away
     if (s.istep && typeof window.setStep === "function") { try { window.setStep(s.istep); } catch (e) {} }
     renderBar(q.flow, q.step);
+    configureSubmit(q.flow, q.step - 1);
   }
   if (document.body) boot();
   else document.addEventListener("DOMContentLoaded", boot);

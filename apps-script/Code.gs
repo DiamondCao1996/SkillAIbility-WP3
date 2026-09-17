@@ -310,7 +310,7 @@ function doPost(e) {
     if (data.form === "assessment" || data.form === "inclusion") saveAssessment_(data);
     else if (data.form === "usecases") saveUseCases_(data);
     else saveCanvas_(data);
-    notify_(data);
+    if (!data.no_email) notify_(data);   // a multi-step flow submission emails once, after its last part
     return ContentService.createTextOutput(JSON.stringify({ ok: true, id: data.submission_id, form: data.form || "canvas" }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
