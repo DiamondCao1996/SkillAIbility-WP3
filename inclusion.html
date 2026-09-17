@@ -418,7 +418,7 @@
    DATA MODEL
    ===================================================================== */
 const WORKSHOP_ID = "WP3";
-const STORAGE_KEY = "skillaibility_wp3_assessment_v2";
+const STORAGE_KEY = "skillaibility_wp3_assessment_v3";
 const CANVAS_KEY = "skillaibility_wp3_canvas_v2";   // workforce canvas draft (tool 1) on this device
 const FORM = "assessment";
 
@@ -443,18 +443,35 @@ const DIMENSIONS = [
     charsTitle:"Task characteristics",
     charsDef:"The nature of the task and its characteristics that influence how a worker can perform it.",
     chars:[
-      "<b>Demand taxonomy:</b> core demands (physical / cognitive / sensing) set task feasibility; contextual demands (leadership, training, social inclusion) decide sustainability of inclusion. <span class='ref'>(SPS 2026)</span>",
+      "<b>Demand taxonomy:</b> core demands (physical / cognitive / sensing) set task feasibility; contextual demands (leadership, training, social inclusion) decide sustainability of inclusion. <span class='ref'>(Jakšić et al., 2026; SPS 2026)</span>",
       "Task allocation and redistributed-workload evidence from interviews; empowerment and performance perspective. <span class='ref'>[1]</span>",
       "Sectoral framing of task change against EU digitalisation-and-work trends. <span class='ref'>[2][3]</span>"
     ],
     codes:[
       {id:"TA1", label:"Fewer complex motions – perform one motion at a time", freq:false},
-      {id:"TA2", label:"", freq:false},{id:"TA3", label:"", freq:false},{id:"TA4", label:"", freq:false},
-      {id:"TA5", label:"", freq:false},{id:"TA6", label:"", freq:false},{id:"TA7", label:"", freq:false},{id:"TA8", label:"", freq:false},
+      {id:"TA2", label:"In-situ capability / skill matching", freq:false},
+      {id:"TA3", label:"Remembering a long list of tasks to be performed sequentially – AI helps manage workflow organisation [Use case MADE LF02]", freq:false},
+      {id:"TA4", label:"Complementary task allocation – AI automates or supports task components while preserving meaningful human judgment and contribution, so humans and AI use their respective strengths (Liu, 2026)", freq:false},
+      {id:"TA5", label:"Physically demanding activities – tool reducing ergonomic strains [Use case MADE LF03]", freq:false},
+      {id:"TA6", label:"Progressive task complexity – start with simpler AI-supported tasks and increase complexity with learning", freq:false},
+      {id:"TA7", label:"Adequate decision time – allow sufficient time to interpret AI information and respond", freq:false},
+      {id:"TA8", label:"Structured task steps – divide complex work into clear, manageable steps", freq:false},
+      {id:"TA9", label:"Perceived meaningfulness of the task – AI helps manage workflow organisation and makes the meaning of tasks recognisable (Cassar & Meier 2018; Ariely et al. 2008)", freq:false},
     ],
     baseline:{
-      "novice:inclusion":["TA1"], "deaf:inclusion":["TA1"], "aging:inclusion":["TA1"],
-      "physical:inclusion":["TA1"], "cognitive:inclusion":["TA1"]
+      "novice:augmentation":["TA3", "TA9"],
+      "novice:inclusion":["TA1", "TA3", "TA6"],
+      "novice:symbiosis":["TA3"],
+      "novice:empowerment":["TA6"],
+      "deaf:inclusion":["TA1"],
+      "aging:augmentation":["TA4"],
+      "aging:inclusion":["TA1", "TA7"],
+      "aging:empowerment":["TA7"],
+      "physical:augmentation":["TA4"],
+      "physical:inclusion":["TA1", "TA5"],
+      "physical:symbiosis":["TA5"],
+      "cognitive:inclusion":["TA1", "TA8"],
+      "cognitive:empowerment":["TA8"],
     }
   },
   {
@@ -468,23 +485,40 @@ const DIMENSIONS = [
       "<b>Multimodal redundancy principle:</b> at least two channels for every alert / instruction; adaptable rather than static technology."
     ],
     codes:[
-      {id:"TE1",  label:"Physical functions – adjust spacing in projected assembly instructions", freq:false},
-      {id:"TE2",  label:"Cognitive support – in-situ instructions, continuous assistance", freq:false},
-      {id:"TE3",  label:"Cognitive support – two-way communication", freq:false},
-      {id:"TE4",  label:"Cognitive support – feedback systems", freq:false},
-      {id:"TE5",  label:"Cognitive support – automatic detection when the operator does not know how to initiate interaction", freq:false},
-      {id:"TE6",  label:"Sensing functions – appropriate mode of instruction (visual, audio, lights, verbal, colour schemes)", freq:true},
-      {id:"TE7",  label:"Simulation for work planning", freq:false},
-      {id:"TE8",  label:"In-situ capability / skill matching", freq:true},
-      {id:"TE9",  label:"Upskilling – sufficient content depth", freq:false},
-      {id:"TE10", label:"Upskilling – contextualisation for industry-specific training", freq:false},
+      {id:"TE1", label:"Physical functions – adjust spacing in projected assembly instructions", freq:false},
+      {id:"TE2", label:"Cognitive support – in-situ instructions, continuous assistance", freq:false},
+      {id:"TE3", label:"Cognitive support – two-way communication", freq:false},
+      {id:"TE4", label:"Cognitive support – feedback systems", freq:false},
+      {id:"TE5", label:"Cognitive support – automatic detection when the operator does not know how to initiate interaction", freq:false},
+      {id:"TE6", label:"Sensing functions – appropriate mode of instruction (visual, audio, lights, verbal, colour schemes)", freq:true},
+      {id:"TE7", label:"Simulation for work planning", freq:false},
+      {id:"TE8", label:"Dynamic adjustment to skill level", freq:true},
+      {id:"TE9", label:"Sufficient content depth", freq:false},
+      {id:"TE10", label:"Contextualisation for industry-specific training", freq:false},
+      {id:"TE11", label:"Understandable AI – AI outputs and explanations are accessible and easy to understand (Liu, 2026)", freq:false},
+      {id:"TE12", label:"Visual guidance – to be informed when pieces are assembled correctly [Use case MADE LF01]", freq:false},
+      {id:"TE13", label:"Haptic feedback – to be informed when a person / robot is moving in the vicinity [Use case NTNU LF02]", freq:false},
+      {id:"TE14", label:"Accessible alerts – visual or other non-audio alternatives for important alerts (Liu, 2026)", freq:false},
+      {id:"TE15", label:"Exoskeletons or tools that reduce or substitute for an operator's physical workload [Use case NTNU LF02]", freq:false},
+      {id:"TE16", label:"Machine–human interaction based on gesture [Use case Chalmers LF01 UC1]", freq:false},
     ],
     baseline:{
-      "novice:inclusion":["TE8"], "novice:symbiosis":["TE8","TE10"], "novice:empowerment":["TE7","TE8","TE9","TE10"],
-      "deaf:inclusion":["TE6"], "deaf:empowerment":["TE6"],
-      "aging:inclusion":["TE8"], "aging:empowerment":["TE8"],
+      "novice:augmentation":["TE11"],
+      "novice:inclusion":["TE8", "TE12"],
+      "novice:symbiosis":["TE8", "TE10", "TE12", "TE16"],
+      "novice:empowerment":["TE7", "TE8", "TE9", "TE10", "TE12"],
+      "deaf:inclusion":["TE6", "TE12", "TE13", "TE14"],
+      "deaf:symbiosis":["TE12", "TE13", "TE16"],
+      "deaf:empowerment":["TE6", "TE12", "TE14"],
+      "aging:inclusion":["TE8"],
+      "aging:symbiosis":["TE16"],
+      "aging:empowerment":["TE8"],
       "physical:inclusion":["TE1"],
-      "cognitive:augmentation":["TE4","TE6"], "cognitive:inclusion":["TE5","TE6"], "cognitive:symbiosis":["TE3"], "cognitive:empowerment":["TE2","TE6"]
+      "physical:symbiosis":["TE16"],
+      "cognitive:augmentation":["TE4", "TE6", "TE15"],
+      "cognitive:inclusion":["TE5", "TE6"],
+      "cognitive:symbiosis":["TE3", "TE15", "TE16"],
+      "cognitive:empowerment":["TE2", "TE6"],
     }
   },
   {
@@ -506,10 +540,18 @@ const DIMENSIONS = [
       {id:"OR6", label:"Knowledge-oriented leadership", freq:true},
       {id:"OR7", label:"Training through direct interaction with technology", freq:false},
       {id:"OR8", label:"Combined with direct contact with experts, e.g. visits and practical lectures", freq:true},
+      {id:"OR9", label:"Worker co-design – workers are involved in AI design, testing and improvement (Liu, 2026)", freq:false},
+      {id:"OR10", label:"Individual accessibility review – assess workplace and AI accessibility before implementation (Liu, 2026)", freq:false},
     ],
     baseline:{
-      "novice:inclusion":["OR8"], "novice:symbiosis":["OR1"], "novice:empowerment":["OR1","OR8"],
-      "aging:inclusion":["OR4","OR5","OR6"], "aging:symbiosis":["OR2","OR7"], "aging:empowerment":["OR2","OR3","OR5","OR6"]
+      "novice:inclusion":["OR8", "OR9"],
+      "novice:symbiosis":["OR1", "OR9"],
+      "novice:empowerment":["OR1", "OR8", "OR9"],
+      "aging:inclusion":["OR4", "OR5", "OR6"],
+      "aging:symbiosis":["OR2", "OR7"],
+      "aging:empowerment":["OR2", "OR3", "OR5", "OR6"],
+      "physical:inclusion":["OR10"],
+      "physical:empowerment":["OR10"],
     }
   }
 ];

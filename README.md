@@ -132,11 +132,11 @@ The boxes are laid out **one colour per row**, so a group works straight down th
 **Step 1 – matrix.** Three dimensions, each defined in one line above its matrix:
 
 * **Task characteristics (TA)** – the nature of the task and its characteristics that influence how
-  a worker can perform it. Codes TA1–TA8 (TA2–TA8 left blank for participants to define).
+  a worker can perform it. Codes TA1–TA9.
 * **Technology characteristics (TE)** – the features and functionality of the technology, equipment,
-  and tools that influence how a worker can perform the task. Codes TE1–TE10.
+  and tools that influence how a worker can perform the task. Codes TE1–TE16.
 * **Work organisation conditions (OR)** – the way work is structured, coordinated, and supported that
-  influences how a worker can perform the task. Codes OR1–OR8.
+  influences how a worker can perform the task. Codes OR1–OR10.
 
 Each dimension is a 5 × 4 grid of **worker groups** (novice / learning-vulnerable, deaf and
 hard-of-hearing, aging, physical support needs, cognitive support needs) × **outcomes**

@@ -92,19 +92,33 @@ const MATRIX_TO_UC_GROUP = { novice:"novice", deaf:"deaf", aging:"aging", physic
 /* baseline requirement code lists (fallback when no assessment-matrix draft exists in this browser) */
 const BASELINE_CODES = {
   TA:[
-    {id:"TA1", label:"Fewer complex motions – perform one motion at a time"}
+    {id:"TA1", label:"Fewer complex motions – perform one motion at a time"},
+    {id:"TA2", label:"In-situ capability / skill matching"},
+    {id:"TA3", label:"Remembering a long list of tasks to be performed sequentially – AI helps manage workflow organisation [Use case MADE LF02]"},
+    {id:"TA4", label:"Complementary task allocation – AI automates or supports task components while preserving meaningful human judgment and contribution, so humans and AI use their respective strengths (Liu, 2026)"},
+    {id:"TA5", label:"Physically demanding activities – tool reducing ergonomic strains [Use case MADE LF03]"},
+    {id:"TA6", label:"Progressive task complexity – start with simpler AI-supported tasks and increase complexity with learning"},
+    {id:"TA7", label:"Adequate decision time – allow sufficient time to interpret AI information and respond"},
+    {id:"TA8", label:"Structured task steps – divide complex work into clear, manageable steps"},
+    {id:"TA9", label:"Perceived meaningfulness of the task – AI helps manage workflow organisation and makes the meaning of tasks recognisable (Cassar & Meier 2018; Ariely et al. 2008)"},
   ],
   TE:[
-    {id:"TE1",  label:"Physical functions – adjust spacing in projected assembly instructions"},
-    {id:"TE2",  label:"Cognitive support – in-situ instructions, continuous assistance"},
-    {id:"TE3",  label:"Cognitive support – two-way communication"},
-    {id:"TE4",  label:"Cognitive support – feedback systems"},
-    {id:"TE5",  label:"Cognitive support – automatic detection when the operator does not know how to initiate interaction"},
-    {id:"TE6",  label:"Sensing functions – appropriate mode of instruction (visual, audio, lights, verbal, colour schemes)"},
-    {id:"TE7",  label:"Simulation for work planning"},
-    {id:"TE8",  label:"In-situ capability / skill matching"},
-    {id:"TE9",  label:"Upskilling – sufficient content depth"},
-    {id:"TE10", label:"Upskilling – contextualisation for industry-specific training"}
+    {id:"TE1", label:"Physical functions – adjust spacing in projected assembly instructions"},
+    {id:"TE2", label:"Cognitive support – in-situ instructions, continuous assistance"},
+    {id:"TE3", label:"Cognitive support – two-way communication"},
+    {id:"TE4", label:"Cognitive support – feedback systems"},
+    {id:"TE5", label:"Cognitive support – automatic detection when the operator does not know how to initiate interaction"},
+    {id:"TE6", label:"Sensing functions – appropriate mode of instruction (visual, audio, lights, verbal, colour schemes)"},
+    {id:"TE7", label:"Simulation for work planning"},
+    {id:"TE8", label:"Dynamic adjustment to skill level"},
+    {id:"TE9", label:"Sufficient content depth"},
+    {id:"TE10", label:"Contextualisation for industry-specific training"},
+    {id:"TE11", label:"Understandable AI – AI outputs and explanations are accessible and easy to understand (Liu, 2026)"},
+    {id:"TE12", label:"Visual guidance – to be informed when pieces are assembled correctly [Use case MADE LF01]"},
+    {id:"TE13", label:"Haptic feedback – to be informed when a person / robot is moving in the vicinity [Use case NTNU LF02]"},
+    {id:"TE14", label:"Accessible alerts – visual or other non-audio alternatives for important alerts (Liu, 2026)"},
+    {id:"TE15", label:"Exoskeletons or tools that reduce or substitute for an operator's physical workload [Use case NTNU LF02]"},
+    {id:"TE16", label:"Machine–human interaction based on gesture [Use case Chalmers LF01 UC1]"},
   ],
   OR:[
     {id:"OR1", label:"Flexible study methods – online learning"},
@@ -114,6 +128,8 @@ const BASELINE_CODES = {
     {id:"OR5", label:"Simultaneously value workers' long experience"},
     {id:"OR6", label:"Knowledge-oriented leadership"},
     {id:"OR7", label:"Training through direct interaction with technology"},
-    {id:"OR8", label:"Combined with direct contact with experts, e.g. visits and practical lectures"}
+    {id:"OR8", label:"Combined with direct contact with experts, e.g. visits and practical lectures"},
+    {id:"OR9", label:"Worker co-design – workers are involved in AI design, testing and improvement (Liu, 2026)"},
+    {id:"OR10", label:"Individual accessibility review – assess workplace and AI accessibility before implementation (Liu, 2026)"},
   ]
 };
