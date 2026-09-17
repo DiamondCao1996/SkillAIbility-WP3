@@ -114,7 +114,7 @@ const BASELINE_CODES = {
     {id:"TE9", label:"Suitable information density"},
     {id:"TE10", label:"System integration with industrial workflow"},
     {id:"TE11", label:"Understandable AI – AI outputs and explanations are accessible and easy to understand (Liu, 2026)"},
-    {id:"TE12", label:"Visual guidance – to be informed when pieces are assembled correctly [Use case MADE LF01]"},
+    {id:"TE12", label:"Visual guidance – to be informed when pieces are operated correctly [Use case MADE LF01]"},
     {id:"TE13", label:"Haptic feedback – to be informed when a person / robot is moving in the vicinity [Use case NTNU LF02]"},
     {id:"TE14", label:"Accessible alerts – visual or other non-audio alternatives for important alerts (Liu, 2026)"},
     {id:"TE15", label:"Exoskeletons or tools that reduce or substitute for an operator's physical workload [Use case NTNU LF02]"},
