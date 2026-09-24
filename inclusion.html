@@ -280,15 +280,15 @@
 
 <main>
   <div class="steps">
-    <button class="stepbtn active" id="stepbtn1" onclick="setStep(1)"><span class="sn">1</span><span>Assessment matrix<small>Map requirements per worker group × outcome</small></span></button>
-    <button class="stepbtn" id="stepbtn2" onclick="setStep(2)"><span class="sn">2</span><span>Solution canvas<small>Design your solution for the personas, linked to step 1</small></span></button>
+    <button class="stepbtn active" id="stepbtn1" onclick="setStep(1)"><span class="sn">1</span><span>Assessment matrix<small>Formalise requirements per worker group × learning pathway</small></span></button>
+    <button class="stepbtn" id="stepbtn2" onclick="setStep(2)"><span class="sn">2</span><span>Solution canvas<small>Design the solution, linked to the requirements you mapped</small></span></button>
   </div>
 
   <!-- ================= STEP 1 ================= -->
   <div class="stepview active" id="step1">
     <div class="framing">
-      <h2>Step 1 · Organisation → Inclusion</h2>
-      <p>For each <b>worker group</b> (rows) and each <b>outcome</b> the technology should deliver (columns), select which <b>requirements</b> apply. Cells are pre-filled with the WP3 research baseline – confirm, remove or add codes based on your own case. Click a cell to edit it; define new codes in the legend on the right (★ marks a frequent requirement). Your choices here feed the solution canvas in step 2.</p>
+      <h2>Step 1 · Assessment matrix <small style="font-weight:500;color:#5b6a7d">– formalise requirements per worker group × learning pathway</small></h2>
+      <p><b>Three dimensions</b>, each a grid of <b>worker groups</b> (rows) × <b>learning pathways</b> (columns): Task characteristics (TA), Technology requirements (TE), Organisational conditions (OR). Cells are pre-filled with the <b>WP3 research baseline</b> – confirm, remove or add. <b>Click a cell</b>, then tick / untick codes in the legend on the right and add a note for the cell. Rename codes, add new ones (<b>+ New code</b>) or mark frequent ones with ★. <b>▼ Expand codes</b> shows full text inside the cells; <b>▼ Expand list</b> shows the full legend. The lists you build here flow into the solution canvas (step 2) and back to the use case toolkit.</p>
       <div class="outcomes" id="outcomePills"></div>
     </div>
     <div class="tabs" id="tabs"></div>
@@ -299,7 +299,7 @@
   <div class="stepview" id="step2">
     <div class="framing">
       <h2>Step 2 · Solution canvas <button class="expand-btn" style="margin-left:10px;vertical-align:middle" onclick="importFromCanvas(false)" title="The personas, texts and solution layers are mirrored live with the workforce canvas (tool 1) – click to re-sync">↻ Sync with workforce canvas</button></h2>
-      <p>Design the solution for your case. The <b>Persona</b> box links to the worker groups of step 1, and the three <b>Solution layers</b> (task · technology · organisation) draw on the requirement codes you mapped in the matrix – codes ringed in yellow are the ones step 1 assigned to your selected personas. Click codes to include them, and add free text for anything beyond the codes.</p>
+      <p>Design the solution, linked to the requirements you mapped. Your texts from the <b>workforce canvas are already here</b> – this canvas mirrors it. <b>Click the three solution layers</b> – Task characteristics (TA), Technology requirements (TE), Organisational conditions (OR) – and select the codes your solution builds on; codes assigned to your personas in the matrix are <b>ringed in yellow</b> as suggestions, and free text covers anything beyond the codes. Then <b>reflect on the free-text boxes</b> – challenge, pain points, goals, UVP, risks, KPIs, skills, action plan: does the solution still answer them? Refine where needed. When the group agrees: <b>Submit all steps</b>.</p>
     </div>
     <div class="canvas2">
 
