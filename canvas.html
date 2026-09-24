@@ -205,6 +205,20 @@
   .framing{background:#fff;border-radius:var(--radius,14px);padding:14px 20px;margin-bottom:16px;border-left:6px solid var(--navy,#0b1b3f)}
   .framing h2{margin:0 0 4px;font-size:18px;font-weight:600}
   .framing p{margin:0;font-size:14px;color:var(--muted,#5b6a7d);line-height:1.45}
+  /* learning pathways box */
+  .box.violet{background:#e9e4fb;border-color:#a99bea}
+  .pw-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1}
+  @media (max-width:1000px){.pw-cards{grid-template-columns:1fr 1fr}}
+  @media (max-width:600px){.pw-cards{grid-template-columns:1fr}}
+  .pwc{border:2px solid rgba(11,27,63,.25);border-radius:12px;padding:10px 12px 10px 34px;background:rgba(255,255,255,.65);font-size:13px;line-height:1.4;color:var(--ink);user-select:none;display:flex;flex-direction:column;gap:3px;cursor:pointer;position:relative;transition:background .15s,border-color .15s}
+  .pwc:hover{background:#fff;border-color:var(--navy)}
+  .pwc .pc{position:absolute;left:11px;top:10px;font-size:16px}
+  .pwc.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .pwc.on small,.pwc.on .def{opacity:.92}
+  .pwc b{font-size:14.5px}
+  .pwc small{font-size:12px;opacity:.75;font-style:italic}
+  #c_pathways{min-height:0}
+  #c_pathways .pw-cards{margin-top:8px}
   @media print{ .framing{display:none !important} }
   @media print{
     @page{size:A3 landscape;margin:10mm}
@@ -243,6 +257,14 @@
     <p>Pick the <b>worker groups (personas)</b> your use case is for, and describe your specific persona. Work through the boxes: Challenge → Pain points → Goals → an initial Solution (task / technology / organisation) → Unique value → Risks → KPIs → Skills → Action plan. In the <b>KPIs</b> box, use <b>📊 Score success metrics</b> to rate how you will measure success. Keep it open and exploratory – the requirements are formalised in the assessment matrix. Everything you write here is <b>mirrored into the solution canvas</b>, so you never type it twice.</p>
   </div>
   <div class="canvas" id="canvas">
+
+    <div class="crow" id="row-pathways">
+    <section class="box violet" id="c_pathways">
+      <span class="step">0</span><h2>Learning pathways</h2>
+      <p class="q">The four SkillAIbility learning pathways – the columns of the assessment matrix and the pathways of the use case matching. Click to select the one(s) your case aims at.</p>
+      <div class="pw-cards" id="pathwayDefs"></div>
+    </section>
+    </div>
 
     <div class="crow" id="row-blue">
     <section class="box blue" id="challenge">
@@ -419,9 +441,9 @@
 
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
-<script src="config.js?v=20260924b"></script>
-<script src="usecases-data.js?v=20260924b"></script>
-<script src="metrics-data.js?v=20260924b"></script>
+<script src="config.js?v=20260924c"></script>
+<script src="usecases-data.js?v=20260924c"></script>
+<script src="metrics-data.js?v=20260924c"></script>
 <script>
 /* SUBMIT_URL is defined in config.js */
 const WORKSHOP_ID = "WP3";         // tag stored with every submission
@@ -442,6 +464,7 @@ const PERSONA_GROUPS = [
   { id:"cognitive", name:"Workers with cognitive support needs" },
 ];
 let personas = [];
+let pathways = [];
 let metrics = { task_type:"", context:"", scores:{} };   // success-metrics scoring (opened from the KPIs box)
 let fbRating = 0;   // 1–5 rating in the feedback box (canvas_feedback text is a normal field)
 /* live mirror: pull the shared fields back from the assessment matrix's step 2 when it changes */
@@ -455,14 +478,22 @@ function pullFromMatrix(){
   Object.keys(map).forEach(k=>{ const v=(m.canvas.fields||{})[map[k]]; const el=$(`textarea[data-key=${k}]`); if(typeof v==="string"&&el&&el.value!==v){ el.value=v; changed=true; } });
   Object.keys(sol).forEach(k=>{ const v=((m.canvas.sol||{})[sol[k]]||{}).text; const el=$(`textarea[data-key=${k}]`); if(typeof v==="string"&&el&&el.value!==v){ el.value=v; changed=true; } });
   if(Array.isArray(m.canvas.personas)){ const np=m.canvas.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)); if(JSON.stringify(np)!==JSON.stringify(personas)){ personas=np; changed=true; } }
+  if(Array.isArray(m.canvas.pathways)){ const np=m.canvas.pathways.filter(p=>PATHWAYS.some(x=>x.id===p)); if(JSON.stringify(np)!==JSON.stringify(pathways)){ pathways=np; changed=true; } }
   if(m.company&&!$("#m_case").value){ $("#m_case").value=m.company; changed=true; }
   if(m.participants&&!$("#m_people").value){ $("#m_people").value=m.participants; changed=true; }
   return changed;
 }
 window.addEventListener("storage",e=>{
-  if(e.key===MATRIX_KEY && pullFromMatrix()){ renderPersonas(); scheduleSave(); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); }
+  if(e.key===MATRIX_KEY && pullFromMatrix()){ renderPersonas(); renderPathways(); scheduleSave(); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); }
   if(e.key===STORAGE_KEY && e.newValue){ try{ const d=JSON.parse(e.newValue); if(d.synced_from==="assessment"){ fill(d); $("#status").textContent="Updated live from the assessment matrix · "+new Date().toLocaleTimeString(); } }catch(err){} }
 });
+function renderPathways(){
+  const h=$("#pathwayDefs"); if(!h||typeof PATHWAYS==="undefined") return; h.innerHTML="";
+  PATHWAYS.forEach(p=>{ const on=pathways.includes(p.id); const c=document.createElement("div"); c.className="pwc"+(on?" on":""); c.title=on?"Click to deselect":"Click to select this pathway";
+    c.innerHTML=`<span class="pc">${on?"☑":"☐"}</span><b>${p.name}</b><small>${p.short}</small><span class="def">${p.def}</span>`;
+    c.onclick=()=>{ const i=pathways.indexOf(p.id); i>=0?pathways.splice(i,1):pathways.push(p.id); scheduleSave(); renderPathways(); refresh(); };
+    h.appendChild(c); });
+}
 function renderPersonas(){
   const pl=$("#personaList"); pl.innerHTML="";
   PERSONA_GROUPS.forEach(g=>{
@@ -584,6 +615,7 @@ function collect(){
   };
   fieldEls().forEach(t => d[t.dataset.key] = t.value.trim());
   d.personas = personas.slice();
+  d.pathways = pathways.slice();
   d.metrics = metricsCollect();
   d.canvas_rating = fbRating;
   return d;
@@ -600,6 +632,7 @@ function fill(d){
   // backwards compatibility with drafts that had a single solution box
   if(d.solution && !d.solution_technology) $("textarea[data-key=solution_technology]").value = d.solution;
   personas = Array.isArray(d.personas) ? d.personas.filter(p=>PERSONA_GROUPS.some(g=>g.id===p)) : [];
+  pathways = Array.isArray(d.pathways) ? d.pathways.filter(p=>PATHWAYS.some(x=>x.id===p)) : [];
   metrics = { task_type:"", context:"", scores:{} };
   if(d.metrics && typeof d.metrics==="object"){
     metrics.task_type = typeof d.metrics.task_type==="string" ? d.metrics.task_type : "";
@@ -609,6 +642,7 @@ function fill(d){
   }
   fbRating = Math.max(0, Math.min(5, +d.canvas_rating || 0));
   renderPersonas();
+  renderPathways();
   renderFbRate();
   if($("#metricsPage").classList.contains("open")) renderMetrics(); else updateMetricsBadge();
   refresh();
@@ -617,9 +651,10 @@ function fill(d){
 /* ---------- autosave ---------- */
 let saveTimer;
 function refresh(){
-  let filled=0, total=fieldEls().length+1;
+  let filled=0, total=fieldEls().length+2;
   fieldEls().forEach(t=>{ const box=t.closest(".box"); const has=t.value.trim().length>0; if(has) filled++; box.classList.toggle("filled", $$("textarea",box).some(x=>x.value.trim())); });
   if(personas.length){ filled++; $("#persona").classList.add("filled"); }
+  if(pathways.length) filled++;
   $("#progress").textContent = `${filled} / ${total} fields filled`;
 }
 function scheduleSave(){
@@ -641,6 +676,7 @@ document.addEventListener("input", e=>{ if(e.target.matches("textarea,input")) s
   // interconnection: start from the assessment matrix draft on this device (personas + company) if this canvas is still empty
   if(!restored && pullFromMatrix()){ $("#status").textContent="Taken over from your assessment matrix"; setTimeout(scheduleSave,0); }
   renderPersonas();
+  renderPathways();
   renderFbRate();
   updateMetricsBadge();
   refresh();
@@ -705,7 +741,7 @@ async function doSubmit(d){
 /* keyboard shortcut: Ctrl/Cmd+S exports */
 document.addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
 </script>
-<script src="flow.js?v=20260924b"></script>
+<script src="flow.js?v=20260924c"></script>
 <script>
 /* Step number follows the guided flow: Academic = step 2, Industrial = step 1 */
 (function(){ if(new URLSearchParams(location.search).get("flow")==="industrial") document.querySelectorAll(".sn-c").forEach(function(e){e.textContent="1";}); })();

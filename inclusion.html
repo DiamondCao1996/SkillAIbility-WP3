@@ -196,6 +196,11 @@
   @media (max-width:1000px){.pw-cards{grid-template-columns:1fr 1fr}}
   @media (max-width:600px){.pw-cards{grid-template-columns:1fr}}
   .pwc{border:2px solid rgba(11,27,63,.25);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.65);font-size:13px;line-height:1.4;color:var(--ink);user-select:none;display:flex;flex-direction:column;gap:3px}
+  .pwc{cursor:pointer;position:relative;padding-left:34px;transition:background .15s,border-color .15s}
+  .pwc:hover{background:#fff;border-color:var(--navy)}
+  .pwc .pc{position:absolute;left:11px;top:10px;font-size:16px}
+  .pwc.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .pwc.on small,.pwc.on .def{opacity:.92}
   .pwc b{font-size:14.5px}
   .pwc small{font-size:12px;opacity:.75;font-style:italic}
   .pwc .def{font-size:12.5px;margin-top:2px}
@@ -306,7 +311,7 @@
       <div class="crow" id="row-pathways">
       <section class="box violet" id="c_pathways">
         <span class="step">0</span><h2>Learning pathways</h2>
-        <p class="q">The four SkillAIbility learning pathways – the columns of the assessment matrix and the pathways of the use case matching. Aim your solution at one or more of them.</p>
+        <p class="q">The four SkillAIbility learning pathways – the columns of the assessment matrix and the pathways of the use case matching. Click to select the one(s) your solution aims at.</p>
         <div class="pw-cards ref" id="pathwayDefs"></div>
       </section>
       </div>
@@ -411,8 +416,8 @@
 <div class="modal" id="modal"><div class="card"><h3 id="modalTitle"></h3><div id="modalBody"></div><div class="row" id="modalRow"></div></div></div>
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
-<script src="config.js?v=20260924b"></script>
-<script src="usecases-data.js?v=20260924b"></script>
+<script src="config.js?v=20260924c"></script>
+<script src="usecases-data.js?v=20260924c"></script>
 <script>
 /* =====================================================================
    DATA MODEL
@@ -597,7 +602,7 @@ function freshState(){
 }
 function freshState2(){
   const fields={}; CANVAS_KEYS.forEach(k=>fields[k]="");
-  return { personas:[], fields, fb_rating:0, sol:{ TA:{codes:[],text:""}, TE:{codes:[],text:""}, OR:{codes:[],text:""} } };
+  return { personas:[], pathways:[], fields, fb_rating:0, sol:{ TA:{codes:[],text:""}, TE:{codes:[],text:""}, OR:{codes:[],text:""} } };
 }
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -608,14 +613,15 @@ const $$ = s => [...document.querySelectorAll(s)];
 const SHARED_MAP={challenge:"challenge",persona:"persona_notes",pain_points:"pain_points",goals:"goals",uvp:"uvp",risks:"risks",kpi_social:"kpi_social",kpi_technical:"kpi_technical",kpi_operational:"kpi_operational",kpi_economic:"kpi_economic",skills:"skills",action_plan:"action_plan"};
 const SOL_MAP=[["solution_task","TA"],["solution_technology","TE"],["solution_organisation","OR"]];
 function canvasDraft(){ try{ return JSON.parse(localStorage.getItem(CANVAS_KEY)||"null"); }catch(e){ return null; } }
-function sharedSnapshot(){ const o={personas:state2.personas.slice()}; Object.keys(SHARED_MAP).forEach(k=>o[k]=state2.fields[SHARED_MAP[k]]||""); SOL_MAP.forEach(([k,d])=>o[k]=state2.sol[d].text||""); return o; }
-function step2IsEmpty(){ return !state2.personas.length && !CANVAS_KEYS.some(k=>(state2.fields[k]||"").trim()) && !["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim()); }
+function sharedSnapshot(){ const o={personas:state2.personas.slice(),pathways:state2.pathways.slice()}; Object.keys(SHARED_MAP).forEach(k=>o[k]=state2.fields[SHARED_MAP[k]]||""); SOL_MAP.forEach(([k,d])=>o[k]=state2.sol[d].text||""); return o; }
+function step2IsEmpty(){ return !state2.personas.length && !state2.pathways.length && !CANVAS_KEYS.some(k=>(state2.fields[k]||"").trim()) && !["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim()); }
 /* canvas → step 2 (mirror; returns true if anything changed) */
 function syncFromCanvas(){
   const c=canvasDraft(); if(!c) return false;
   const before=JSON.stringify(sharedSnapshot());
   Object.keys(SHARED_MAP).forEach(k=>{ if(typeof c[k]==="string") state2.fields[SHARED_MAP[k]]=c[k]; });
   if(Array.isArray(c.personas)) state2.personas=c.personas.filter(p=>GROUPS.some(g=>g.id===p));
+  if(Array.isArray(c.pathways)) state2.pathways=c.pathways.filter(p=>PATHWAYS.some(x=>x.id===p));
   SOL_MAP.forEach(([k,d])=>{ if(typeof c[k]==="string") state2.sol[d].text=c[k]; });
   if(c.solution&&!c.solution_technology) state2.sol.TE.text=c.solution;
   if(!$("#m_case").value&&c.company) $("#m_case").value=c.company;
@@ -627,7 +633,7 @@ function pushToCanvas(){
   let c=canvasDraft();
   if(!c){ if(step2IsEmpty()) return; c={form:"canvas",workshop:WORKSHOP_ID}; }
   const snap=sharedSnapshot(); let changed=false;
-  Object.keys(snap).forEach(k=>{ const v=snap[k]; if(JSON.stringify(c[k]===undefined?(k==="personas"?[]:""):c[k])!==JSON.stringify(v)){ c[k]=v; changed=true; } });
+  Object.keys(snap).forEach(k=>{ const v=snap[k]; if(JSON.stringify(c[k]===undefined?((k==="personas"||k==="pathways")?[]:""):c[k])!==JSON.stringify(v)){ c[k]=v; changed=true; } });
   const comp=$("#m_case").value.trim(), ppl=$("#m_people").value.trim();
   if(comp&&c.company!==comp){ c.company=comp; changed=true; }
   if(ppl&&c.participants!==ppl){ c.participants=ppl; changed=true; }
@@ -755,7 +761,7 @@ function renderSide(d){
 function updateCounts(){
   let filled=0;
   DIMENSIONS.forEach(d=>{ const st=state.dims[d.id]; const n=Object.values(st.cells).filter(a=>a.length).length; const c=Object.values(st.cells).reduce((s,a)=>s+a.length,0); filled+=n; const el=$("#cnt_"+d.id); if(el) el.textContent=`${n}/20 cells · ${c} codes`; });
-  const f2=CANVAS_KEYS.filter(k=>state2.fields[k].trim()).length + (state2.personas.length?1:0) + (["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim())?1:0);
+  const f2=CANVAS_KEYS.filter(k=>state2.fields[k].trim()).length + (state2.personas.length?1:0) + (state2.pathways.length?1:0) + (["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim())?1:0);
   $("#progress").textContent=`Matrix: ${filled}/60 cells · Solution canvas: ${f2}/14 boxes`;
 }
 
@@ -769,9 +775,11 @@ function suggestedCodes(dim){
 }
 function renderOutcomePills(){ const h=$("#outcomePills"); if(!h||h.children.length) return; PATHWAYS.forEach(p=>{ const sp=document.createElement("span"); sp.innerHTML=`<b>${p.name}</b><i>${p.short}</i>`; sp.title=p.def; sp.style.cursor="help"; h.appendChild(sp); }); }
 function renderPathwayDefs(){
-  const h=$("#pathwayDefs"); if(!h||h.children.length) return;
-  PATHWAYS.forEach(p=>{ const c=document.createElement("div"); c.className="pwc";
-    c.innerHTML=`<b>${p.name}</b><small>${p.short}</small><span class="def">${p.def}</span>`; h.appendChild(c); });
+  const h=$("#pathwayDefs"); if(!h) return; h.innerHTML="";
+  PATHWAYS.forEach(p=>{ const on=state2.pathways.includes(p.id); const c=document.createElement("div"); c.className="pwc"+(on?" on":""); c.title=on?"Click to deselect":"Click to select this pathway";
+    c.innerHTML=`<span class="pc">${on?"☑":"☐"}</span><b>${p.name}</b><small>${p.short}</small><span class="def">${p.def}</span>`;
+    c.onclick=()=>{ const i=state2.pathways.indexOf(p.id); i>=0?state2.pathways.splice(i,1):state2.pathways.push(p.id); scheduleSave(); renderPathwayDefs();  };
+    h.appendChild(c); });
 }
 function renderFbRate(){
   const h=$("#fbRate"); if(!h) return; h.innerHTML="";
@@ -850,7 +858,7 @@ function collect(){
     company:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
     submitted_at:new Date().toISOString(), user_agent:navigator.userAgent,
     dims:state.dims,
-    canvas:{ personas:state2.personas, fields:state2.fields, sol:state2.sol, fb_rating:state2.fb_rating||0 }
+    canvas:{ personas:state2.personas, pathways:state2.pathways, fields:state2.fields, sol:state2.sol, fb_rating:state2.fb_rating||0 }
   };
 }
 function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-ASM-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id);} return id; }
@@ -865,6 +873,7 @@ function load(d){
   if(d.dims){ const s=freshState(); DIMENSIONS.forEach(dim=>{ const src=d.dims[dim.id]; if(!src) return; if(Array.isArray(src.codes)&&src.codes.length) s.dims[dim.id].codes=src.codes; if(src.cells) s.dims[dim.id].cells={...s.dims[dim.id].cells,...src.cells}; if(src.notes) s.dims[dim.id].notes=src.notes; }); state=s; }
   const s2=freshState2();
   if(d.canvas){ if(Array.isArray(d.canvas.personas)) s2.personas=d.canvas.personas.filter(p=>GROUPS.some(g=>g.id===p));
+    if(Array.isArray(d.canvas.pathways)) s2.pathways=d.canvas.pathways.filter(p=>PATHWAYS.some(x=>x.id===p));
     if(d.canvas.fields) CANVAS_KEYS.forEach(k=>{ if(typeof d.canvas.fields[k]==="string") s2.fields[k]=d.canvas.fields[k]; });
     s2.fb_rating = Math.max(0, Math.min(5, +d.canvas.fb_rating || 0));
     if(d.canvas.sol) ["TA","TE","OR"].forEach(x=>{ const src=d.canvas.sol[x]; if(src){ if(Array.isArray(src.codes)) s2.sol[x].codes=src.codes; if(typeof src.text==="string") s2.sol[x].text=src.text; } }); }
@@ -912,7 +921,7 @@ async function doSubmit(d){
 }
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } if(e.key==="Escape"&&selected){ selected=null; renderAll(); } });
 </script>
-<script src="flow.js?v=20260924b"></script>
+<script src="flow.js?v=20260924c"></script>
 <script>
 /* Step numbers follow the guided flow: Academic = use cases 1 · workforce canvas 2 · matrix 3 · solution canvas 4;
    Industrial = workforce canvas 1 · solution canvas 2 (the matrix is not a numbered step there). */
