@@ -2,7 +2,7 @@
  * ------------------------------------------
  * Two entry pathways chosen on the front page (index.html):
  *   • industrial   (for companies) – workforce canvas → solution canvas
- *   • professional (for scholars)  – use case matching → workforce canvas
+ *   • professional = Academic version (for scholars)  – use case matching → workforce canvas
  *                                    → assessment matrix → solution canvas
  *
  * The front page renders the chooser + per-step instructions and estimated
@@ -49,7 +49,7 @@ const FLOWS = {
   },
   professional: {
     id: "professional",
-    name: "Professional version",
+    name: "Academic version",
     who: "for scholars",
     total: "65–90 min",
     tagline: "From evidence to solution: map requirements and evaluate use cases systematically.",

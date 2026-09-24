@@ -27,7 +27,7 @@ The start page (`index.html`) offers two versions, defined in `flow.js`:
 
 * **Industrial version** *(for companies)* — **Workforce canvas → Solution canvas**. A light,
   conversation-first path; the goal is to generate discussion and an action plan. ~40–60 min.
-* **Professional version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
+* **Academic version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
   matrix → Solution canvas**. The full analytical path from the project's real use cases through
   formal requirement mapping to a grounded solution design. ~65–90 min.
 
@@ -214,11 +214,11 @@ email problems never block a submission. (Google's quota is ~100 emails/day for 
 ## Running a workshop
 
 * Share the **start-page URL** (or a QR code) with each group; one device per group is enough. The
-  group picks the **Industrial** or **Professional** pathway and is then guided step by step.
+  group picks the **Industrial** or **Academic** pathway and is then guided step by step.
 * After picking a pathway the group enters **Company**, **Participants** and **Date** once on the
   start page; these carry into every tool automatically. Participants from one company count as one
   group, and re-submissions are told apart by `received_at`.
-* The pathway sets the order automatically: Industrial = canvas → solution canvas; Professional =
+* The pathway sets the order automatically: Industrial = canvas → solution canvas; Academic =
   use case matching → canvas → matrix → solution canvas. Each step opens with its instructions and an
   estimated time.
 * Groups can submit as often as they like. If Wi-Fi is unreliable, they can **Export** a JSON file
@@ -262,7 +262,7 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 
 | File | Purpose |
 |---|---|
-| `index.html` | **Start page** – the pathway chooser (Industrial / Professional) with per-step instructions and times |
+| `index.html` | **Start page** – the pathway chooser (Industrial / Academic) with per-step instructions and times |
 | `flow.js` | The two guided pathways (`FLOWS`), the in-tool flow bar and the instruction/time gate; shared by the start page and every tool |
 | `canvas.html` | Tool 1 – human-centric workforce canvas (single self-contained page, no build step) |
 | `inclusion.html` | Tool 2 – assessment matrix, steps 1 and 2, with the research baseline embedded |
