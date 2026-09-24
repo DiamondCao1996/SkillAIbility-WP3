@@ -25,9 +25,9 @@ Repository: https://github.com/DiamondCao1996/SkillAIbility-WP3
 
 The start page (`index.html`) offers two versions, defined in `flow.js`:
 
-* **Industrial version** *(for companies)* — **Workforce canvas → Solution canvas**. A light,
+* **Industrial Version** *(for companies)* — **Workforce canvas → Solution canvas**. A light,
   conversation-first path; the goal is to generate discussion and an action plan. ~40–60 min.
-* **Academic version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
+* **Academic Version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
   matrix → Solution canvas**. The full analytical path from the project's real use cases through
   formal requirement mapping to a grounded solution design. ~65–90 min.
 
