@@ -419,9 +419,9 @@
 
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
-<script src="config.js"></script>
-<script src="usecases-data.js"></script>
-<script src="metrics-data.js"></script>
+<script src="config.js?v=20260924b"></script>
+<script src="usecases-data.js?v=20260924b"></script>
+<script src="metrics-data.js?v=20260924b"></script>
 <script>
 /* SUBMIT_URL is defined in config.js */
 const WORKSHOP_ID = "WP3";         // tag stored with every submission
@@ -705,7 +705,7 @@ async function doSubmit(d){
 /* keyboard shortcut: Ctrl/Cmd+S exports */
 document.addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
 </script>
-<script src="flow.js"></script>
+<script src="flow.js?v=20260924b"></script>
 <script>
 /* Step number follows the guided flow: Academic = step 2, Industrial = step 1 */
 (function(){ if(new URLSearchParams(location.search).get("flow")==="industrial") document.querySelectorAll(".sn-c").forEach(function(e){e.textContent="1";}); })();

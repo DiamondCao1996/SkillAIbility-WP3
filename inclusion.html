@@ -411,8 +411,8 @@
 <div class="modal" id="modal"><div class="card"><h3 id="modalTitle"></h3><div id="modalBody"></div><div class="row" id="modalRow"></div></div></div>
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
-<script src="config.js"></script>
-<script src="usecases-data.js"></script>
+<script src="config.js?v=20260924b"></script>
+<script src="usecases-data.js?v=20260924b"></script>
 <script>
 /* =====================================================================
    DATA MODEL
@@ -912,7 +912,7 @@ async function doSubmit(d){
 }
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } if(e.key==="Escape"&&selected){ selected=null; renderAll(); } });
 </script>
-<script src="flow.js"></script>
+<script src="flow.js?v=20260924b"></script>
 <script>
 /* Step numbers follow the guided flow: Academic = use cases 1 · workforce canvas 2 · matrix 3 · solution canvas 4;
    Industrial = workforce canvas 1 · solution canvas 2 (the matrix is not a numbered step there). */

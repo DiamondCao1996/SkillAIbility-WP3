@@ -164,8 +164,8 @@
 <div class="modal" id="modal"><div class="card"><h3 id="modalTitle"></h3><div id="modalBody"></div><div class="row" id="modalRow"></div></div></div>
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
-<script src="config.js"></script>
-<script src="usecases-data.js"></script>
+<script src="config.js?v=20260924b"></script>
+<script src="usecases-data.js?v=20260924b"></script>
 <script>
 const WORKSHOP_ID="WP3";
 const STORAGE_KEY="skillaibility_wp3_usecases_v1";
@@ -331,6 +331,6 @@ async function doSubmit(d){
 }
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
 </script>
-<script src="flow.js"></script>
+<script src="flow.js?v=20260924b"></script>
 </body>
 </html>
