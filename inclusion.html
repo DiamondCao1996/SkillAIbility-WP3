@@ -280,15 +280,15 @@
 
 <main>
   <div class="steps">
-    <button class="stepbtn active" id="stepbtn1" onclick="setStep(1)"><span class="sn">1</span><span>Assessment matrix<small>Formalise requirements per worker group × learning pathway</small></span></button>
-    <button class="stepbtn" id="stepbtn2" onclick="setStep(2)"><span class="sn">2</span><span>Solution canvas<small>Design the solution, linked to the requirements you mapped</small></span></button>
+    <button class="stepbtn active" id="stepbtn1" onclick="setStep(1)"><span class="sn sn-m">3</span><span>Assessment matrix<small>Formalise requirements per worker group × learning pathway</small></span></button>
+    <button class="stepbtn" id="stepbtn2" onclick="setStep(2)"><span class="sn sn-s">4</span><span>Solution canvas<small>Design the solution, linked to the requirements you mapped</small></span></button>
   </div>
 
   <!-- ================= STEP 1 ================= -->
   <div class="stepview active" id="step1">
     <div class="framing">
-      <h2>Step 1 · Assessment matrix <small style="font-weight:500;color:#5b6a7d">– formalise requirements per worker group × learning pathway</small></h2>
-      <p><b>Three dimensions</b>, each a grid of <b>worker groups</b> (rows) × <b>learning pathways</b> (columns): Task characteristics (TA), Technology requirements (TE), Organisational conditions (OR). Cells are pre-filled with the <b>WP3 research baseline</b> – confirm, remove or add. <b>Click a cell</b>, then tick / untick codes in the legend on the right and add a note for the cell. Rename codes, add new ones (<b>+ New code</b>) or mark frequent ones with ★. <b>▼ Expand codes</b> shows full text inside the cells; <b>▼ Expand list</b> shows the full legend. The lists you build here flow into the solution canvas (step 2) and back to the use case toolkit.</p>
+      <h2><span class="stepword-m">Step <span class="sn-m">3</span> · </span>Assessment matrix <small style="font-weight:500;color:#5b6a7d">– formalise requirements per worker group × learning pathway</small></h2>
+      <p><b>Three dimensions</b>, each a grid of <b>worker groups</b> (rows) × <b>learning pathways</b> (columns): Task characteristics (TA), Technology requirements (TE), Organisational conditions (OR). Cells are pre-filled with the <b>WP3 research baseline</b> – confirm, remove or add. <b>Click a cell</b>, then tick / untick codes in the legend on the right and add a note for the cell. Rename codes, add new ones (<b>+ New code</b>) or mark frequent ones with ★. <b>▼ Expand codes</b> shows full text inside the cells; <b>▼ Expand list</b> shows the full legend. The lists you build here flow into the solution canvas (step <span class="sn-s">4</span>) and back to the use case toolkit.</p>
       <div class="outcomes" id="outcomePills"></div>
     </div>
     <div class="tabs" id="tabs"></div>
@@ -298,7 +298,7 @@
   <!-- ================= STEP 2 ================= -->
   <div class="stepview" id="step2">
     <div class="framing">
-      <h2>Step 2 · Solution canvas <button class="expand-btn" style="margin-left:10px;vertical-align:middle" onclick="importFromCanvas(false)" title="The personas, texts and solution layers are mirrored live with the workforce canvas (tool 1) – click to re-sync">↻ Sync with workforce canvas</button></h2>
+      <h2>Step <span class="sn-s">4</span> · Solution canvas <button class="expand-btn" style="margin-left:10px;vertical-align:middle" onclick="importFromCanvas(false)" title="The personas, texts and solution layers are mirrored live with the workforce canvas (tool 1) – click to re-sync">↻ Sync with workforce canvas</button></h2>
       <p>Design the solution, linked to the requirements you mapped. Your texts from the <b>workforce canvas are already here</b> – this canvas mirrors it. <b>Click the three solution layers</b> – Task characteristics (TA), Technology requirements (TE), Organisational conditions (OR) – and select the codes your solution builds on; codes assigned to your personas in the matrix are <b>ringed in yellow</b> as suggestions, and free text covers anything beyond the codes. Then <b>reflect on the free-text boxes</b> – challenge, pain points, goals, UVP, risks, KPIs, skills, action plan: does the solution still answer them? Refine where needed. When the group agrees: <b>Submit all steps</b>.</p>
     </div>
     <div class="canvas2">
@@ -306,7 +306,7 @@
       <div class="crow" id="row-pathways">
       <section class="box violet" id="c_pathways">
         <span class="step">0</span><h2>Learning pathways</h2>
-        <p class="q">The four SkillAIbility learning pathways – the columns of the step 1 matrix and the pathways of the use case mapping (tool 3). Aim your solution at one or more of them.</p>
+        <p class="q">The four SkillAIbility learning pathways – the columns of the assessment matrix and the pathways of the use case matching. Aim your solution at one or more of them.</p>
         <div class="pw-cards ref" id="pathwayDefs"></div>
       </section>
       </div>
@@ -321,7 +321,7 @@
       <section class="box blue" id="c_persona">
         <span class="step">1</span><h2>Persona</h2>
         <p class="q">Which worker groups is this solution for?</p>
-        <p class="link-hint">↳ linked to the rows of the step 1 matrix</p>
+        <p class="link-hint">↳ linked to the rows of the assessment matrix</p>
         <div class="persona-list" id="personaList"></div>
         <div class="uc-strip" id="ucStrip"></div>
         <textarea data-k2="persona_notes" placeholder="Characteristics of your specific persona(s)…" style="min-height:48px"></textarea>
@@ -344,8 +344,8 @@
       <section class="box green" id="c_solution">
         <span class="step">2</span><h2>Solution</h2>
         <p class="q">Define your solution in three layers.</p>
-        <p class="link-hint">↳ linked to the requirement lists of the step 1 matrix</p>
-        <p class="sug-legend"><span class="sw"></span>= assigned to your selected personas in step 1</p>
+        <p class="link-hint">↳ linked to the requirement lists of the assessment matrix</p>
+        <p class="sug-legend"><span class="sw"></span>= assigned to your selected personas in the assessment matrix</p>
         <div id="layers"></div>
       </section>
 
@@ -756,7 +756,7 @@ function updateCounts(){
   let filled=0;
   DIMENSIONS.forEach(d=>{ const st=state.dims[d.id]; const n=Object.values(st.cells).filter(a=>a.length).length; const c=Object.values(st.cells).reduce((s,a)=>s+a.length,0); filled+=n; const el=$("#cnt_"+d.id); if(el) el.textContent=`${n}/20 cells · ${c} codes`; });
   const f2=CANVAS_KEYS.filter(k=>state2.fields[k].trim()).length + (state2.personas.length?1:0) + (["TA","TE","OR"].some(x=>state2.sol[x].codes.length||state2.sol[x].text.trim())?1:0);
-  $("#progress").textContent=`Step 1: ${filled}/60 cells · Step 2: ${f2}/14 boxes`;
+  $("#progress").textContent=`Matrix: ${filled}/60 cells · Solution canvas: ${f2}/14 boxes`;
 }
 
 /* =====================================================================
@@ -812,7 +812,7 @@ function renderStep2(){
       sp.onclick=()=>{ const i=sol.codes.indexOf(c.id); i>=0?sol.codes.splice(i,1):sol.codes.push(c.id); scheduleSave(); renderStep2(); };
       chips.appendChild(sp);
     });
-    if(!any){ const e=document.createElement("p"); e.className="empty"; e.textContent="No codes defined yet – add them in step 1."; div.appendChild(e); }
+    if(!any){ const e=document.createElement("p"); e.className="empty"; e.textContent="No codes defined yet – add them in the assessment matrix."; div.appendChild(e); }
     else div.appendChild(chips);
     const ta=document.createElement("textarea"); ta.placeholder="Anything beyond the codes for this layer…"; ta.value=sol.text;
     ta.addEventListener("input",()=>{ sol.text=ta.value; scheduleSave(); });
@@ -874,7 +874,7 @@ function load(d){
 (function init(){
   state=freshState(); state2=freshState2(); $("#m_date").value=new Date().toISOString().slice(0,10);
   try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ load(JSON.parse(raw)); $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
-  if(canvasDraft() && syncFromCanvas()){ $("#status").textContent="Step 2 synced with your workforce canvas"; setTimeout(scheduleSave,0); }
+  if(canvasDraft() && syncFromCanvas()){ $("#status").textContent="Solution canvas synced with your workforce canvas"; setTimeout(scheduleSave,0); }
   renderOutcomePills(); renderAll(); renderStep2();
 })();
 
@@ -890,13 +890,13 @@ function slug(){ const d=collect(); return [WORKSHOP_ID+"-assessment", d.company
 function exportJSON(){ const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=slug()+".json"; a.click(); toast("Exported as JSON","ok"); }
 function importJSON(){ $("#fileInput").click(); }
 $("#fileInput").addEventListener("change",e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ load(JSON.parse(r.result)); renderAll(); renderStep2(); scheduleSave(); toast("Loaded","ok"); }catch(err){ toast("Could not read that file","err"); } }; r.readAsText(f); e.target.value=""; });
-function confirmReset(){ modal("Reset both steps?","<p>Step 1 goes back to the pre-filled WP3 baseline and step 2 is cleared. Company, participants and date are kept. Export first if you want a copy.</p>",[{label:"Cancel"},{label:"Reset",cls:"btn-danger",onClick:()=>{ state=freshState(); state2=freshState2(); selected=null; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); renderAll(); renderStep2(); scheduleSave(); toast("Reset to baseline"); }}]); }
+function confirmReset(){ modal("Reset both steps?","<p>The matrix goes back to the pre-filled WP3 baseline and the solution canvas is cleared. Company, participants and date are kept. Export first if you want a copy.</p>",[{label:"Cancel"},{label:"Reset",cls:"btn-danger",onClick:()=>{ state=freshState(); state2=freshState2(); selected=null; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); renderAll(); renderStep2(); scheduleSave(); toast("Reset to baseline"); }}]); }
 
 function submitMatrix(){
   const d=collect();
   if(!d.company){ modal("Almost there","<p><b>Please fill in the Company field</b> (top bar) – it identifies your group's submission.</p>",[{label:"OK"}]); return; }
   let body="";
-  if(!d.canvas.personas.length) body+="<p>No persona selected in step 2 yet.</p>";
+  if(!d.canvas.personas.length) body+="<p>No persona selected in the solution canvas yet.</p>";
   const undefinedUsed=[]; DIMENSIONS.forEach(dim=>{ const st=state.dims[dim.id]; const used=new Set(Object.values(st.cells).flat().concat(state2.sol[dim.id].codes)); st.codes.forEach(c=>{ if(used.has(c.id)&&!c.label.trim()) undefinedUsed.push(c.id); }); });
   if(undefinedUsed.length) body+=`<p>Codes used but without a description: <b>${undefinedUsed.join(", ")}</b>. You can still submit.</p>`;
   if(!SUBMIT_URL) body+=`<p><i>No collection backend is configured, so a JSON file will be downloaded instead – please send it to the facilitator.</i></p>`;
@@ -913,5 +913,16 @@ async function doSubmit(d){
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } if(e.key==="Escape"&&selected){ selected=null; renderAll(); } });
 </script>
 <script src="flow.js"></script>
+<script>
+/* Step numbers follow the guided flow: Professional = use cases 1 · workforce canvas 2 · matrix 3 · solution canvas 4;
+   Industrial = workforce canvas 1 · solution canvas 2 (the matrix is not a numbered step there). */
+(function(){
+  var f=new URLSearchParams(location.search).get("flow");
+  if(f!=="industrial") return;
+  document.querySelectorAll(".sn-s").forEach(function(e){e.textContent="2";});
+  document.querySelectorAll(".sn-m").forEach(function(e){e.textContent="–";});
+  var w=document.querySelector(".stepword-m"); if(w) w.textContent="";
+})();
+</script>
 </body>
 </html>
