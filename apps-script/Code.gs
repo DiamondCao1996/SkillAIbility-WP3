@@ -94,10 +94,10 @@ var METRIC_LABELS = {
   "impact.2": ["Impact / upskilling", "Inclusion & retention"]
 };
 var METRICS_HEADERS = ["received_at", "submission_id", "company", "participants", "date", "task_type", "context", "block", "metric_id", "metric", "rating", "priority"];
-function saveMetrics_(d) {
+function saveMetrics_(d, sheetName) {
   var m = d.metrics;
   if (!m || !m.scores || typeof m.scores !== "object") return;
-  var sh = sheet_("Metrics", METRICS_HEADERS);
+  var sh = sheet_(sheetName || "Metrics", METRICS_HEADERS);
   var rows = [];
   Object.keys(m.scores).forEach(function (id) {
     var s = m.scores[id] || {};
@@ -108,6 +108,23 @@ function saveMetrics_(d) {
       str_(m.task_type), str_(m.context), lab[0], id, lab[1], r, s.p ? "yes" : "no"]);
   });
   if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
+}
+
+/* ---------- Worker experience assessment (Industrial Version · Worker channel, metrics.html) ----------
+ * "Worker_metrics": one row per worker (wide – one column per metric rating, "*" = starred)
+ * "Worker_metrics_long": one row per rated metric (pivot-ready) */
+var METRIC_IDS = Object.keys(METRIC_LABELS);
+var WORKER_FIELDS = ["use_case", "role", "task_type", "task_context", "overall_rating", "would_adopt", "worked_well", "should_change", "metrics_rated", "metrics_starred"];
+function workerHeaders_() { return META.concat(WORKER_FIELDS, METRIC_IDS.map(function (id) { return id; })); }
+function saveWorkerMetrics_(d) {
+  var m = d.metrics || {}; var sc = m.scores || {};
+  d.task_type = m.task_type; d.task_context = m.context;
+  var rated = 0, starred = 0;
+  var cells = METRIC_IDS.map(function (id) { var s = sc[id] || {}; var r = Number(s.r) || 0; if (r > 0) rated++; if (s.p) starred++; return (r ? String(r) : "") + (s.p ? "*" : ""); });
+  d.metrics_rated = rated; d.metrics_starred = starred;
+  var row = metaRow_(d).concat(WORKER_FIELDS.map(function (c) { return str_(d[c]); }), cells);
+  sheet_("Worker_metrics", workerHeaders_()).appendRow(row);
+  saveMetrics_(d, "Worker_metrics_long");
 }
 
 /* ---------- Assessment (matrix + linked canvas) ---------- */
@@ -233,7 +250,7 @@ function exportXlsx_() {
   return resp.getBlob().setName("SkillAIbility_WP3_submissions_" + stamp + ".xlsx");
 }
 function summaryHtml_(d) {
-  var kind = d.form === "assessment" ? "assessment" : d.form === "usecases" ? "use case matching" : "canvas";
+  var kind = d.form === "assessment" ? "assessment" : d.form === "usecases" ? "use case matching" : d.form === "metrics" ? "worker experience assessment" : "canvas";
   var h = "<h2 style='font-family:sans-serif'>SkillAIbility WP3 – new " + kind + " submission</h2>";
   h += "<table style='font-family:sans-serif;font-size:13px;border-collapse:collapse'>";
   function tr(k, v) { if (v) h += "<tr><td style='padding:3px 10px 3px 0;font-weight:bold;vertical-align:top;white-space:nowrap'>" + k + "</td><td style='padding:3px 0'>" + String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>") + "</td></tr>"; }
@@ -269,6 +286,16 @@ function summaryHtml_(d) {
       if ((c.missing || "").trim()) bits.push("missing: " + c.missing);
       if (bits.length) tr(id + " – " + (UC_NAMES[id] || ""), bits.join(" | "));
     });
+  } else if (d.form === "metrics") {
+    tr("Use case / technology", d.use_case); tr("Role", d.role);
+    if (d.metrics) { tr("Task type", d.metrics.task_type); tr("Task", d.metrics.context); }
+    tr("Overall rating", d.overall_rating); tr("Would use daily", d.would_adopt);
+    tr("Worked well", d.worked_well); tr("Should change", d.should_change);
+    if (d.metrics && d.metrics.scores) {
+      var ws = d.metrics.scores, lines = [];
+      Object.keys(ws).forEach(function (id) { var s = ws[id] || {}; var lab = METRIC_LABELS[id] || ["", id]; if (Number(s.r) > 0 || s.p) lines.push(lab[1] + ": " + (s.r || "–") + (s.p ? " ★" : "")); });
+      tr("Metrics", lines.join("; "));
+    }
   } else {
     if (Array.isArray(d.personas)) d.personas = d.personas.map(function (p) { return GROUP_NAMES[p] || p; }).join("; ");
     if (Array.isArray(d.pathways)) d.pathways = d.pathways.map(function (p) { return PATHWAY_NAMES[p] || p; }).join("; ");
@@ -326,7 +353,7 @@ function sendQueued_() {
   } finally { lock.releaseLock(); }
 }
 function notify_(d) {
-  var kind = d.form === "assessment" ? "Assessment" : d.form === "usecases" ? "Use case matching" : "Canvas";
+  var kind = d.form === "assessment" ? "Assessment" : d.form === "usecases" ? "Use case matching" : d.form === "metrics" ? "Worker experience" : "Canvas";
   queueEmail_("[SkillAIbility WP3] " + kind + " submission – " + (d.company || "unknown company"), summaryHtml_(d));
 }
 /* one email for a whole guided flow (sent by the page after all parts were posted) */
@@ -349,6 +376,7 @@ function doPost(e) {
     else {
       if (data.form === "assessment" || data.form === "inclusion") saveAssessment_(data);
       else if (data.form === "usecases") saveUseCases_(data);
+      else if (data.form === "metrics") saveWorkerMetrics_(data);
       else saveCanvas_(data);
       if (!data.no_email) notify_(data);   // parts of a multi-step flow set no_email and send one "notify" at the end
     }

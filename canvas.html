@@ -134,6 +134,7 @@
   .metrics-open .mo-badge{background:#41c3ec;color:var(--navy);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;display:none}
   .metrics-open .mo-badge.show{display:inline-block}
 
+  body.no-metrics .metrics-open{display:none !important}
   /* ---------- success-metrics overlay ("turning page") ---------- */
   .mp{position:fixed;inset:0;z-index:40;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
   .mp.open{display:flex;animation:mp-in .28s ease}
@@ -441,9 +442,9 @@
 
 <input type="file" id="fileInput" accept="application/json" style="display:none">
 
-<script src="config.js?v=20260924c"></script>
-<script src="usecases-data.js?v=20260924c"></script>
-<script src="metrics-data.js?v=20260924c"></script>
+<script src="config.js?v=20261008"></script>
+<script src="usecases-data.js?v=20261008"></script>
+<script src="metrics-data.js?v=20261008"></script>
 <script>
 /* SUBMIT_URL is defined in config.js */
 const WORKSHOP_ID = "WP3";         // tag stored with every submission
@@ -741,10 +742,18 @@ async function doSubmit(d){
 /* keyboard shortcut: Ctrl/Cmd+S exports */
 document.addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
 </script>
-<script src="flow.js?v=20260924c"></script>
+<script src="flow.js?v=20261008"></script>
 <script>
-/* Step number follows the guided flow: Academic = step 2, Industrial = step 1 */
-(function(){ if(new URLSearchParams(location.search).get("flow")==="industrial") document.querySelectorAll(".sn-c").forEach(function(e){e.textContent="1";}); })();
+/* Step number follows the guided flow: Academic = step 2, Industrial · Developer = step 1 */
+(function(){
+  var f=new URLSearchParams(location.search).get("flow");
+  if(f==="industrial"||f==="developer"){
+    document.querySelectorAll(".sn-c").forEach(function(e){e.textContent="1";});
+    // Developer channel: the success metrics are assessed by the workers themselves (Worker channel), not on the canvas
+    document.body.classList.add("no-metrics");
+    var fr=document.querySelector(".framing p"); if(fr) fr.innerHTML=fr.innerHTML.replace(/ In the <b>KPIs<\/b> box, use <b>📊 Score success metrics<\/b> to rate how you will measure success\./,"");
+  }
+})();
 </script>
 </body>
 </html>

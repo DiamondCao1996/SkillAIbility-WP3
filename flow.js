@@ -2,6 +2,7 @@
  * ------------------------------------------
  * Two entry pathways chosen on the front page (index.html):
  *   • industrial   (for companies) – workforce canvas → solution canvas
+ *   • worker (Industrial · Worker) – success metrics only
  *   • professional = Academic Version (for scholars)  – use case matching → workforce canvas
  *                                    → assessment matrix → solution canvas
  *
@@ -14,10 +15,11 @@
  * sub-step 2); a step's `istep` selects which one to open.
  */
 const FLOWS = {
-  industrial: {
-    id: "industrial",
-    name: "Industrial Version",
-    who: "for companies",
+  developer: {
+    id: "developer",
+    group: "industrial",
+    name: "Industrial Version · Developer",
+    who: "developers, engineers & managers",
     total: "40–60 min",
     tagline: "Generate discussion and an action plan.",
     blurb: "A light, conversation-first path: brainstorm the case openly, then turn the discussion into a concrete solution and action plan. No prior preparation needed.",
@@ -30,7 +32,6 @@ const FLOWS = {
           "Make sure <b>Company / organisation</b> is filled in (start page) – it identifies your group's submission.",
           "Pick the <b>worker groups (personas)</b> involved, and describe your specific persona.",
           "Work through the boxes: Challenge → Pain points → Goals → Solution (task / technology / organisation) → Unique value → Risks → KPIs → Skills → Action plan.",
-          "In the <b>KPIs</b> box, use <b>📊 Score success metrics</b> to rate and prioritise how you will measure success.",
           "Everything autosaves in this browser; you submit once, at the last step."
         ]
       },
@@ -43,6 +44,29 @@ const FLOWS = {
           "Then <b>reflect on the free-text boxes</b> (challenge, pain points, goals, UVP, risks, KPIs, skills, action plan) that came over from the workforce canvas: refine where needed.",
           "Sharpen the <b>action plan</b>: concrete actions, owners and timing.",
           "Click <b>Submit all steps</b> when the group agrees – both steps are sent to the facilitators together and emailed as Excel."
+        ]
+      }
+    ]
+  },
+  worker: {
+    id: "worker",
+    group: "industrial",
+    name: "Industrial Version · Worker",
+    who: "workers from a use case experiment",
+    total: "10–15 min",
+    tagline: "Assess your own experience with the technology.",
+    blurb: "One short page: describe the task you did with the technology, rate the success metrics from your own experience, star what mattered most and tell us what worked and what should change.",
+    steps: [
+      {
+        key: "metrics", page: "metrics.html", name: "Success metrics – worker assessment", time: "10–15 min",
+        purpose: "Rate how the technology performed for you in the use case experiment.",
+        instr: [
+          "Each worker fills in the page on <b>their own device</b> (phone, tablet or PC) – answers are individual.",
+          "Make sure <b>Company / organisation</b> is filled in (start page) – it links your answers to the use case experiment.",
+          "Describe the <b>technology and the task</b> you did with it, and pick your role.",
+          "Rate each <b>success metric 1–5</b> from your own experience and <b>★ star</b> the ones that mattered most to you; skip what does not apply.",
+          "Give an <b>overall rating</b>, say whether you would use it in daily work, and write what worked well / what should change.",
+          "Click <b>Submit</b> – your answers go straight to the research team."
         ]
       }
     ]
@@ -98,6 +122,8 @@ const FLOWS = {
     ]
   }
 };
+
+FLOWS.industrial = FLOWS.developer;   // old links (?flow=industrial) keep working
 
 /* ---- helpers shared with the front page ---- */
 const WPFLOW = {
@@ -214,7 +240,7 @@ const WPFLOW = {
       + '<div class="wpf-dots">' + dots + '</div>'
       + (idx > 0 ? '<button class="wpf-prev" type="button">‹ Prev</button>' : '')
       + (idx < f.steps.length - 1 ? '<button class="wpf-next" type="button">Next: ' + esc(f.steps[idx + 1].name) + ' →</button>'
-                                  : '<span class="wpf-last">Last step — Submit when the group is done ✓</span>');
+                                  : (f.steps.length > 1 ? '<span class="wpf-last">Last step — Submit when the group is done ✓</span>' : '<span class="wpf-last">Submit when you are done ✓</span>'));
     document.body.insertBefore(bar, document.body.firstChild);
 
     var prev = bar.querySelector(".wpf-prev");
@@ -227,7 +253,7 @@ const WPFLOW = {
      Intermediate steps: the tool's Submit button waits. Last step: it sends the
      drafts of every step of the flow (from this browser) together; the backend
      emails once, with the complete workbook attached. */
-  var DRAFT_PREFIX = { "canvas.html": "skillaibility_wp3_canvas_", "inclusion.html": "skillaibility_wp3_assessment_", "usecases.html": "skillaibility_wp3_usecases_" };
+  var DRAFT_PREFIX = { "canvas.html": "skillaibility_wp3_canvas_", "inclusion.html": "skillaibility_wp3_assessment_", "usecases.html": "skillaibility_wp3_usecases_", "metrics.html": "skillaibility_wp3_metrics_" };
   function draftFor(page) {
     var pre = DRAFT_PREFIX[page]; if (!pre) return null;
     var best = null;
@@ -237,7 +263,7 @@ const WPFLOW = {
     }
     return best ? best.data : null;
   }
-  function stepLabel(page) { return page === "canvas.html" ? "Workforce canvas" : page === "inclusion.html" ? "Assessment matrix + solution canvas" : "Use case matching"; }
+  function stepLabel(page) { return page === "canvas.html" ? "Workforce canvas" : page === "inclusion.html" ? "Assessment matrix + solution canvas" : page === "metrics.html" ? "Worker experience assessment" : "Use case matching"; }
   function currentPage() { return (location.pathname.split("/").pop() || "index.html"); }
   function say(msg, cls) { if (typeof window.toast === "function") window.toast(msg, cls || "", 6000); else alert(msg); }
 
@@ -295,7 +321,7 @@ const WPFLOW = {
     var last = idx === f.steps.length - 1;
     var fresh = btn.cloneNode(true); fresh.removeAttribute("onclick"); btn.parentNode.replaceChild(fresh, btn); btn = fresh;
     if (last) {
-      btn.textContent = "Submit all steps";
+      btn.textContent = f.steps.length > 1 ? "Submit all steps" : "Submit";
       btn.title = "Sends every step of this flow together";
       btn.onclick = function () { submitFlow(flowId); };
     } else {

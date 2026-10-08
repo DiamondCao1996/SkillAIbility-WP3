@@ -25,8 +25,14 @@ Repository: https://github.com/DiamondCao1996/SkillAIbility-WP3
 
 The start page (`index.html`) offers two versions, defined in `flow.js`:
 
-* **Industrial Version** *(for companies)* — **Workforce canvas → Solution canvas**. A light,
-  conversation-first path; the goal is to generate discussion and an action plan. ~40–60 min.
+* **Industrial Version** *(for companies)* — two channels:
+  * **Developer** *(developers, engineers & managers)* — **Workforce canvas → Solution canvas**. A light,
+    conversation-first path: brainstorm the case, then turn it into a solution and action plan
+    (40–60 min). The success-metrics scoring is not shown on these canvases – it belongs to the Worker channel.
+  * **Worker** *(workers who took part in a use case experiment)* — **Success metrics – worker assessment**
+    (`metrics.html`, 10–15 min, one page, one submission per worker): describe the task done with the
+    technology, rate every success metric 1–5 from one's own experience, star what mattered most, give an
+    overall rating and say what worked / what should change.
 * **Academic Version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
   matrix → Solution canvas**. The full analytical path from the project's real use cases through
   formal requirement mapping to a grounded solution design. ~65–90 min.
@@ -234,6 +240,8 @@ email problems never block a submission. (Google's quota is ~100 emails/day for 
 | `Assessment` | One row per assessment submission: metadata, personas, all step-2 fields, the three solution layers (codes + text), the canvas feedback (`canvas:rating` / `canvas:feedback`), one column per matrix cell (`TE:aging:inclusion` = "TE8", …), one note column per cell, and the code definitions as JSON |
 | `Assessment_cells` | Long format, one row per code entry – `source` says whether it came from the step-1 matrix (with worker group × outcome) or the step-2 solution layers. Pivot this for frequency analysis |
 | `Assessment_codes` | Code definitions as each group left them – shows renamed / newly added codes |
+| `Worker_metrics` | Worker channel: one row per worker – use case, role, task type & context, overall rating, would-adopt, worked-well / should-change texts, and one column per metric (`4`, `5*` = starred) |
+| `Worker_metrics_long` | Worker channel, long format: one row per rated metric (same columns as `Metrics`) |
 | `UseCases` | One row per (submission, use case): institute, linked TA/TE/OR codes, sufficiency verdict (`yes` / `partly` / `no`) and the missing-items note |
 | `Metrics` | One row per scored success metric on a workforce-canvas submission: `task_type`, `context` (persona &amp; task), `block`, `metric_id`, `metric`, `rating` (1–5) and `priority` (`yes` / `no`). Pivot on `metric`/`block` for which metrics groups prioritise |
 
@@ -267,6 +275,7 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 | `canvas.html` | Tool 1 – human-centric workforce canvas (single self-contained page, no build step) |
 | `inclusion.html` | Tool 2 – assessment matrix, steps 1 and 2, with the research baseline embedded |
 | `usecases.html` | Tool 3 – use case matching toolkit |
+| `metrics.html` | Worker channel – success-metrics experience assessment (Industrial Version · Worker) |
 | `usecases-data.js` | The 19 use cases, partners, NACE codes, mapping placements and baseline code lists |
 | `metrics-data.js` | The *Success metrics to evaluate use cases* framework: blocks, metrics, indicators, how-to, appendix, references (used by the scoring sheet in `canvas.html`) |
 | `config.js` | One setting: the Google Apps Script URL all tools submit to |
