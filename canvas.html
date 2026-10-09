@@ -19,6 +19,10 @@
   /* ---------- top bar ---------- */
   header{background:var(--navy);color:#fff;padding:12px 24px 14px;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"title nav actions" "meta meta meta";gap:12px 24px;align-items:center}
   header h1{grid-area:title;font-size:20px;margin:0;font-weight:600;letter-spacing:.3px;white-space:nowrap}
+  .brand{grid-area:title;display:flex;align-items:center;gap:14px;text-decoration:none;color:#fff}
+  .brand img{height:44px;width:auto;background:#fff;border-radius:10px;padding:5px 10px;display:block}
+  .brand small{font-weight:400;opacity:.8;font-size:13px;line-height:1.25;max-width:220px}
+  @media (max-width:900px){.brand img{height:38px}}
   nav.pages{grid-area:nav;justify-self:start}
   .actions{grid-area:actions}
   .meta{grid-area:meta}
@@ -236,7 +240,7 @@
 <body>
 
 <header>
-  <h1>SkillAIbility <small>WP3 · Human-centric Workforce Canvas</small></h1>
+  <a class="brand" href="index.html" title="SkillAIbility – start page"><img src="assets/skillaibility-logo.png" alt="SkillAIbility"><small>WP3 · Human-centric Workforce Canvas</small></a>
   <nav class="pages"><a href="index.html">⌂ Start</a></nav>
   <div class="meta">
     <label>Company <input id="m_case" placeholder="e.g. Volvo" autocomplete="off"></label>
