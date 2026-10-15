@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SkillAIbility WP3 – Workshop results dashboard</title>
+<script src="assets/vendor/xlsx.full.min.js"></script>
+<script src="assets/vendor/chart.umd.min.js"></script>
+<style>
+  :root{--navy:#0b1b3f;--cyan:#41c3ec;--amber:#f0b429;--bg:#eef0f3;--ink:#0b1b3f;--muted:#5b6a7d;--radius:16px}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+  header{background:var(--navy);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:#fff}
+  .brand img{height:44px;background:#fff;border-radius:10px;padding:5px 10px}
+  .brand small{font-size:13px;opacity:.8}
+  header .sp{flex:1}
+  header a.lnk{color:#fff;opacity:.85;font-size:13px}
+  main{max-width:1500px;margin:0 auto;padding:18px 22px 70px}
+  .drop{background:#fff;border:2px dashed #9aa7bd;border-radius:var(--radius);padding:22px;text-align:center;margin-bottom:18px}
+  .drop.on{border-color:var(--cyan);background:#f2fbfe}
+  .drop h2{margin:0 0 6px;font-size:18px}
+  .drop p{margin:4px 0;color:var(--muted);font-size:13.5px}
+  .drop input{display:none}
+  .btn{display:inline-block;background:var(--cyan);color:var(--navy);font-weight:700;border:0;border-radius:9px;padding:9px 16px;cursor:pointer;font-size:14px}
+  .btn.ghost{background:#eef1f7;color:var(--navy)}
+  .filters{background:#fff;border-radius:var(--radius);padding:12px 18px;margin-bottom:18px;display:none}
+  .filters h3{margin:0 0 8px;font-size:14px}
+  .subs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px 14px;font-size:13px}
+  .subs label{display:flex;gap:8px;align-items:center}
+  .subs small{color:var(--muted)}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+  .tile{background:#fff;border-radius:var(--radius);padding:14px 16px}
+  .tile b{display:block;font-size:28px;color:var(--navy)}
+  .tile span{font-size:12.5px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+  .card{background:#fff;border-radius:var(--radius);padding:14px 18px}
+  .card h3{margin:0 0 4px;font-size:16px}
+  .card p.hint{margin:0 0 10px;font-size:12.5px;color:var(--muted)}
+  canvas{max-height:360px}
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  th{background:var(--navy);color:#fff;text-align:left;padding:6px 8px;font-weight:600;position:sticky;top:0}
+  td{padding:5px 8px;border-bottom:1px solid #e6e9ef;vertical-align:top}
+  tr:nth-child(even) td{background:#f7f8fb}
+  .tag{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700}
+  .tag.keep{background:#e8f6e6;color:#1f6f2e}.tag.review{background:#fdf3d5;color:#7a5200}.tag.add{background:#e3f4fc;color:#0b4f6c}.tag.single{background:#eef1f7;color:var(--muted)}
+  .tag.yes{background:#e8f6e6;color:#1f6f2e}.tag.partly{background:#fdf3d5;color:#7a5200}.tag.no{background:#fde3e1;color:#8a1c14}
+  .scroll{max-height:460px;overflow:auto;border:1px solid #e6e9ef;border-radius:10px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px;font-size:13px}
+  select,input[type=text]{font:inherit;font-size:13px;padding:5px 8px;border:1px solid #c9d1db;border-radius:8px}
+  details{background:#fff;border-radius:var(--radius);padding:10px 18px;margin-bottom:12px}
+  summary{cursor:pointer;font-weight:700;font-size:15px;padding:4px 0}
+  .ctext{display:grid;grid-template-columns:180px 1fr;gap:6px 12px;font-size:12.5px;margin-top:8px}
+  .ctext b{color:var(--navy)}
+  .ctext div{white-space:pre-wrap}
+  .empty{display:none}
+  .hidden{display:none}
+  .note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="index.html"><img src="assets/skillaibility-logo.png" alt="SkillAIbility"><small>WP3 · Workshop results dashboard</small></a>
+  <span class="sp"></span>
+  <a class="lnk" href="https://github.com/DiamondCao1996/SkillAIbility-WP3#facilitator-setup-3-minutes-one-time" target="_blank" rel="noopener">Facilitator guide</a>
+</header>
+<main>
+  <div class="drop" id="drop">
+    <h2>Drop the Excel export here</h2>
+    <p>Use the workbook attached to the collector e-mail (<i>SkillAIbility_WP3_submissions_…xlsx</i>) or download the Google Sheet as .xlsx. Nothing is uploaded – the file is read in your browser only.</p>
+    <p><label class="btn">Choose file<input type="file" id="file" accept=".xlsx,.xls"></label></p>
+    <p class="note">Needs the tabs <b>Assessment</b>, <b>Assessment_cells</b>, <b>Canvas</b>, <b>UseCases</b> (and optionally <b>Worker_metrics_long</b>, <b>Metrics</b>). The baseline used for confirmed / removed / added is the one built into the toolkit.</p>
+  </div>
+
+  <div class="filters" id="filters">
+    <h3>Submissions included <small style="font-weight:400;color:var(--muted)">– untick test runs; a company that submitted several times keeps only its latest tick by default</small></h3>
+    <div class="subs" id="subs"></div>
+    <div class="row" style="margin-top:8px"><button class="btn ghost" onclick="toggleAll(true)">All</button><button class="btn ghost" onclick="toggleAll(false)">None</button><button class="btn ghost" onclick="latestOnly()">Latest per company</button><span id="selinfo"></span></div>
+  </div>
+
+  <div id="dash" class="hidden">
+    <div class="tiles" id="tiles"></div>
+    <div class="grid">
+      <div class="card"><h3>Agreement with the research baseline – per group</h3><p class="hint">Confirmed = baseline placement kept · Removed = unticked · Added = ticked where the baseline had none. A tab never opened stays at baseline (counts as confirmed).</p><canvas id="cGroups"></canvas></div>
+      <div class="card"><h3>Per dimension</h3><p class="hint">Where the groups edited the pre-filled matrix.</p><canvas id="cDims"></canvas></div>
+    </div>
+    <div class="grid">
+      <div class="card"><h3>Most contested codes</h3><p class="hint">Removals (left) and additions (right) per requirement code, all groups.</p><canvas id="cCodes"></canvas></div>
+      <div class="card"><h3>Worker groups and pathways chosen</h3><p class="hint">Number of groups that ticked each persona / learning pathway in the canvas.</p><canvas id="cPersonas"></canvas></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h3>Cell-level consensus</h3><p class="hint">For every cell (dimension × worker group × pathway) and code: groups that have it, baseline membership, removals, additions and a suggested action for the next baseline.</p>
+      <div class="row"><label>Show <select id="fAction"><option value="">all</option><option value="review">review (removed by ≥3)</option><option value="add">consider adding (added by ≥2)</option><option value="keep">keep</option></select></label>
+        <label>Dimension <select id="fDim"><option value="">all</option><option>TA</option><option>TE</option><option>OR</option></select></label>
+        <label>Search <input type="text" id="fQ" placeholder="code, group, pathway…"></label><span id="cellinfo"></span></div>
+      <div class="scroll"><table id="tCells"><thead><tr><th>Dim</th><th>Worker group</th><th>Pathway</th><th>Code</th><th>Label</th><th>Baseline</th><th>Groups having it</th><th>Confirmed</th><th>Removed</th><th>Added</th><th>Suggested</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h3>Use case matching</h3><p class="hint">Sufficiency verdicts and what the groups said is missing.</p>
+      <div class="scroll" style="max-height:380px"><table id="tUC"><thead><tr><th>Group</th><th>Institute</th><th>Use case</th><th>Name</th><th>TA</th><th>TE</th><th>OR</th><th>Sufficient?</th><th>Missing / comments</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card" id="metricsCard" style="margin-bottom:16px">
+      <h3>Success metrics (Worker channel + canvas scorings)</h3><p class="hint">Average rating per metric and how often it was starred.</p><canvas id="cMetrics"></canvas>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h3>Workforce canvas texts</h3><p class="hint">Verbatim content per group.</p>
+      <div id="canvasTexts"></div>
+    </div>
+    <div class="card"><h3>Matrix cell notes</h3><div class="scroll" style="max-height:300px"><table id="tNotes"><thead><tr><th>Group</th><th>Dim</th><th>Worker group</th><th>Pathway</th><th>Note</th></tr></thead><tbody></tbody></table></div></div>
+    <p class="note">Tip: Export the figures with right-click → Save image. The analysis logic mirrors the Excel analysis workbook (sheets Summary_groups, Summary_dims, Code_changes, Cell_consensus).</p>
+  </div>
+</main>
+
+<script src="baseline-data.js?v=20261015"></script>
+<script>
+const GROUPS=["novice","deaf","aging","physical","cognitive"], OUTS=["augmentation","inclusion","symbiosis","empowerment"];
+const GN={novice:"Novice & learning-vulnerable",deaf:"Deaf & hard-of-hearing",aging:"Ageing",physical:"Physical support needs",cognitive:"Cognitive support needs"};
+const PERSONA_KEYS=[["Novice and learning-vulnerable","Novice & learning-vulnerable"],["Deaf and hard-of-hearing","Deaf & hard-of-hearing"],["Aging","Ageing"],["physical support","Physical support needs"],["cognitive support","Cognitive support needs"]];
+const LABEL={}; Object.values(BASELINE).forEach(d=>d.codes.forEach(c=>LABEL[c.id]=c.label));
+const NAVY="#0b1b3f",CYAN="#41c3ec",AMB="#f0b429";
+let DATA=null, charts={};
+const $=s=>document.querySelector(s);
+
+/* ---------- file handling ---------- */
+const drop=$("#drop");
+["dragenter","dragover"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add("on");}));
+["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("on");}));
+drop.addEventListener("drop",ev=>{ const f=ev.dataTransfer.files[0]; if(f) readFile(f); });
+$("#file").addEventListener("change",ev=>{ const f=ev.target.files[0]; if(f) readFile(f); });
+function readFile(f){
+  const r=new FileReader();
+  r.onload=e=>{ try{ const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array",cellDates:true}); load(wb); }catch(err){ alert("Could not read this workbook: "+err.message); } };
+  r.readAsArrayBuffer(f);
+}
+function sheet(wb,name){ const ws=wb.Sheets[name]; return ws?XLSX.utils.sheet_to_json(ws,{defval:""}):[]; }
+function dstr(v){ if(v instanceof Date) return v.toISOString().slice(0,10); return String(v||"").slice(0,10); }
+function dt(v){ return v instanceof Date? v.getTime() : (Date.parse(v)||0); }
+
+function load(wb){
+  const asm=sheet(wb,"Assessment"), cells=sheet(wb,"Assessment_cells"), canvas=sheet(wb,"Canvas"), uc=sheet(wb,"UseCases");
+  const wm=sheet(wb,"Worker_metrics_long").concat(sheet(wb,"Metrics"));
+  if(!asm.length && !canvas.length){ alert("No 'Assessment' or 'Canvas' tab found in this file."); return; }
+  // submissions = assessment rows (one per group); fall back to canvas rows for canvas-only groups
+  const subs=[];
+  asm.forEach(r=>subs.push({id:r.submission_id,company:String(r.company||"").trim(),participants:r.participants,date:dstr(r.date),received:dt(r.received_at),personas:r.personas||"",pathways:r.pathways||"",kind:"assessment",row:r}));
+  canvas.filter(r=>r.submission_id).forEach(r=>{ if(!subs.some(s=>s.company===String(r.company||"").trim())) subs.push({id:r.submission_id,company:String(r.company||"").trim(),participants:r.participants,date:dstr(r.date),received:dt(r.received_at),personas:r.personas||"",pathways:r.pathways||"",kind:"canvas",row:r}); });
+  subs.sort((a,b)=>a.received-b.received);
+  DATA={subs,cells,canvas,uc,wm};
+  renderFilters(); latestOnly();
+  $("#dash").classList.remove("hidden"); $("#filters").style.display="block";
+  drop.querySelector("h2").textContent="Loaded – drop another export to replace";
+}
+function renderFilters(){
+  const h=$("#subs"); h.innerHTML="";
+  DATA.subs.forEach((s,i)=>{ const l=document.createElement("label"); l.innerHTML=`<input type="checkbox" data-i="${i}" checked> <span><b>${esc(s.company)}</b> – ${esc(s.participants||"")} <small>${s.date} · ${s.kind==="canvas"?"canvas only":"matrix"}${/test/i.test(s.company+" "+s.participants)?" · looks like a test":""}</small></span>`; h.appendChild(l); });
+  h.querySelectorAll("input").forEach(cb=>cb.addEventListener("change",render));
+}
+function toggleAll(v){ document.querySelectorAll("#subs input").forEach(cb=>cb.checked=v); render(); }
+function latestOnly(){
+  const last={}; DATA.subs.forEach((s,i)=>{ last[s.company]=i; });
+  document.querySelectorAll("#subs input").forEach(cb=>{ const s=DATA.subs[+cb.dataset.i]; cb.checked=(last[s.company]===+cb.dataset.i)&&!/test/i.test(s.company+" "+s.participants); });
+  render();
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+/* ---------- analysis ---------- */
+function selected(){ return [...document.querySelectorAll("#subs input:checked")].map(cb=>DATA.subs[+cb.dataset.i]); }
+function analyse(){
+  const subs=selected(); const ids=new Set(subs.map(s=>s.id));
+  const label={}; subs.forEach(s=>label[s.id]=s.company);
+  // matrix cells: keep the batch of the latest received_at per submission (±60 s)
+  const mx={}; DATA.cells.forEach(r=>{ if(r.source==="matrix"&&ids.has(r.submission_id)){ const t=dt(r.received_at); if(!mx[r.submission_id]||t>mx[r.submission_id]) mx[r.submission_id]=t; } });
+  const have={}; const notes=[];
+  DATA.cells.forEach(r=>{ if(r.source!=="matrix"||!ids.has(r.submission_id)) return; if(dt(r.received_at)<mx[r.submission_id]-60000) return;
+    (have[r.submission_id]=have[r.submission_id]||{})[r.dimension+"|"+r.worker_group+"|"+r.outcome]=(have[r.submission_id][r.dimension+"|"+r.worker_group+"|"+r.outcome]||new Set()).add(r.code);
+    if(r.note) notes.push({g:label[r.submission_id],d:r.dimension,wg:GN[r.worker_group]||r.worker_group,o:r.outcome,note:r.note}); });
+  const judg=[]; // {sid,g,d,wg,o,code,status}
+  subs.filter(s=>s.kind==="assessment").forEach(s=>{
+    const H=have[s.id]||{};
+    for(const d in BASELINE){ GROUPS.forEach(wg=>OUTS.forEach(o=>{ const b=new Set(BASELINE[d].baseline[wg+":"+o]||[]); const h=H[d+"|"+wg+"|"+o]||new Set();
+      new Set([...b,...h]).forEach(code=>{ const st=b.has(code)&&h.has(code)?"confirmed":(b.has(code)?"removed":"added"); judg.push({sid:s.id,g:s.company,d,wg,o,code,status:st}); }); })); }
+  });
+  const uniqNotes=[]; const seen=new Set(); notes.forEach(n=>{ const k=n.g+n.d+n.wg+n.o+n.note; if(!seen.has(k)){seen.add(k);uniqNotes.push(n);} });
+  return {subs,judg,notes:uniqNotes};
+}
+function count(arr,key){ const o={}; arr.forEach(x=>{ const k=key(x); o[k]=(o[k]||0)+1; }); return o; }
+
+/* ---------- render ---------- */
+function mk(id,cfg){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart($("#"+id),cfg); }
+function render(){
+  const A=analyse(); const {subs,judg}=A;
+  $("#selinfo").textContent=subs.length+" selected";
+  const st=count(judg,j=>j.status); const nConf=st.confirmed||0,nRem=st.removed||0,nAdd=st.added||0;
+  const ucRows=DATA.uc.filter(r=>subs.some(s=>s.company===String(r.company||"").trim()));
+  const canvRows=DATA.canvas.filter(r=>r.submission_id&&subs.some(s=>s.company===String(r.company||"").trim()));
+  const latestCanvas={}; canvRows.forEach(r=>{ const c=String(r.company).trim(); if(!latestCanvas[c]||dt(r.received_at)>dt(latestCanvas[c].received_at)) latestCanvas[c]=r; });
+  const tiles=[[subs.length,"groups selected"],[judg.length,"baseline judgements"],[(judg.length?Math.round(100*nConf/(nConf+nRem)):0)+" %","of the baseline confirmed"],[nRem+" / "+nAdd,"removed / added"],[ucRows.length,"use case matchings"],[Object.keys(latestCanvas).length,"workforce canvases"]];
+  $("#tiles").innerHTML=tiles.map(([n,l])=>`<div class="tile"><b>${n}</b><span>${l}</span></div>`).join("");
+  // groups chart
+  const gs=[...new Set(judg.map(j=>j.g))];
+  const by=s=>gs.map(g=>judg.filter(j=>j.g===g&&j.status===s).length);
+  mk("cGroups",{type:"bar",data:{labels:gs,datasets:[{label:"Confirmed",data:by("confirmed"),backgroundColor:NAVY},{label:"Added",data:by("added"),backgroundColor:CYAN},{label:"Removed",data:by("removed"),backgroundColor:AMB}]},options:{indexAxis:"y",responsive:true,scales:{x:{stacked:true},y:{stacked:true}},plugins:{legend:{position:"bottom"}}}});
+  const dims=["TA","TE","OR"]; const byd=s=>dims.map(d=>judg.filter(j=>j.d===d&&j.status===s).length);
+  mk("cDims",{type:"bar",data:{labels:["Task (TA)","Technology (TE)","Organisation (OR)"],datasets:[{label:"Confirmed",data:byd("confirmed"),backgroundColor:NAVY},{label:"Added",data:byd("added"),backgroundColor:CYAN},{label:"Removed",data:byd("removed"),backgroundColor:AMB}]},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});
+  // codes
+  const cc={}; judg.forEach(j=>{ if(j.status==="confirmed") return; (cc[j.code]=cc[j.code]||{a:0,r:0})[j.status==="added"?"a":"r"]++; });
+  const codes=Object.keys(cc).filter(c=>cc[c].a+cc[c].r>=2).sort((x,y)=>(cc[y].a+cc[y].r)-(cc[x].a+cc[x].r)).slice(0,20);
+  mk("cCodes",{type:"bar",data:{labels:codes,datasets:[{label:"Removed",data:codes.map(c=>-cc[c].r),backgroundColor:AMB},{label:"Added",data:codes.map(c=>cc[c].a),backgroundColor:CYAN}]},options:{indexAxis:"y",responsive:true,scales:{x:{stacked:true,ticks:{callback:v=>Math.abs(v)}},y:{stacked:true}},plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+Math.abs(c.raw)+"  "+(LABEL[c.label]||"")}}}}});
+  // personas
+  const P=PERSONA_KEYS.map(([k,l])=>[l,subs.filter(s=>(s.personas||"").includes(k)).length]); const W=["Augmentation","Inclusion","Symbiosis","Empowerment"].map(k=>[k,subs.filter(s=>(s.pathways||"").includes(k)).length]);
+  mk("cPersonas",{type:"bar",data:{labels:[...P.map(p=>p[0]),...W.map(w=>w[0])],datasets:[{label:"groups",data:[...P.map(p=>p[1]),...W.map(w=>w[1])],backgroundColor:[...P.map(()=>NAVY),...W.map(()=>CYAN)]}]},options:{indexAxis:"y",responsive:true,plugins:{legend:{display:false}}}});
+  // cell consensus table
+  const cellMap={}; judg.forEach(j=>{ const k=[j.d,j.wg,j.o,j.code].join("|"); const c=cellMap[k]=cellMap[k]||{d:j.d,wg:j.wg,o:j.o,code:j.code,base:j.status!=="added",conf:0,rem:0,add:0}; c[j.status==="confirmed"?"conf":j.status==="removed"?"rem":"add"]++; if(j.status!=="added") c.base=true; });
+  window._cells=Object.values(cellMap).map(c=>{ c.have=c.conf+c.add; c.action=c.base?(c.rem>=3?"review":"keep"):(c.add>=2?"add":"single"); return c; });
+  renderCells();
+  // use cases
+  $("#tUC tbody").innerHTML=ucRows.map(r=>`<tr><td>${esc(r.company)}</td><td>${esc(r.partner)}</td><td><b>${esc(r.use_case)}</b></td><td>${esc(r.use_case_name)}</td><td>${esc(r.ta_codes)}</td><td>${esc(r.te_codes)}</td><td>${esc(r.or_codes)}</td><td>${r.coverage?`<span class="tag ${esc(r.coverage)}">${esc(r.coverage)}</span>`:"–"}</td><td>${esc(r.missing)}</td></tr>`).join("")||"<tr><td colspan=9>No use case matchings in the selection.</td></tr>";
+  // metrics
+  const wm=DATA.wm.filter(r=>subs.some(s=>s.company===String(r.company||"").trim()));
+  if(wm.length){ $("#metricsCard").style.display="block"; const agg={}; wm.forEach(r=>{ const a=agg[r.metric]=agg[r.metric]||{s:0,n:0,p:0}; if(+r.rating>0){a.s+=+r.rating;a.n++;} if(r.priority==="yes") a.p++; }); const ks=Object.keys(agg);
+    mk("cMetrics",{type:"bar",data:{labels:ks,datasets:[{label:"average rating (1–5)",data:ks.map(k=>agg[k].n?+(agg[k].s/agg[k].n).toFixed(2):0),backgroundColor:NAVY},{label:"times starred",data:ks.map(k=>agg[k].p),backgroundColor:AMB}]},options:{indexAxis:"y",responsive:true,plugins:{legend:{position:"bottom"}}}}); }
+  else { $("#metricsCard").style.display="none"; }
+  // canvas texts
+  const F=[["challenge","Challenge"],["persona","Persona notes"],["pain_points","Pain points"],["goals","Goals"],["solution_task","Solution – task"],["solution_technology","Solution – technology"],["solution_organisation","Solution – organisation"],["uvp","Unique value proposition"],["risks","Risks"],["kpi_social","KPI – social"],["kpi_technical","KPI – technical"],["kpi_operational","KPI – operational"],["kpi_economic","KPI – economic"],["skills","Skills"],["action_plan","Action plan"],["canvas_feedback","Feedback on the canvas"]];
+  $("#canvasTexts").innerHTML=Object.values(latestCanvas).map(r=>`<details><summary>${esc(r.company)} <small style="font-weight:400;color:var(--muted)">– ${esc(r.participants||"")} · personas: ${esc(r.personas||"–")} · pathways: ${esc(r.pathways||"–")}</small></summary><div class="ctext">${F.filter(([k])=>String(r[k]||"").trim()).map(([k,l])=>`<b>${l}</b><div>${esc(r[k])}</div>`).join("")}</div></details>`).join("")||"<p class='note'>No canvases in the selection.</p>";
+  $("#tNotes tbody").innerHTML=A.notes.map(n=>`<tr><td>${esc(n.g)}</td><td>${n.d}</td><td>${esc(n.wg)}</td><td>${esc(n.o)}</td><td>${esc(n.note)}</td></tr>`).join("")||"<tr><td colspan=5>No cell notes.</td></tr>";
+}
+function renderCells(){
+  const act=$("#fAction").value, dim=$("#fDim").value, q=$("#fQ").value.toLowerCase();
+  const rows=(window._cells||[]).filter(c=>(!act||c.action===act)&&(!dim||c.d===dim)&&(!q||[c.code,GN[c.wg],c.o,LABEL[c.code]].join(" ").toLowerCase().includes(q)));
+  const T={keep:"keep",review:"review",add:"consider adding",single:"single addition"};
+  rows.sort((a,b)=>({review:0,add:1,keep:2,single:3})[a.action]-({review:0,add:1,keep:2,single:3})[b.action]||b.rem-a.rem||b.add-a.add);
+  $("#tCells tbody").innerHTML=rows.map(c=>`<tr><td>${c.d}</td><td>${GN[c.wg]}</td><td>${c.o}</td><td><b>${c.code}</b></td><td>${esc(LABEL[c.code]||"")}</td><td>${c.base?"yes":"no"}</td><td>${c.have}</td><td>${c.conf}</td><td>${c.rem}</td><td>${c.add}</td><td><span class="tag ${c.action}">${T[c.action]}${c.action==="review"?" – removed by "+c.rem:""}</span></td></tr>`).join("");
+  $("#cellinfo").textContent=rows.length+" rows";
+}
+["fAction","fDim"].forEach(id=>$("#"+id).addEventListener("change",renderCells)); $("#fQ").addEventListener("input",renderCells);
+</script>
+</body>
+</html>

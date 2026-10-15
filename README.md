@@ -176,6 +176,16 @@ see only that institute's use cases. For each one they tick the task characteris
 text), judge whether the lists are **sufficient to implement** the use case (yes / partly / no) and
 note what is missing.
 
+## Results dashboard
+
+Open `results.html` (https://diamondcao1996.github.io/SkillAIbility-WP3/results.html), drop the workbook
+attached to any collector e-mail (or the Google Sheet downloaded as .xlsx) and tick the submissions to
+include (test runs can be unticked; *Latest per company* keeps one submission per group). The page then
+shows: KPI tiles, agreement with the research baseline per group and per dimension, the most contested
+codes, worker groups and pathways chosen, a filterable cell-level consensus table with a suggested action
+per code (keep / review / consider adding), the use case verdicts, success-metric averages and the
+verbatim canvas texts. The file never leaves the browser.
+
 ## Facilitator setup (≈3 minutes, one time)
 
 The pages are static (GitHub Pages), so submissions are collected through a small Google Apps Script
@@ -276,6 +286,9 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 | `inclusion.html` | Tool 2 – assessment matrix, steps 1 and 2, with the research baseline embedded |
 | `usecases.html` | Tool 3 – use case matching toolkit |
 | `metrics.html` | Worker channel – success-metrics experience assessment (Industrial Version · Worker) |
+| `results.html` | **Results dashboard** for facilitators – drop the Excel export from the collector e-mail onto the page and it renders agreement with the baseline per group / dimension, contested codes, cell-level consensus, use case verdicts, success metrics and the canvas texts (runs in the browser, nothing is uploaded) |
+| `baseline-data.js` | The matrix baseline (generated from `inclusion.html`) used by the dashboard to compute confirmed / removed / added |
+| `assets/vendor/` | SheetJS and Chart.js, vendored so the dashboard works offline |
 | `usecases-data.js` | The 19 use cases, partners, NACE codes, mapping placements and baseline code lists |
 | `metrics-data.js` | The *Success metrics to evaluate use cases* framework: blocks, metrics, indicators, how-to, appendix, references (used by the scoring sheet in `canvas.html`) |
 | `config.js` | One setting: the Google Apps Script URL all tools submit to |
