@@ -57,6 +57,21 @@
   .empty{display:none}
   .hidden{display:none}
   .note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  /* canvas theme matrix */
+  .tm td.on{background:var(--navy);color:#fff;text-align:center;font-weight:700}
+  .tm td.c{text-align:center}
+  .tm td.cat{background:#eef1f7;font-weight:700;color:var(--navy)}
+  .tm th.rot{font-size:11px}
+  /* canvas poster */
+  .poster{border:1px solid #dfe3ea;border-radius:14px;padding:12px;margin:10px 0 16px;background:#f7f8fb}
+  .poster h4{margin:0 0 8px;font-size:15px;color:var(--navy)}
+  .poster h4 small{font-weight:400;color:var(--muted);font-size:12px;margin-left:8px}
+  .prow{display:grid;gap:8px;margin-bottom:8px}
+  .pbox{border:2px solid;border-radius:12px;padding:8px 10px;font-size:12px;min-height:70px;white-space:pre-wrap}
+  .pbox b{display:block;font-size:12.5px;margin-bottom:3px}
+  .pbox.blue{background:#c9eefb;border-color:#41c3ec}.pbox.green{background:#d9f2c9;border-color:#9fd65c}.pbox.yellow{background:#fce9a9;border-color:#f0d34a}.pbox.grey{background:#f5f6f8;border-color:#c7ccd6}.pbox.violet{background:#e9e4fb;border-color:#a99bea}
+  .pbox .chipz span{display:inline-block;background:var(--navy);color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;margin:2px 3px 0 0}
+  .ptoggle{font-size:12.5px;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -104,7 +119,12 @@
       <h3>Success metrics (Worker channel + canvas scorings)</h3><p class="hint">Average rating per metric and how often it was starred.</p><canvas id="cMetrics"></canvas>
     </div>
     <div class="card" style="margin-bottom:16px">
-      <h3>Workforce canvas texts</h3><p class="hint">Verbatim content per group.</p>
+      <h3>Workforce canvas – shared themes</h3><p class="hint">Keyword-coded from the canvas texts (dictionary: canvas-themes.js). ■ = the group's canvas mentions the theme; hover for the matched words. Totals on the right.</p>
+      <div class="scroll" style="max-height:520px"><table id="tThemes" class="tm"><thead></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h3>Workforce canvas posters</h3><p class="hint">Each group's canvas as submitted, in the layout of the tool.</p>
+      <div class="ptoggle"><label><input type="checkbox" id="pEmpty"> show empty boxes</label></div>
       <div id="canvasTexts"></div>
     </div>
     <div class="card"><h3>Matrix cell notes</h3><div class="scroll" style="max-height:300px"><table id="tNotes"><thead><tr><th>Group</th><th>Dim</th><th>Worker group</th><th>Pathway</th><th>Note</th></tr></thead><tbody></tbody></table></div></div>
@@ -113,6 +133,7 @@
 </main>
 
 <script src="baseline-data.js?v=20261015"></script>
+<script src="canvas-themes.js?v=20261015"></script>
 <script>
 const GROUPS=["novice","deaf","aging","physical","cognitive"], OUTS=["augmentation","inclusion","symbiosis","empowerment"];
 const GN={novice:"Novice & learning-vulnerable",deaf:"Deaf & hard-of-hearing",aging:"Ageing",physical:"Physical support needs",cognitive:"Cognitive support needs"};
@@ -221,11 +242,33 @@ function render(){
   if(wm.length){ $("#metricsCard").style.display="block"; const agg={}; wm.forEach(r=>{ const a=agg[r.metric]=agg[r.metric]||{s:0,n:0,p:0}; if(+r.rating>0){a.s+=+r.rating;a.n++;} if(r.priority==="yes") a.p++; }); const ks=Object.keys(agg);
     mk("cMetrics",{type:"bar",data:{labels:ks,datasets:[{label:"average rating (1–5)",data:ks.map(k=>agg[k].n?+(agg[k].s/agg[k].n).toFixed(2):0),backgroundColor:NAVY},{label:"times starred",data:ks.map(k=>agg[k].p),backgroundColor:AMB}]},options:{indexAxis:"y",responsive:true,plugins:{legend:{position:"bottom"}}}}); }
   else { $("#metricsCard").style.display="none"; }
-  // canvas texts
-  const F=[["challenge","Challenge"],["persona","Persona notes"],["pain_points","Pain points"],["goals","Goals"],["solution_task","Solution – task"],["solution_technology","Solution – technology"],["solution_organisation","Solution – organisation"],["uvp","Unique value proposition"],["risks","Risks"],["kpi_social","KPI – social"],["kpi_technical","KPI – technical"],["kpi_operational","KPI – operational"],["kpi_economic","KPI – economic"],["skills","Skills"],["action_plan","Action plan"],["canvas_feedback","Feedback on the canvas"]];
-  $("#canvasTexts").innerHTML=Object.values(latestCanvas).map(r=>`<details><summary>${esc(r.company)} <small style="font-weight:400;color:var(--muted)">– ${esc(r.participants||"")} · personas: ${esc(r.personas||"–")} · pathways: ${esc(r.pathways||"–")}</small></summary><div class="ctext">${F.filter(([k])=>String(r[k]||"").trim()).map(([k,l])=>`<b>${l}</b><div>${esc(r[k])}</div>`).join("")}</div></details>`).join("")||"<p class='note'>No canvases in the selection.</p>";
+  // canvas themes + posters
+  window._canvases=Object.values(latestCanvas); renderCanvases();
   $("#tNotes tbody").innerHTML=A.notes.map(n=>`<tr><td>${esc(n.g)}</td><td>${n.d}</td><td>${esc(n.wg)}</td><td>${esc(n.o)}</td><td>${esc(n.note)}</td></tr>`).join("")||"<tr><td colspan=5>No cell notes.</td></tr>";
 }
+function renderCanvases(){
+  const cv=window._canvases||[]; const groups=cv.map(r=>String(r.company).trim());
+  const th=$("#tThemes thead"), tb=$("#tThemes tbody");
+  th.innerHTML="<tr><th>Theme</th>"+groups.map(g=>`<th class="rot">${esc(g)}</th>`).join("")+"<th>groups</th></tr>";
+  let html="";
+  CANVAS_THEMES.forEach(c=>{ html+=`<tr><td class="cat" colspan="${groups.length+2}">${esc(c.cat)}</td></tr>`;
+    c.themes.forEach(t=>{ let n=0; const cells=cv.map(r=>{ const hits=themeHits(t.fields.map(f=>r[f]||"").join(" \n "),t.kw); if(hits.length){ n++; return `<td class="on" title="${esc(hits.join(", "))}">■</td>`; } return "<td class='c'>·</td>"; }).join("");
+      html+=`<tr><td>${esc(t.name)}</td>${cells}<td class="c"><b>${n}</b></td></tr>`; }); });
+  tb.innerHTML=html||"<tr><td>No canvases in the selection.</td></tr>";
+  const showEmpty=$("#pEmpty").checked;
+  const box=(cls,title,txt,extra)=>{ const v=String(txt||"").trim(); if(!v&&!extra&&!showEmpty) return ""; return `<div class="pbox ${cls}"><b>${title}</b>${extra||""}${esc(v)}</div>`; };
+  $("#canvasTexts").innerHTML=cv.map(r=>{
+    const per=String(r.personas||"").split(";").map(x=>x.trim()).filter(Boolean), pw=String(r.pathways||"").split(";").map(x=>x.trim()).filter(Boolean);
+    const chips=a=>a.length?`<div class="chipz">${a.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:"";
+    const r1=[box("violet","Learning pathways","",chips(pw)),box("blue","Challenge",r.challenge),box("blue","Persona",r.persona,chips(per)),box("blue","Pain points",r.pain_points),box("blue","Goals",r.goals)].filter(Boolean).join("");
+    const r2=[box("green","Solution – task",r.solution_task),box("green","Solution – technology",r.solution_technology),box("green","Solution – organisation",r.solution_organisation),box("green","Unique value proposition",r.uvp)].filter(Boolean).join("");
+    const r3=[box("yellow","Risks",r.risks),box("yellow","KPI – social",r.kpi_social),box("yellow","KPI – technical",r.kpi_technical),box("yellow","KPI – operational",r.kpi_operational),box("yellow","KPI – economic",r.kpi_economic),box("yellow","Skills",r.skills)].filter(Boolean).join("");
+    const r4=[box("grey","Action plan",r.action_plan),box("grey","Feedback on the canvas",r.canvas_feedback,r.canvas_rating?`<div class="chipz"><span>rating ${esc(r.canvas_rating)}/5</span></div>`:"")].filter(Boolean).join("");
+    const grid=(h,n)=>h?`<div class="prow" style="grid-template-columns:repeat(${Math.min(n,(h.match(/class="pbox/g)||[]).length)},1fr)">${h}</div>`:"";
+    return `<div class="poster"><h4>${esc(r.company)}<small>${esc(r.participants||"")} · ${esc(String(r.date||"").slice(0,10))}</small></h4>${grid(r1,5)}${grid(r2,4)}${grid(r3,6)}${grid(r4,2)}</div>`;
+  }).join("")||"<p class='note'>No canvases in the selection.</p>";
+}
+$("#pEmpty").addEventListener("change",renderCanvases);
 function renderCells(){
   const act=$("#fAction").value, dim=$("#fDim").value, q=$("#fQ").value.toLowerCase();
   const rows=(window._cells||[]).filter(c=>(!act||c.action===act)&&(!dim||c.d===dim)&&(!q||[c.code,GN[c.wg],c.o,LABEL[c.code]].join(" ").toLowerCase().includes(q)));

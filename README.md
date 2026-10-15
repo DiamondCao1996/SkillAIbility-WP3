@@ -286,7 +286,8 @@ Metadata on every row: `submission_id`, `company`, `participants`, `date`, `rece
 | `inclusion.html` | Tool 2 – assessment matrix, steps 1 and 2, with the research baseline embedded |
 | `usecases.html` | Tool 3 – use case matching toolkit |
 | `metrics.html` | Worker channel – success-metrics experience assessment (Industrial Version · Worker) |
-| `results.html` | **Results dashboard** for facilitators – drop the Excel export from the collector e-mail onto the page and it renders agreement with the baseline per group / dimension, contested codes, cell-level consensus, use case verdicts, success metrics and the canvas texts (runs in the browser, nothing is uploaded) |
+| `results.html` | **Results dashboard** for facilitators – drop the Excel export from the collector e-mail onto the page and it renders agreement with the baseline per group / dimension, contested codes, cell-level consensus, use case verdicts, success metrics, a keyword-coded theme matrix of the canvases and every canvas as a poster (runs in the browser, nothing is uploaded) |
+| `canvas-themes.js` | Theme dictionary (keywords per canvas field) used to code the workforce-canvas texts in the dashboard and the analysis |
 | `baseline-data.js` | The matrix baseline (generated from `inclusion.html`) used by the dashboard to compute confirmed / removed / added |
 | `assets/vendor/` | SheetJS and Chart.js, vendored so the dashboard works offline |
 | `usecases-data.js` | The 19 use cases, partners, NACE codes, mapping placements and baseline code lists |
