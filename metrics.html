@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SkillAIbility WP3 – Worker experience assessment</title>
+<title>SkillAIbility WP3 – How was the new technology for you?</title>
 <style>
 
   :root{
@@ -73,7 +73,24 @@
   .orow{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
   .orow > div{flex:1 1 320px}
   .mp-rate.big .rb{width:40px;height:40px;font-size:15px}
-  .mp-sub{font-size:12.5px;color:var(--muted);margin:4px 0 8px}
+  .mp-sub{font-size:15px;color:var(--ink);margin:4px 0 8px;font-weight:600}
+  .framing h2{font-size:22px}
+  .framing p.easy{font-size:16px;line-height:1.6;color:var(--ink)}
+  .easy-steps{margin:8px 0 10px;padding-left:22px;font-size:15px;line-height:1.6}
+  .scale span{font-size:13.5px}
+  .mp-context h3,.mp-legend{font-size:17px}
+  .mp-legend{font-size:15px;line-height:1.6;color:var(--ink)}
+  .mp-ctx-row label{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:600}
+  .mp-ctx-row .opt{font-weight:400;color:var(--muted);font-size:13px}
+  .chips .tt{font-size:14px;padding:8px 14px}
+  .chips.multi .tt .pc{font-size:15px;margin-right:2px}
+  .mp-block-head h3{font-size:18px}
+  .mp-block-head .bq{font-size:14px}
+  .mp-mlabel b{font-size:15.5px;line-height:1.4}
+  .mp-ind{font-size:14px;line-height:1.5}
+  .mp-rate .rb{width:36px;height:36px;font-size:15px}
+  .mp-star{font-size:13.5px}
+  .mp-metric{grid-template-columns:1.6fr 1.6fr auto}
   @media print{ .actions,.statusbar,.toast,.modal,nav.pages,.mp-score .mp-star{display:none !important} body{background:#fff} }
   /* ---------- success-metrics (page)  ("turning page") ---------- */
   .mp{position:fixed;inset:0;z-index:40;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
@@ -165,57 +182,62 @@
   <nav class="pages"><a href="index.html">⌂ Start</a></nav>
   <div class="meta">
     <label>Company <input id="m_case" placeholder="e.g. Volvo" autocomplete="off"></label>
-    <label>Participants <input id="m_people" placeholder="your name or role" autocomplete="off"></label>
+    <label>Your name (optional) <input id="m_people" placeholder="your name or your job" autocomplete="off"></label>
     <label>Date <input id="m_date" type="date"></label>
   </div>
   <div class="actions">
     <button class="btn-ghost" onclick="exportJSON()" title="Download as JSON">⬇ Export</button>
     <button class="btn-ghost" onclick="window.print()" title="Print or save as PDF">🖨 Print</button>
-    <button class="btn-ghost" onclick="confirmClear()" title="Clear all answers">✕ Clear</button>
-    <button class="btn-primary" id="submitBtn" onclick="submitMetrics()">Submit</button>
+    <button class="btn-ghost" onclick="confirmClear()" title="Start again">✕ Start again</button>
+    <button class="btn-primary" id="submitBtn" onclick="submitMetrics()">Send my answers</button>
   </div>
 </header>
 
 <main>
   <div class="framing">
-    <h2>Step 1 · Success metrics <small style="font-weight:500;color:#5b6a7d">– assess your experience in the use case experiment</small></h2>
-    <p>You tried a new technology in a SkillAIbility use case experiment. Tell us how it worked <b>for you</b>. First describe the task you did with it, then rate each success metric from your own experience and <b>★ star</b> the ones that mattered most to you. Finish with what worked well and what should change. There are no right or wrong answers – your experience is the data. About <b>10–15 minutes</b>.</p>
-    <div class="scale"><span>1 = very poor</span><span>2 = poor</span><span>3 = okay</span><span>4 = good</span><span>5 = very good</span><span>★ = mattered most to me</span></div>
+    <h2>How was the new technology for you?</h2>
+    <p class="easy">You tried a new technology at work.<br>We want to know how it was <b>for you</b>.<br>There are no right or wrong answers.<br>It takes about <b>10 minutes</b>.</p>
+    <ol class="easy-steps"><li>Tell us about you and the task.</li><li>Give each point a score from 1 to 5.</li><li>Tell us what was good and what should be better.</li></ol>
+    <div class="scale"><span>1 = very bad</span><span>2 = bad</span><span>3 = OK</span><span>4 = good</span><span>5 = very good</span><span>★ = this was important for me</span></div>
   </div>
 
   <div class="mp-body">
     <section class="mp-context">
-      <h3>1 · You and the task</h3>
-      <p class="mp-q">Which technology did you try, what task did you do with it, and what is your role?</p>
+      <h3>1 · About you and the task</h3>
       <div class="mp-ctx-row">
-        <label>Use case / technology tested<input id="f_usecase" placeholder="e.g. AR-guided maintenance, cobot clip insertion…"></label>
-        <label>Your role<div class="chips" id="roleChips"></div></label>
-        <label>Task type<div class="chips" id="metricsTaskType"></div></label>
+        <label>What technology did you try?<input id="f_usecase" placeholder="for example: smart glasses, a robot arm, a tablet with instructions"></label>
       </div>
       <div class="mp-ctx-row" style="margin-top:12px">
-        <label style="flex:1 1 100%">The task you did with the technology<textarea id="metricsContext" rows="2" placeholder="e.g. I diagnosed a fault on line 3 with the AR glasses; I assembled the chassis parts with the cobot…"></textarea></label>
+        <label>What is your job?<div class="chips" id="roleChips"></div></label>
+        <label>What kind of task was it?<div class="chips" id="metricsTaskType"></div></label>
+      </div>
+      <div class="mp-ctx-row" style="margin-top:12px">
+        <label style="flex:1 1 100%">What did you do with the technology?<textarea id="metricsContext" rows="2" placeholder="for example: I put parts together with the robot. I checked a machine with the smart glasses."></textarea></label>
+      </div>
+      <div class="mp-ctx-row" style="margin-top:14px">
+        <label style="flex:1 1 100%">Which of these describe you? <span class="opt">You can tick more than one. You can also skip this.</span><div class="chips multi" id="personaChips"></div></label>
       </div>
     </section>
 
-    <p class="mp-legend">2 · Rate your experience — for each metric, how well did the technology perform <b>for you</b> (1 = very poor, 5 = very good)? <b>★ Star</b> the ones that mattered most. The examples under each metric show what to think about; skip a metric if it does not apply to your task.</p>
+    <p class="mp-legend"><b>2 · Give each point a score.</b><br>1 = very bad &nbsp;…&nbsp; 5 = very good.<br>Press <b>★</b> if this point was important for you.<br>If a point does not fit your task, skip it.</p>
 
     <div id="metricsBlocks"></div>
 
     <section class="overall">
-      <h3>3 · Overall</h3>
+      <h3>3 · In the end</h3>
       <div class="orow">
         <div>
-          <p class="mp-sub">Overall, how was your experience with the technology?</p>
+          <p class="mp-sub">All in all, how was the technology for you?</p>
           <div class="mp-rate big" id="overallRate"></div>
         </div>
         <div>
-          <p class="mp-sub">Would you want to use it in your daily work?</p>
+          <p class="mp-sub">Would you like to use it every day at work?</p>
           <div class="chips" id="adoptChips"></div>
         </div>
       </div>
       <div class="orow" style="margin-top:12px">
-        <div><p class="mp-sub">What worked well?</p><textarea id="f_good" placeholder="What helped you, what felt easier or safer…"></textarea></div>
-        <div><p class="mp-sub">What should change?</p><textarea id="f_change" placeholder="What was hard, confusing, slow or uncomfortable; what is missing…"></textarea></div>
+        <div><p class="mp-sub">What was good?</p><textarea id="f_good" placeholder="What helped you? What was easier or safer?"></textarea></div>
+        <div><p class="mp-sub">What should be better?</p><textarea id="f_change" placeholder="What was hard, slow or uncomfortable? What is missing?"></textarea></div>
       </div>
     </section>
 
@@ -233,7 +255,7 @@
 
 <div class="statusbar">
   <span><span class="dot" id="dot"></span><span id="status">Draft saved locally in this browser</span></span>
-  <span id="progress">0 metrics rated</span>
+  <span id="progress">0 of 18 points scored</span>
 </div>
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal">
@@ -245,15 +267,45 @@
 </div>
 
 <script src="config.js?v=20261008"></script>
-<script src="metrics-data.js?v=20261008"></script>
+<script src="metrics-data.js?v=20261016"></script>
 <script>
 const WORKSHOP_ID="WP3";
 const STORAGE_KEY="skillaibility_wp3_metrics_v1";
 const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
-const ROLES=["Operator","Technician","Team leader","Trainee / apprentice","Other"];
+const ROLES=["I work on the line or at a machine","I fix and check machines","I lead a team","I am learning the job","Something else"];
+const TASKS=[["Maintenance","Fixing or checking a machine"],["Assembly","Putting parts together"],["Other","Something else"]];
 const ADOPT=["Yes","Maybe","No"];
+const PERSONAS=[["novice","I am new to this job, or I am still learning it"],["deaf","I am deaf or hard of hearing"],["aging","I am an older worker (about 55 or older)"],["physical","I have a physical condition that affects my work"],["cognitive","I need extra support to understand or remember instructions"],["none","None of these"]];
+/* easy-read text for every success metric (ids match metrics-data.js) */
+const EASY={
+  taskuser:{name:"The task and you",q:"Did the technology help you with the task?"},
+  "taskuser.1":["The technology helped me with the hard parts of the task","The risky steps, or the steps that are easy to get wrong."],
+  "taskuser.2":["I could do the task with the technology, without extra help from another person","I could see it, hear it, understand it and use it."],
+  "taskuser.3":["I felt safe and my body was OK","No pain, no strain, no near-accidents."],
+  technical:{name:"Did it work?",q:"Did the technology work well?"},
+  "technical.1":["The technology gave me the right information","It did not make mistakes, like showing the wrong part."],
+  "technical.2":["It worked every time and it was fast enough","It did not stop, crash or make me wait."],
+  "technical.3":["It fitted with the tools and systems I already use","I did not need tricks or workarounds."],
+  operational:{name:"Doing the job",q:"Did the work go better?"},
+  "operational.1":["I could do the task faster, with fewer interruptions","I did not have to stop and ask for help."],
+  "operational.2":["My work had fewer mistakes","Less rework. No missed steps."],
+  "operational.3":["I learned the task, and I can do it again","I know what to do next time."],
+  social:{name:"How it felt",q:"How did it feel to use the technology?"},
+  "social.1":["It was easy to use","Clear instructions. Easy to see, hear and operate."],
+  "social.2":["I trust it, and I think it is fair","It does not control me or judge me unfairly."],
+  "social.3":["I could still work together with my colleagues","It did not cut me off from my team or my supervisor."],
+  workload:{name:"Your head and your energy",q:"Was it too much for your head or your body?"},
+  "workload.1":["My head was not overloaded","I could keep up. I did not feel stressed or rushed."],
+  "workload.2":["I did not feel tired or tense","My eyes, my breathing and my body felt normal."],
+  economic:{name:"Time and effort",q:"Was it worth the time and effort?"},
+  "economic.1":["Learning to use it took a fair amount of time and effort","Not too long. Not too hard."],
+  "economic.2":["I think it is worth it for the company","Less waste, less waiting, better work."],
+  impact:{name:"Your future",q:"Does it help you in your job?"},
+  "impact.1":["It helps me grow in my job","I can take on new or more skilled tasks. My job feels secure."],
+  "impact.2":["It helps people like me stay in this work","People with my needs can do this job well."]
+};
 let metrics={ task_type:"", context:"", scores:{} };
-let extra={ use_case:"", role:"", overall:0, adopt:"", good:"", change:"" };
+let extra={ use_case:"", role:"", overall:0, adopt:"", good:"", change:"", personas:[] };
 let saveTimer=null;
 
 function metricScore(id){ return metrics.scores[id]||(metrics.scores[id]={r:0,p:false}); }
@@ -267,14 +319,16 @@ function build(){
   SUCCESS_METRICS.forEach(b=>{
     const sec=document.createElement("section"); sec.className="mp-block";
     const head=document.createElement("div"); head.className="mp-block-head";
-    head.innerHTML=`<h3>${b.name}<span class="btot" id="btot-${b.id}"></span></h3><span class="bq">${b.question}</span>`;
+    const eb=EASY[b.id]||{name:b.name,q:b.question};
+    head.innerHTML=`<h3>${eb.name}<span class="btot" id="btot-${b.id}"></span></h3><span class="bq">${eb.q}</span>`;
     sec.appendChild(head);
     b.metrics.forEach(m=>{
       const row=document.createElement("div"); row.className="mp-metric"; row.id="row-"+cssId(m.id);
-      const ind=(m.micro?`<p><span class="lens micro">think of</span>${m.micro}</p>`:"")+(m.macro?`<p><span class="lens macro">wider</span>${m.macro}</p>`:"");
-      row.innerHTML=`<div class="mp-mlabel"><b>${m.label}</b></div><div class="mp-ind">${ind||'<p style="color:#999">—</p>'}</div>`+
+      const em=EASY[m.id]||[m.label,m.micro||""];
+      const ind=em[1]?`<p><span class="lens micro">for example</span>${em[1]}</p>`:"";
+      row.innerHTML=`<div class="mp-mlabel"><b>${em[0]}</b></div><div class="mp-ind">${ind}</div>`+
         `<div class="mp-score"><div class="mp-rate">`+[1,2,3,4,5].map(n=>`<button type="button" class="rb" data-m="${m.id}" data-r="${n}">${n}</button>`).join("")+
-        `</div><button type="button" class="mp-star" data-m="${m.id}">★ Mattered most</button></div>`;
+        `</div><button type="button" class="mp-star" data-m="${m.id}">★ Important for me</button></div>`;
       sec.appendChild(row);
     });
     host.appendChild(sec);
@@ -296,7 +350,9 @@ function build(){
 function render(){
   build();
   chips("#roleChips",ROLES,()=>extra.role,v=>extra.role=v);
-  chips("#metricsTaskType",METRICS_TASK_TYPES,()=>metrics.task_type,v=>metrics.task_type=v);
+  (function(){ const h=$("#metricsTaskType"); h.innerHTML=""; TASKS.forEach(([v,l])=>{ const c=document.createElement("div"); c.className="tt"+(metrics.task_type===v?" on":""); c.textContent=l; c.onclick=()=>{ metrics.task_type=metrics.task_type===v?"":v; scheduleSave(); render(); }; h.appendChild(c); }); })();
+  (function(){ const h=$("#personaChips"); h.innerHTML=""; PERSONAS.forEach(([v,l])=>{ const on=extra.personas.includes(v); const c=document.createElement("div"); c.className="tt"+(on?" on":""); c.innerHTML=`<span class="pc">${on?"☑":"☐"}</span> ${l}`;
+    c.onclick=()=>{ if(v==="none"){ extra.personas=on?[]:["none"]; } else { extra.personas=extra.personas.filter(x=>x!=="none"); const i=extra.personas.indexOf(v); i>=0?extra.personas.splice(i,1):extra.personas.push(v); } scheduleSave(); render(); }; h.appendChild(c); }); })();
   chips("#adoptChips",ADOPT,()=>extra.adopt,v=>extra.adopt=v);
   if($("#metricsContext").value!==metrics.context) $("#metricsContext").value=metrics.context||"";
   if($("#f_usecase").value!==extra.use_case) $("#f_usecase").value=extra.use_case||"";
@@ -315,13 +371,13 @@ function render(){
     const t=$("#btot-"+b.id); if(t) t.innerHTML=n?`avg <b>${(sum/n).toFixed(1)}</b> · ${n}/${b.metrics.length} rated`:"";
   });
   $$("#overallRate .rb").forEach(x=>x.classList.toggle("on",+x.dataset.r===extra.overall));
-  $("#progress").textContent=`${rated} metrics rated · ${pri} starred`+(extra.overall?` · overall ${extra.overall}/5`:"");
+  $("#progress").textContent=`${rated} of 18 points scored · ${pri} marked ★`+(extra.overall?` · overall ${extra.overall}/5`:"");
 }
 function collect(){
   const scores={}; Object.keys(metrics.scores).forEach(id=>{ const s=metrics.scores[id]; if(s&&(s.r>0||s.p)) scores[id]={r:s.r||0,p:!!s.p}; });
   return { form:"metrics", workshop:WORKSHOP_ID, submission_id:getSubmissionId(), company:$("#m_case").value.trim(), participants:$("#m_people").value.trim(), date:$("#m_date").value,
     submitted_at:new Date().toISOString(), user_agent:navigator.userAgent,
-    use_case:extra.use_case.trim(), role:extra.role, overall_rating:extra.overall||"", would_adopt:extra.adopt, worked_well:extra.good.trim(), should_change:extra.change.trim(),
+    use_case:extra.use_case.trim(), role:extra.role, personas:extra.personas.slice(), overall_rating:extra.overall||"", would_adopt:extra.adopt, worked_well:extra.good.trim(), should_change:extra.change.trim(),
     metrics:{ task_type:metrics.task_type||"", context:(metrics.context||"").trim(), scores } };
 }
 function getSubmissionId(){ let id=localStorage.getItem(STORAGE_KEY+"_id"); if(!id){ id=WORKSHOP_ID+"-W-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6); localStorage.setItem(STORAGE_KEY+"_id",id); } return id; }
@@ -329,7 +385,7 @@ function fill(d){
   $("#m_case").value=d.company||""; $("#m_people").value=d.participants||""; $("#m_date").value=d.date||new Date().toISOString().slice(0,10);
   metrics={ task_type:(d.metrics&&d.metrics.task_type)||"", context:(d.metrics&&d.metrics.context)||"", scores:{} };
   if(d.metrics&&d.metrics.scores) Object.keys(d.metrics.scores).forEach(id=>{ const s=d.metrics.scores[id]||{}; metrics.scores[id]={r:Math.max(0,Math.min(5,+s.r||0)),p:!!s.p}; });
-  extra={ use_case:d.use_case||"", role:d.role||"", overall:+d.overall_rating||0, adopt:d.would_adopt||"", good:d.worked_well||"", change:d.should_change||"" };
+  extra={ use_case:d.use_case||"", role:d.role||"", overall:+d.overall_rating||0, adopt:d.would_adopt||"", good:d.worked_well||"", change:d.should_change||"", personas:Array.isArray(d.personas)?d.personas.filter(x=>PERSONAS.some(p=>p[0]===x)):[] };
   render();
 }
 function scheduleSave(){
@@ -338,18 +394,18 @@ function scheduleSave(){
 }
 ["m_case","m_people","m_date"].forEach(id=>$("#"+id).addEventListener("input",scheduleSave));
 function exportJSON(){ const blob=new Blob([JSON.stringify(collect(),null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=("WP3_worker_"+($("#m_case").value||"assessment")).replace(/[^\w\-]+/g,"-")+".json"; a.click(); toast("Exported as JSON","ok"); }
-function confirmClear(){ modal("Clear all answers?","<p>All ratings and texts will be removed. Company and date are kept.</p>",[{label:"Cancel"},{label:"Clear",cls:"btn-danger",onClick:()=>{ const c=$("#m_case").value, p=$("#m_people").value, dt=$("#m_date").value; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); fill({company:c,participants:p,date:dt}); toast("Cleared"); }}]); }
+function confirmClear(){ modal("Start again?","<p>All your answers will be removed.</p>",[{label:"No, keep them"},{label:"Yes, start again",cls:"btn-danger",onClick:()=>{ const c=$("#m_case").value, p=$("#m_people").value, dt=$("#m_date").value; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+"_id"); fill({company:c,participants:p,date:dt}); toast("Cleared"); }}]); }
 function submitMetrics(){
   const d=collect(); const rated=Object.keys(d.metrics.scores).length;
-  if(!d.company){ modal("Almost there","<p><b>Please fill in:</b> Company (top bar).</p>",[{label:"OK"}]); return; }
-  modal("Submit your assessment?",`<p>${rated} metrics rated${d.overall_rating?", overall "+d.overall_rating+"/5":""}. Your answers are sent to the research team; you can re-submit later if you change something.</p>`,[{label:"Cancel"},{label:"Submit",cls:"btn-primary",onClick:()=>doSubmit(d)}]);
+  if(!d.company){ modal("One more thing","<p>Please write the <b>company</b> name at the top of the page.</p>",[{label:"OK"}]); return; }
+  modal("Send your answers?",`<p>You gave ${rated} scores${d.overall_rating?" and an overall score of "+d.overall_rating+"/5":""}.<br>Your answers go to the research team.<br>You can change them and send again later.</p>`,[{label:"Not yet"},{label:"Yes, send",cls:"btn-primary",onClick:()=>doSubmit(d)}]);
 }
 async function doSubmit(d){
   if(!SUBMIT_URL){ exportJSON(); return; }
-  const btn=$("#submitBtn"); btn.disabled=true; btn.textContent="Submitting…";
-  try{ await fetch(SUBMIT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)}); toast("✓ Thank you – your assessment was submitted!","ok",5000); $("#status").textContent="Submitted "+new Date().toLocaleTimeString(); }
+  const btn=$("#submitBtn"); btn.disabled=true; btn.textContent="Sending…";
+  try{ await fetch(SUBMIT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)}); toast("✓ Thank you! Your answers were sent.","ok",5000); $("#status").textContent="Submitted "+new Date().toLocaleTimeString(); }
   catch(err){ toast("Submission failed (offline?). A JSON copy was downloaded instead.","err",6000); exportJSON(); }
-  finally{ btn.disabled=false; btn.textContent="Submit"; }
+  finally{ btn.disabled=false; btn.textContent="Send my answers"; }
 }
 function toast(msg,cls="",ms=3500){ const t=$("#toast"); t.textContent=msg; t.className="toast show "+cls; clearTimeout(t._t); t._t=setTimeout(()=>t.className="toast",ms); }
 function modal(title,bodyHTML,buttons){ $("#modalTitle").textContent=title; $("#modalBody").innerHTML=bodyHTML; const row=$("#modalRow"); row.innerHTML=""; buttons.forEach(b=>{ const btn=document.createElement("button"); btn.textContent=b.label; btn.className=b.cls||"btn-cancel"; btn.onclick=()=>{ closeModal(); b.onClick&&b.onClick(); }; row.appendChild(btn); }); $("#modal").classList.add("open"); }
@@ -363,6 +419,6 @@ $("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeModal()
 })();
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
 </script>
-<script src="flow.js?v=20261008"></script>
+<script src="flow.js?v=20261016"></script>
 </body>
 </html>

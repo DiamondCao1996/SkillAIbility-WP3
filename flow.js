@@ -52,21 +52,21 @@ const FLOWS = {
     id: "worker",
     group: "industrial",
     name: "Industrial Version · Worker",
-    who: "workers from a use case experiment",
-    total: "10–15 min",
-    tagline: "Assess your own experience with the technology.",
-    blurb: "One short page: describe the task you did with the technology, rate the success metrics from your own experience, star what mattered most and tell us what worked and what should change.",
+    who: "workers who tried a new technology at work",
+    total: "about 10 min",
+    tagline: "How was the new technology for you?",
+    blurb: "One short page in easy-read English. You say what you did with the technology, give each point a score from 1 to 5, mark what was important for you, and tell us what was good and what should be better.",
     steps: [
       {
-        key: "metrics", page: "metrics.html", name: "Success metrics – worker assessment", time: "10–15 min",
-        purpose: "Rate how the technology performed for you in the use case experiment.",
+        key: "metrics", page: "metrics.html", name: "How was the new technology for you?", time: "about 10 min",
+        purpose: "Tell us how the technology was for you. There are no right or wrong answers.",
         instr: [
-          "Each worker fills in the page on <b>their own device</b> (phone, tablet or PC) – answers are individual.",
-          "Make sure <b>Company / organisation</b> is filled in (start page) – it links your answers to the use case experiment.",
-          "Describe the <b>technology and the task</b> you did with it, and pick your role.",
-          "Rate each <b>success metric 1–5</b> from your own experience and <b>★ star</b> the ones that mattered most to you; skip what does not apply.",
-          "Give an <b>overall rating</b>, say whether you would use it in daily work, and write what worked well / what should change.",
-          "Click <b>Submit</b> – your answers go straight to the research team."
+          "Use your <b>own phone, tablet or computer</b>. Your answers are only yours.",
+          "Check that the <b>company</b> name is written at the top of the page.",
+          "Say <b>what technology</b> you tried and <b>what you did</b> with it. Tick what describes you – you can tick more than one.",
+          "Give each point a <b>score from 1 to 5</b>. Press <b>★</b> if the point was important for you. Skip a point if it does not fit.",
+          "Say how it was <b>all in all</b>, and what was <b>good</b> and what should be <b>better</b>.",
+          "Press <b>Send my answers</b>. Thank you!"
         ]
       }
     ]

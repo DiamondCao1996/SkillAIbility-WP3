@@ -114,11 +114,12 @@ function saveMetrics_(d, sheetName) {
  * "Worker_metrics": one row per worker (wide – one column per metric rating, "*" = starred)
  * "Worker_metrics_long": one row per rated metric (pivot-ready) */
 var METRIC_IDS = Object.keys(METRIC_LABELS);
-var WORKER_FIELDS = ["use_case", "role", "task_type", "task_context", "overall_rating", "would_adopt", "worked_well", "should_change", "metrics_rated", "metrics_starred"];
+var WORKER_FIELDS = ["use_case", "role", "personas", "task_type", "task_context", "overall_rating", "would_adopt", "worked_well", "should_change", "metrics_rated", "metrics_starred"];
 function workerHeaders_() { return META.concat(WORKER_FIELDS, METRIC_IDS.map(function (id) { return id; })); }
 function saveWorkerMetrics_(d) {
   var m = d.metrics || {}; var sc = m.scores || {};
   d.task_type = m.task_type; d.task_context = m.context;
+  if (Array.isArray(d.personas)) d.personas = d.personas.map(function (p) { return p === "none" ? "None of these" : (GROUP_NAMES[p] || p); }).join("; ");
   var rated = 0, starred = 0;
   var cells = METRIC_IDS.map(function (id) { var s = sc[id] || {}; var r = Number(s.r) || 0; if (r > 0) rated++; if (s.p) starred++; return (r ? String(r) : "") + (s.p ? "*" : ""); });
   d.metrics_rated = rated; d.metrics_starred = starred;
@@ -287,7 +288,7 @@ function summaryHtml_(d) {
       if (bits.length) tr(id + " – " + (UC_NAMES[id] || ""), bits.join(" | "));
     });
   } else if (d.form === "metrics") {
-    tr("Use case / technology", d.use_case); tr("Role", d.role);
+    tr("Use case / technology", d.use_case); tr("Role", d.role); tr("Describes themselves as", Array.isArray(d.personas) ? d.personas.map(function (p) { return GROUP_NAMES[p] || p; }).join("; ") : d.personas);
     if (d.metrics) { tr("Task type", d.metrics.task_type); tr("Task", d.metrics.context); }
     tr("Overall rating", d.overall_rating); tr("Would use daily", d.would_adopt);
     tr("Worked well", d.worked_well); tr("Should change", d.should_change);
