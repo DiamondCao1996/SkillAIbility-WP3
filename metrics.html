@@ -91,7 +91,48 @@
   .mp-rate .rb{width:36px;height:36px;font-size:15px}
   .mp-star{font-size:13.5px}
   .mp-metric{grid-template-columns:1.6fr 1.6fr auto}
-  @media print{ .actions,.statusbar,.toast,.modal,nav.pages,.mp-score .mp-star{display:none !important} body{background:#fff} }
+  /* ---------- self-guided (wizard) mode ---------- */
+  body.wz main{padding-bottom:110px}
+  body.wz .wz-screen{display:none}
+  body.wz .wz-screen.on{display:block;animation:wz-in .25s ease}
+  @keyframes wz-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  body.wz .mp-legend{display:none}
+  body:not(.wz) #wzWelcome{display:none}
+  body.wz.wz-mid .mp-more{display:none}
+  .wz-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #d8dce4;padding:10px 22px 12px;z-index:6;display:none}
+  body.wz .wz-nav{display:block}
+  body.wz .statusbar{display:none}
+  .wz-nav .row{display:flex;gap:10px;align-items:center;max-width:1500px;margin:0 auto}
+  .wz-nav .bar{flex:1;height:10px;background:#e6e9ef;border-radius:999px;overflow:hidden}
+  .wz-nav .bar i{display:block;height:100%;background:var(--cyan);width:0;transition:width .3s}
+  .wz-nav .step{font-size:14px;color:var(--muted);min-width:90px;text-align:center}
+  .wz-nav button{font-size:16px;padding:12px 22px;border-radius:12px}
+  .wz-nav .btn-back{background:#eef1f7;color:var(--navy)}
+  .wz-nav .btn-next{background:var(--navy);color:#fff}
+  .wz-nav .btn-send{background:#1f8f4c;color:#fff}
+  .wz-nav .hint{font-size:12.5px;color:var(--muted);text-align:center;margin-top:6px}
+  .welcome{background:#fff;border-radius:14px;padding:22px 24px;border-left:6px solid var(--navy)}
+  .welcome h2{margin:0 0 10px;font-size:24px}
+  .welcome p{font-size:17px;line-height:1.6;margin:6px 0}
+  .welcome .uc{background:#e3f4fc;border-radius:12px;padding:12px 16px;margin:12px 0;font-size:16px}
+  .welcome .uc b{display:block;font-size:18px;color:var(--navy)}
+  .welcome .big{font-size:18px;padding:14px 28px;margin-top:10px}
+  .review{background:#fff;border-radius:14px;padding:18px 22px}
+  .review h3{margin:0 0 8px;font-size:18px;color:var(--navy)}
+  .review table{width:100%;border-collapse:collapse;font-size:14px}
+  .review td{padding:6px 8px;border-bottom:1px solid #eef0f4}
+  .review td.sc{text-align:right;font-weight:700;white-space:nowrap}
+  .review .miss{color:var(--muted);font-style:italic}
+  .modebar{display:flex;justify-content:flex-end;margin:-6px 0 10px;font-size:13px}
+  .modebar label{display:flex;gap:6px;align-items:center;color:var(--muted);cursor:pointer}
+  .facil{margin-top:24px}
+  .facil summary{font-size:14px}
+  .facil .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:10px 0}
+  .facil label{display:flex;flex-direction:column;font-size:12.5px;color:var(--muted)}
+  .facil select,.facil input{font:inherit;font-size:14px;padding:7px 9px;border:1px solid #c9d1db;border-radius:8px;min-width:200px}
+  .facil code{display:block;background:#f1f3f7;padding:8px 10px;border-radius:8px;font-size:12.5px;word-break:break-all;margin-top:6px}
+  @media (max-width:700px){.mp-metric{grid-template-columns:1fr}.mp-score{align-items:flex-start}.wz-nav .step{display:none}}
+  @media print{ .actions,.statusbar,.toast,.modal,nav.pages,.mp-score .mp-star,.wz-nav{display:none !important} body{background:#fff} body.wz .wz-screen{display:block} }
   /* ---------- success-metrics (page)  ("turning page") ---------- */
   .mp{position:fixed;inset:0;z-index:40;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
   .mp.open{display:flex;animation:mp-in .28s ease}
@@ -194,7 +235,15 @@
 </header>
 
 <main>
-  <div class="framing">
+  <div class="modebar"><label><input type="checkbox" id="modeAll"> show everything on one page</label></div>
+  <section class="wz-screen welcome" id="wzWelcome">
+    <h2>How was the new technology for you?</h2>
+    <div class="uc" id="ucBanner" style="display:none"></div>
+    <p>You tried a new technology at work.<br>We want to know how it was <b>for you</b>.</p>
+    <p>There are no right or wrong answers.<br>It takes about <b>10 minutes</b>.<br>You can stop and come back – your answers are saved on this device.</p>
+    <p><button type="button" class="btn-primary big" onclick="wzGo(1)">Start →</button></p>
+  </section>
+  <div class="framing wz-screen" id="wzIntro">
     <h2>How was the new technology for you?</h2>
     <p class="easy">You tried a new technology at work.<br>We want to know how it was <b>for you</b>.<br>There are no right or wrong answers.<br>It takes about <b>10 minutes</b>.</p>
     <ol class="easy-steps"><li>Tell us about you and the task.</li><li>Give each point a score from 1 to 5.</li><li>Tell us what was good and what should be better.</li></ol>
@@ -202,7 +251,7 @@
   </div>
 
   <div class="mp-body">
-    <section class="mp-context">
+    <section class="mp-context wz-screen">
       <h3>1 · About you and the task</h3>
       <div class="mp-ctx-row">
         <label>What technology did you try?<input id="f_usecase" placeholder="for example: smart glasses, a robot arm, a tablet with instructions"></label>
@@ -223,7 +272,7 @@
 
     <div id="metricsBlocks"></div>
 
-    <section class="overall">
+    <section class="overall wz-screen">
       <h3>3 · In the end</h3>
       <div class="orow">
         <div>
@@ -241,6 +290,27 @@
       </div>
     </section>
 
+    <section class="review wz-screen" id="wzReview">
+      <h3>Nearly done – check your answers</h3>
+      <p class="mp-sub" style="font-weight:400">Here is what you said. You can go back and change anything. When you are happy, press <b>Send my answers</b>.</p>
+      <div id="reviewBody"></div>
+    </section>
+
+    <details class="mp-more facil">
+      <summary>For facilitators: make a link for your use case</summary>
+      <div class="mp-more-body">
+        <p>Give workers a link (or a QR code of it) that already knows the company and the use case. They only open it and answer.</p>
+        <div class="row">
+          <label>Institute<select id="facPartner"></select></label>
+          <label>Use case<select id="facUc"></select></label>
+          <label>Company / site<input id="facCompany" placeholder="e.g. Volvo Gothenburg"></label>
+          <button type="button" class="btn-ghost" style="background:#eef1f7;color:var(--navy)" onclick="facMake()">Make link</button>
+        </div>
+        <code id="facLink">–</code>
+        <p class="note">Tip: paste the link into any free QR-code generator and print the QR for the shop floor.</p>
+      </div>
+    </details>
+
     <details class="mp-more">
       <summary>Background &amp; sources</summary>
       <div class="mp-more-body">
@@ -252,6 +322,16 @@
     </details>
   </div>
 </main>
+
+<div class="wz-nav" id="wzNav">
+  <div class="row">
+    <button type="button" class="btn-back" id="wzBack" onclick="wzStep(-1)">← Back</button>
+    <div class="bar"><i id="wzBar"></i></div>
+    <span class="step" id="wzStepTxt"></span>
+    <button type="button" class="btn-next" id="wzNext" onclick="wzStep(1)">Next →</button>
+  </div>
+  <div class="hint" id="wzHint">You can skip a point if it does not fit your task.</div>
+</div>
 
 <div class="statusbar">
   <span><span class="dot" id="dot"></span><span id="status">Draft saved locally in this browser</span></span>
@@ -267,7 +347,8 @@
 </div>
 
 <script src="config.js?v=20261008"></script>
-<script src="metrics-data.js?v=20261016"></script>
+<script src="usecases-data.js?v=20261019"></script>
+<script src="metrics-data.js?v=20261019"></script>
 <script>
 const WORKSHOP_ID="WP3";
 const STORAGE_KEY="skillaibility_wp3_metrics_v1";
@@ -411,14 +492,77 @@ function toast(msg,cls="",ms=3500){ const t=$("#toast"); t.textContent=msg; t.cl
 function modal(title,bodyHTML,buttons){ $("#modalTitle").textContent=title; $("#modalBody").innerHTML=bodyHTML; const row=$("#modalRow"); row.innerHTML=""; buttons.forEach(b=>{ const btn=document.createElement("button"); btn.textContent=b.label; btn.className=b.cls||"btn-cancel"; btn.onclick=()=>{ closeModal(); b.onClick&&b.onClick(); }; row.appendChild(btn); }); $("#modal").classList.add("open"); }
 function closeModal(){ $("#modal").classList.remove("open"); }
 $("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeModal(); });
+/* ---------- use case from the link (?uc=U17&company=…) ---------- */
+const Q=new URLSearchParams(location.search);
+const UC=(typeof USE_CASES!=="undefined")?USE_CASES.find(u=>u.id===(Q.get("uc")||"").toUpperCase()):null;
+function applyLink(){
+  if(Q.get("company")&&!$("#m_case").value){ $("#m_case").value=Q.get("company"); }
+  if(UC){
+    const partner=(typeof PARTNERS!=="undefined"?(PARTNERS.find(p=>p.id===UC.partner)||{}).name:"")||"";
+    if(!extra.use_case){ extra.use_case=`${UC.id} – ${UC.name}`; }
+    const b=$("#ucBanner"); b.style.display="block"; b.innerHTML=`<span>You tried:</span><b>${esc(UC.name)}</b><span>${esc((UC.tech||[]).join(", "))}${partner?" · "+esc(partner):""}</span>`;
+    const f=$("#f_usecase"); f.value=extra.use_case; f.readOnly=true; f.style.background="#eef1f7";
+  }
+}
+function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+/* ---------- self-guided mode ---------- */
+let wzScreens=[], wzIdx=0;
+function wzSetup(){
+  build();
+  // give each metric block its own screen
+  $$("#metricsBlocks .mp-block").forEach(b=>b.classList.add("wz-screen"));
+  wzScreens=[$("#wzWelcome"),$("#wzIntro"),$(".mp-context"),...$$("#metricsBlocks .mp-block"),$(".overall"),$("#wzReview")];
+  const all=localStorage.getItem("wp3_metrics_mode")==="all";
+  $("#modeAll").checked=all; document.body.classList.toggle("wz",!all);
+  $("#modeAll").addEventListener("change",e=>{ localStorage.setItem("wp3_metrics_mode",e.target.checked?"all":"wizard"); document.body.classList.toggle("wz",!e.target.checked); if(e.target.checked) renderReview(); else wzShow(wzIdx); });
+  wzShow(0);
+}
+function wzShow(i){
+  wzIdx=Math.max(0,Math.min(wzScreens.length-1,i));
+  wzScreens.forEach((s,k)=>s.classList.toggle("on",k===wzIdx)); document.body.classList.toggle("wz-mid",wzIdx>0);
+  const n=wzScreens.length-1; $("#wzBar").style.width=(100*wzIdx/n)+"%"; $("#wzStepTxt").textContent=wzIdx?`${wzIdx} of ${n}`:"";
+  $("#wzBack").style.visibility=wzIdx?"visible":"hidden";
+  const last=wzIdx===n, first=wzIdx===0;
+  $("#wzNext").style.display=first?"none":"inline-block";
+  $("#wzNext").textContent=last?"Send my answers ✓":"Next →"; $("#wzNext").className=last?"btn-send":"btn-next";
+  $("#wzHint").textContent=last?"Your answers go to the research team.":(wzIdx>=3&&wzIdx<n-1?"You can skip a point if it does not fit your task.":"");
+  if(last) renderReview();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function wzStep(d){ if(d>0&&wzIdx===wzScreens.length-1){ submitMetrics(); return; } wzShow(wzIdx+d); }
+function wzGo(i){ wzShow(i); }
+function renderReview(){
+  const d=collect(); let h="";
+  h+=`<table><tr><td>Technology</td><td class="sc">${esc(d.use_case||"–")}</td></tr><tr><td>Your job</td><td class="sc">${esc(d.role||"–")}</td></tr><tr><td>Describes you</td><td class="sc">${esc(d.personas.map(p=>(PERSONAS.find(x=>x[0]===p)||[])[1]||p).join("; ")||"–")}</td></tr></table>`;
+  SUCCESS_METRICS.forEach(b=>{ const eb=EASY[b.id]||{name:b.name}; h+=`<h3 style="margin-top:14px">${esc(eb.name)}</h3><table>`;
+    b.metrics.forEach(m=>{ const s=d.metrics.scores[m.id]; const lab=(EASY[m.id]||[m.label])[0]; h+=`<tr><td>${esc(lab)}</td><td class="sc">${s&&s.r?s.r+" / 5":"<span class='miss'>skipped</span>"}${s&&s.p?" ★":""}</td></tr>`; });
+    h+="</table>"; });
+  h+=`<h3 style="margin-top:14px">In the end</h3><table><tr><td>All in all</td><td class="sc">${d.overall_rating?d.overall_rating+" / 5":"<span class='miss'>–</span>"}</td></tr><tr><td>Use it every day?</td><td class="sc">${esc(d.would_adopt||"–")}</td></tr></table>`;
+  $("#reviewBody").innerHTML=h;
+}
+/* ---------- facilitator link builder ---------- */
+function facInit(){
+  if(typeof PARTNERS==="undefined") return;
+  const sp=$("#facPartner"); sp.innerHTML=PARTNERS.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
+  const fill=()=>{ const su=$("#facUc"); su.innerHTML=USE_CASES.filter(u=>u.partner===sp.value).map(u=>`<option value="${u.id}">${u.id} – ${esc(u.name)}</option>`).join(""); };
+  sp.addEventListener("change",fill); fill();
+}
+function facMake(){
+  const url=new URL(location.href.split("?")[0]); url.searchParams.set("flow","worker"); url.searchParams.set("step","1"); url.searchParams.set("uc",$("#facUc").value);
+  const c=$("#facCompany").value.trim(); if(c) url.searchParams.set("company",c);
+  $("#facLink").textContent=url.toString(); navigator.clipboard&&navigator.clipboard.writeText(url.toString()).then(()=>toast("Link copied","ok")).catch(()=>{});
+}
+
 (function init(){
   $("#m_date").value=new Date().toISOString().slice(0,10);
   let restored=false; try{ const raw=localStorage.getItem(STORAGE_KEY); if(raw){ fill(JSON.parse(raw)); restored=true; $("#dot").className="dot saved"; $("#status").textContent="Draft restored from this browser"; } }catch(e){}
   if(!restored) render();
+  applyLink(); render(); wzSetup(); facInit();
   if(!SUBMIT_URL) $("#submitBtn").title="No backend configured – submit will download a JSON file instead";
 })();
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key==="s"){ e.preventDefault(); exportJSON(); } });
 </script>
-<script src="flow.js?v=20261016"></script>
+<script src="flow.js?v=20261019"></script>
 </body>
 </html>

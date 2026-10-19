@@ -29,10 +29,15 @@ The start page (`index.html`) offers two versions, defined in `flow.js`:
   * **Developer** *(developers, engineers & managers)* — **Workforce canvas → Solution canvas**. A light,
     conversation-first path: brainstorm the case, then turn it into a solution and action plan
     (40–60 min). The success-metrics scoring is not shown on these canvases – it belongs to the Worker channel.
-  * **Worker** *(workers who took part in a use case experiment)* — **Success metrics – worker assessment**
-    (`metrics.html`, 10–15 min, one page, one submission per worker): describe the task done with the
-    technology, rate every success metric 1–5 from one's own experience, star what mattered most, give an
-    overall rating and say what worked / what should change.
+  * **Worker** *(workers who took part in a use case experiment)* — **How was the new technology for you?**
+    (`metrics.html`, about 10 min, one submission per worker, easy-read English). Self-guided: a welcome
+    screen, then one screen at a time (about you → seven metric blocks → in the end → review → send) with
+    Back / Next and a progress bar; *show everything on one page* switches to the full form. Workers tick
+    which target groups describe them, rate every success metric 1–5, star what was important, give an
+    overall rating and say what was good / what should be better. **Facilitators** open the page, expand
+    *For facilitators: make a link for your use case*, pick institute, use case and company and get a link
+    (`?flow=worker&step=1&uc=U17&company=…`) that pre-fills the use case and company – print it as a QR
+    code and workers only open it and answer.
 * **Academic Version** *(for scholars)* — **Use case matching → Workforce canvas → Assessment
   matrix → Solution canvas**. The full analytical path from the project's real use cases through
   formal requirement mapping to a grounded solution design. ~65–90 min.
